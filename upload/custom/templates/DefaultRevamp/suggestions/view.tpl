@@ -91,7 +91,7 @@
 		
 		<div class="ui six wide tablet four wide computer column">
 		  {include file='suggestions/search.tpl'}
-		  {include file='suggestions/recently_updated.tpl'}
+		  {include file='suggestions/recent_activity.tpl'}
 		</div>
 		
 	  </div>

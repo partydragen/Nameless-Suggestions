@@ -1,5 +1,5 @@
 <div class="ui segment">
-  <h4>Categories</h4>
+  <h4>{$CATEGORIES}</h4>
   <hr>
   <div class="ui grid">
 	{foreach from=$CATEGORIES_LIST item=item}

@@ -22,7 +22,7 @@
 			<table class="ui fixed single line selectable unstackable small padded res table">
 			  <thead>
 				<tr>
-				  <th class="eight wide">{$TITLE}</th>
+				  <th class="eight wide">{$SUGGESTION_TITLE}</th>
 				  <th class="three wide">{$STATS}</th>
 				  <th class="five wide">{$LAST_REPLY}</th>
 				</tr>
@@ -70,7 +70,7 @@
 		<div class="ui six wide tablet four wide computer column">
 		  {include file='suggestions/search.tpl'}
 		  {include file='suggestions/categories.tpl'}
-		  {include file='suggestions/recently_updated.tpl'}
+		  {include file='suggestions/recent_activity.tpl'}
 		</div>
 		
 	  </div>
