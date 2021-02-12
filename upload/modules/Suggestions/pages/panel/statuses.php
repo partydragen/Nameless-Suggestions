@@ -199,6 +199,12 @@ if(!isset($_GET['action'])){
     }
 }
 
+$premium = false;
+$cache->setCache('partydragen');
+if($cache->isCached('premium')){
+    $premium = $cache->retrieve('premium');
+}
+
 // Load modules + template
 Module::loadPage($user, $pages, $cache, $smarty, array($navigation, $cc_nav, $mod_nav), $widgets);
 
@@ -226,6 +232,7 @@ $smarty->assign(array(
     'TOKEN' => Token::get(),
     'SUBMIT' => $language->get('general', 'submit'),
     'SUGGESTIONS' => $suggestions_language->get('general', 'suggestions'),
+    'PREMIUM' => $premium
 ));
 
 if(isset($_GET['action'])){

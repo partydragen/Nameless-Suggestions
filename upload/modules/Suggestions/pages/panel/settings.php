@@ -59,6 +59,12 @@ $icon = $cache->retrieve('suggestions_icon');
 $cache->setCache('suggestions_module_cache');
 $link_location = $cache->retrieve('link_location');
 
+$premium = false;
+$cache->setCache('partydragen');
+if($cache->isCached('premium')){
+    $premium = $cache->retrieve('premium');
+}
+
 // Load modules + template
 Module::loadPage($user, $pages, $cache, $smarty, array($navigation, $cc_nav, $mod_nav), $widgets);
 
@@ -95,7 +101,8 @@ $smarty->assign(array(
     'ICON_EXAMPLE' => htmlspecialchars($suggestions_language->get('admin', 'icon_example')),
     'ICON_VALUE' => Output::getClean(htmlspecialchars_decode($icon)),
     'TOKEN' => Token::get(),
-    'SUBMIT' => $language->get('general', 'submit')
+    'SUBMIT' => $language->get('general', 'submit'),
+    'PREMIUM' => $premium
 ));
 
 $page_load = microtime(true) - $start;

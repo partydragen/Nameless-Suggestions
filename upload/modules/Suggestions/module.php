@@ -9,7 +9,7 @@ class Suggestions_Module extends Module {
         
         $name = 'Suggestions';
         $author = '<a href="https://partydragen.com" target="_blank" rel="nofollow noopener">Partydragen</a>';
-        $module_version = '1.1.1';
+        $module_version = '1.2.0';
         $nameless_version = '2.0.0-pr9';
         
         parent::__construct($this, $name, $author, $module_version, $nameless_version);
@@ -25,6 +25,21 @@ class Suggestions_Module extends Module {
         $pages->add('Suggestions', '/panel/suggestions/settings', 'pages/panel/settings.php');
         $pages->add('Suggestions', '/panel/suggestions/categories', 'pages/panel/categories.php');
         $pages->add('Suggestions', '/panel/suggestions/statuses', 'pages/panel/statuses.php');
+        
+        // Check if module version changed
+        $cache->setCache('suggestions_module_cache');
+        if(!$cache->isCached('module_version')){
+            $cache->store('module_version', $module_version);
+        } else {
+            if($module_version != $cache->retrieve('module_version')) {
+                // Version have changed, Perform actions
+                $cache->store('module_version', $module_version);
+                
+                if($cache->isCached('update_check')){
+                    $cache->erase('update_check');
+                }
+            }
+        }
         
         HookHandler::registerEvent('newSuggestion', 'New Suggestion');
     }
@@ -137,6 +152,38 @@ class Suggestions_Module extends Module {
                     $icon = $cache->retrieve('suggestions_statuses_icon');
 
                 $navs[2]->addItemToDropdown('suggestions_configuration', 'suggestions_statuses', $this->_suggestions_language->get('admin', 'statuses'), URL::build('/panel/suggestions/statuses'), 'top', $order, $icon);
+            }
+        }
+        
+        // Check for module updates
+        if(isset($_GET['route']) && $user->isLoggedIn() && $user->hasPermission('admincp.update')){
+            if(rtrim($_GET['route'], '/') == '/suggestions' || rtrim($_GET['route'], '/') == '/panel/suggestions/settings' || rtrim($_GET['route'], '/') == '/panel/suggestions/categories' || rtrim($_GET['route'], '/') == '/panel/suggestions/statuses'){
+
+                $cache->setCache('suggestions_module_cache');
+                if($cache->isCached('update_check')){
+                    $update_check = $cache->retrieve('update_check');
+                } else {
+                    require_once(ROOT_PATH . '/modules/Suggestions/classes/Suggestions.php');
+                    $update_check = Suggestions::updateCheck();
+                    $cache->store('update_check', $update_check, 3600);
+                }
+
+                $update_check = json_decode($update_check);
+                if(isset($update_check->premium)) {
+                    $cache->setCache('partydragen');
+                    $cache->store('premium', (bool) $update_check->premium);
+                }
+                
+                if(!isset($update_check->error) && !isset($update_check->no_update) && isset($update_check->new_version)){
+                    $smarty->assign(array(
+                        'NEW_UPDATE' => str_replace('{x}', $this->getName(), (isset($update_check->urgent) && $update_check->urgent == 'true') ? $this->_suggestions_language->get('admin', 'new_urgent_update_available_x') : $this->_suggestions_language->get('admin', 'new_update_available_x')),
+                        'NEW_UPDATE_URGENT' => (isset($update_check->urgent) && $update_check->urgent == 'true'),
+                        'CURRENT_VERSION' => str_replace('{x}', $this->getVersion(), $this->_suggestions_language->get('admin', 'current_version_x')),
+                        'NEW_VERSION' => str_replace('{x}', Output::getClean($update_check->new_version), $this->_suggestions_language->get('admin', 'new_version_x')),
+                        'UPDATE' => $this->_suggestions_language->get('admin', 'view_resource'),
+                        'UPDATE_LINK' => 'https://partydragen.com/resources/resource/4-suggestions-system/'
+                    ));
+                }
             }
         }
     }

@@ -62,7 +62,7 @@ if(Input::exists()){
                 HookHandler::executeEvent('newSuggestion', array(
                     'event' => 'newSuggestion',
                     'username' => $user->getDisplayname(),
-                    'content' => 'New suggestion by ' . $user->getDisplayname(),
+                    'content' => str_replace(array('{x}'), array($user->getDisplayname()), $suggestions_language->get('general', 'hook_new_suggestion')),
                     'content_full' => str_replace('&nbsp;', '', strip_tags(htmlspecialchars_decode(Input::get('content')))),
                     'avatar_url' => $user->getAvatar(null, 128, true),
                     'title' => Output::getClean('#' . $suggestion_id . ' - ' . Input::get('title')),

@@ -126,9 +126,9 @@ if(Input::exists()){
                 ));
                 
                 $discordAlert = array(
-                    'event' => 'updateSuggestion',
+                    'event' => 'newSuggestion',
                     'username' => $user->getDisplayname(),
-                    'content' => 'New comment by ' . $user->getDisplayname() . ' - Suggestion have '.$suggestion->likes.' likes and '.$suggestion->dislikes.' dislikes',
+                    'content' => str_replace(array('{x}', '{y}', '{z}'), array($user->getDisplayname(), Output::getClean($suggestion->likes), Output::getClean($suggestion->dislikes)), $suggestions_language->get('general', 'hook_new_comment')),
                     'content_full' => str_replace('&nbsp;', '', strip_tags(htmlspecialchars_decode(Input::get('content')))),
                     'avatar_url' => $user->getAvatar(null, 128, true),
                     'title' => Output::getClean('#' . $suggestion->id . ' - ' . $suggestion->title),
@@ -159,7 +159,7 @@ if(Input::exists()){
                     }
                 }
             
-                HookHandler::executeEvent('updateSuggestion', $discordAlert);
+                HookHandler::executeEvent('newSuggestion', $discordAlert);
                 Redirect::to(URL::build('/suggestions/view/' . $suggestion->id . '-' . Util::stringToURL($suggestion->title)));
                 die();
             } else {
@@ -168,13 +168,13 @@ if(Input::exists()){
                     if(strpos($error, 'minimum') !== false){
                         switch($error){
                             case (strpos($error, 'content') !== false):
-                                $errors[] = 'The comment must be a minimum of 3 characters';
+                                $errors[] = $suggestions_language->get('general', 'comment_minimum');
                             break;
                         }
                     } else if(strpos($error, 'maximum') !== false){
                         switch($error){
                             case (strpos($error, 'content') !== false):
-                                $errors[] = 'The comment must be a maximum of 10000 characters';
+                                $errors[] = $suggestions_language->get('general', 'comment_maximum');
                             break;
                         }
                     }

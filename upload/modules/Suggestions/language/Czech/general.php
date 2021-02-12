@@ -21,10 +21,25 @@ $language = array(
 	'categories' => 'Kategorie',
 	'category' => 'Kategorie',
 	'content' => 'Obsah',
+    'status' => 'Status',
 	'recent_activity' => 'Nedádvná aktivita',
 	'search_keyword' => 'Vyhledávání',
 	'sort_by' => 'Řadit podle',
 	'newest' => 'Nejnovější',
 	'comments' => 'Komentáře',
 	'new_comment' => 'Nový komentář',
+    'editing_suggestion' => 'Editing Suggestion',
+    
+    // Errors
+    'title_required' => 'You must enter a title',
+    'content_required' => 'You must enter a content',
+    'title_minimum' => 'The title must be a minimum of 6 characters',
+    'content_minimum' => 'The content must be a minimum of 6 characters',
+    'title_maximum' => 'The title must be a maximum of 128 characters',
+    'comment_minimum' => 'The comment must be a minimum of 3 characters',
+    'comment_maximum' => 'The comment must be a maximum of 10000 characters',
+    
+    // Hook
+    'hook_new_suggestion' => 'New suggestion by {x}',
+    'hook_new_comment' => 'New comment by {x} - Suggestion have {y} likes and {z} dislikes',
 );

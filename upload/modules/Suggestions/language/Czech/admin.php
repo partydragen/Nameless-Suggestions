@@ -12,7 +12,11 @@ $language = array(
 	'settings' => 'Nastavení',
 	'actions' => 'Akce',
 	'editing_x' => 'Úprava {x}', // Don't replace {x}
-
+    'link_location' => 'Link Location',
+    'icon' => 'Icon',
+    'icon_example' => 'Example: <i class="fa fa-users" aria-hidden="true"></i>',
+    'settings_updated_successfully' => 'Settings updated successfully.',
+    
 	'categories' => 'Kategorie',
 	'new_category' => 'Nová kategorie',
 	'creating_new_category' => 'Vytváření nové kategorie',

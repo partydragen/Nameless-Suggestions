@@ -59,6 +59,9 @@
 							</div>
 						</form>
 						
+                        {if !$PREMIUM}
+                            <center><p>Suggestion Module by <a href="https://partydragen.com/" target="_blank">Partydragen</a></p></center>
+                        {/if}
                     </div>
                 </div>
 

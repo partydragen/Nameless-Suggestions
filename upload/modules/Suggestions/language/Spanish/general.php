@@ -4,30 +4,30 @@
  *  https://github.com/partydragen/Nameless-Suggestions
  *  https://partydragen.com/
  *
- *  EnglishUK Language for Suggestions module
+ *  Spanish Language for Suggestions module
  */
 
 $language = array(
-    'suggestions' => 'Suggestions',
-    'no_suggestions' => 'No suggestions found.',
-    'new_suggestion' => 'New Suggestion',
-    'none_statuses_defined' => 'None statuses found',
-    'none_categories_defined' => 'None categories found',
-    'title' => 'Title',
-    'last_reply' => 'Last Reply',
-    'stats' => 'Stats',
-    'likes' => 'Likes',
-    'dislikes' => 'Dislikes',
-    'categories' => 'Categories',
-    'category' => 'Category',
-    'content' => 'Content',
+	'suggestions' => 'Sugerencias',
+	'no_suggestions' => 'No se encontraron sugerencias.',
+	'new_suggestion' => 'Nueva sugerencia',
+	'none_statuses_defined' => 'No se ha encontrado ningún estado',
+	'none_categories_defined' => 'No se ha encontrado ninguna categoría',
+	'title' => 'Título',
+	'last_reply' => 'Última respuesta',
+	'stats' => 'Estadísticas',
+	'likes' => 'Me gusta',
+	'dislikes' => 'No me gusta',
+	'categories' => 'Categorías',
+	'category' => 'Categoría',
+	'content' => 'Contenido',
     'status' => 'Status',
-    'recent_activity' => 'Recent Activity',
-    'search_keyword' => 'Search Keyword',
-    'sort_by' => 'Sort By',
-    'newest' => 'Newest',
-    'comments' => 'Comments',
-    'new_comment' => 'New comment',
+	'recent_activity' => 'Actividad reciente',
+	'search_keyword' => 'Buscar palabra clave',
+	'sort_by' => 'Ordenar por',
+	'newest' => 'El más reciente',
+	'comments' => 'Comentarios',
+	'new_comment' => 'Nuevo comentario',
     'editing_suggestion' => 'Editing Suggestion',
     
     // Errors
