@@ -1,6 +1,6 @@
 <?php
 /*
- *	Made by Partydragen
+ *  Made by Partydragen
  *  https://github.com/partydragen/Nameless-Suggestions
  *  https://partydragen.com/
  *
@@ -8,27 +8,7 @@
  */
 
 // Can the user view the panel?
-if($user->isLoggedIn()){
-	if(!$user->canViewACP()){
-		// No
-		Redirect::to(URL::build('/'));
-		die();
-	}
-	if(!$user->isAdmLoggedIn()){
-		// Needs to authenticate
-		Redirect::to(URL::build('/panel/auth'));
-		die();
-	} else {
-		if(!$user->hasPermission('suggestions.manage')){
-			require_once(ROOT_PATH . '/403.php');
-			die();
-		}
-	}
-} else {
-	// Not logged in
-	Redirect::to(URL::build('/login'));
-	die();
-}
+$user->handlePanelPageLoad('suggestions.manage');
 
 define('PAGE', 'panel');
 define('PARENT_PAGE', 'suggestions_configuration');
@@ -38,41 +18,84 @@ require_once(ROOT_PATH . '/core/templates/backend_init.php');
 
 // Deal with input
 if (Input::exists()) {
-	if (Token::check(Input::get('token'))) {
+    if (Token::check(Input::get('token'))) {
+                // Get link location
+                if(isset($_POST['link_location'])){
+                    switch($_POST['link_location']){
+                        case 1:
+                        case 2:
+                        case 3:
+                        case 4:
+                            $location = $_POST['link_location'];
+                            break;
+                        default:
+                            $location = 1;
+                    }
+                } else
+                    $location = 1;
+                
+                // Update Icon cache
+                $cache->setCache('navbar_icons');
+                $cache->store('suggestions_icon', Input::get('icon'));
+                
+                // Update Link location cache
+                $cache->setCache('suggestions_module_cache');
+                $cache->store('link_location', $location);
 
-	} else {
-		// Invalid token
-		$errors = array($language->get('general', 'invalid_token'));
-	}
+                Session::flash('suggestions_success', $suggestions_language->get('admin', 'settings_updated_successfully'));
+                Redirect::to(URL::build('/panel/suggestions/settings'));
+                die();
+    } else {
+        // Invalid token
+        $errors = array($language->get('general', 'invalid_token'));
+    }
 }
+
+// Retrieve Icon from cache
+$cache->setCache('navbar_icons');
+$icon = $cache->retrieve('suggestions_icon');
+
+// Retrieve link_location from cache
+$cache->setCache('suggestions_module_cache');
+$link_location = $cache->retrieve('link_location');
 
 // Load modules + template
 Module::loadPage($user, $pages, $cache, $smarty, array($navigation, $cc_nav, $mod_nav), $widgets);
 
-if(Session::exists('general_language'))
-	$success = Session::flash('general_language');
+if(Session::exists('suggestions_success'))
+    $success = Session::flash('suggestions_success');
 
 if(isset($success)){
-	$smarty->assign(array(
-		'SUCCESS_TITLE' => $language->get('general', 'success'),
-		'SUCCESS' => $success
-	));
+    $smarty->assign(array(
+        'SUCCESS_TITLE' => $language->get('general', 'success'),
+        'SUCCESS' => $success
+    ));
 }
 
 if(isset($errors) && count($errors)){
-	$smarty->assign(array(
-		'ERRORS_TITLE' => $language->get('general', 'error'),
-		'ERRORS' => $errors
-	));
+    $smarty->assign(array(
+        'ERRORS_TITLE' => $language->get('general', 'error'),
+        'ERRORS' => $errors
+    ));
 }
 
 $smarty->assign(array(
-	'PARENT_PAGE' => PARENT_PAGE,
-	'DASHBOARD' => $language->get('admin', 'dashboard'),
-	'PAGE' => PANEL_PAGE,
-	'TOKEN' => Token::get(),
-	'SUBMIT' => $language->get('general', 'submit'),
-	'SUGGESTIONS' => $suggestions_language->get('suggestions', 'suggestions'),
+    'PARENT_PAGE' => PARENT_PAGE,
+    'DASHBOARD' => $language->get('admin', 'dashboard'),
+    'PAGE' => PANEL_PAGE,
+    'SUGGESTIONS' => $suggestions_language->get('general', 'suggestions'),
+    'SETTINGS' => $suggestions_language->get('admin', 'settings'),
+    'LINK_LOCATION' => $suggestions_language->get('admin', 'link_location'),
+    'LINK_LOCATION_VALUE' => $link_location,
+    'LINK_NAVBAR' => $language->get('admin', 'page_link_navbar'),
+    'LINK_MORE' => $language->get('admin', 'page_link_more'),
+    'LINK_FOOTER' => $language->get('admin', 'page_link_footer'),
+    'LINK_NONE' => $language->get('admin', 'page_link_none'),
+    'ICON' => $suggestions_language->get('admin', 'icon'),
+    'ICON_EXAMPLE' => htmlspecialchars($suggestions_language->get('admin', 'icon_example')),
+    'ICON_VALUE' => Output::getClean(htmlspecialchars_decode($icon)),
+    'TOKEN' => Token::get(),
+    'SUBMIT' => $language->get('general', 'submit')
 ));
 
 $page_load = microtime(true) - $start;
