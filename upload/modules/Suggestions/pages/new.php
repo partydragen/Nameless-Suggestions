@@ -133,7 +133,7 @@ $template->addJSScript('$(\'.ui.search\')
   .search({
     type: \'category\',
     apiSettings: {
-      url: \'/suggestions/search_api/?q={query}\'
+      url: \''.URL::build('/suggestions/search_api/', 'q=').'{query}\'
     },
     minCharacters: 3
   })

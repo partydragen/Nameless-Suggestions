@@ -10,9 +10,9 @@
 		  <div class="ui small dropdown primary button">
 		    <span class="text">{$SORT_BY} {$SORT_BY_VALUE}</span> <i class="dropdown icon"></i>
 		    <div class="menu">
-			  <a rel="noopener nofollow" class="item" href="/suggestions/?sort=newest">{$NEWEST}</a>
-			  <a rel="noopener nofollow" class="item" href="/suggestions/?sort=recent-activity">{$RECENT_ACTIVITY}</a>
-			  <a rel="noopener nofollow" class="item" href="/suggestions/?sort=likes">{$LIKES}</a>
+			  <a rel="noopener nofollow" class="item" href="{$SORT_NEWEST_LINK}">{$NEWEST}</a>
+			  <a rel="noopener nofollow" class="item" href="{$SORT_RECENT_ACTIVITY_LINK}">{$RECENT_ACTIVITY}</a>
+			  <a rel="noopener nofollow" class="item" href="{$SORT_LIKES_LINK}">{$LIKES}</a>
 		    </div>
 		  </div>
 		  <a class="ui small primary button" href="{$NEW_SUGGESTION_LINK}">{$NEW_SUGGESTION}</a></span>

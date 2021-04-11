@@ -142,6 +142,9 @@ $smarty->assign(array(
     'SEARCH_KEYWORD' => $suggestions_language->get('general', 'search_keyword'),
     'RECENT_ACTIVITY' => $suggestions_language->get('general', 'recent_activity'),
     'RECENT_ACTIVITY_LIST' => $suggestions->getRecentActivity($user, $timeago, $language),
+    'SORT_NEWEST_LINK' => URL::build('/suggestions/category/'.$category->id.'/', 'sort=newest'),
+    'SORT_LIKES_LINK' => URL::build('/suggestions/category/'.$category->id.'/', 'sort=likes'),
+    'SORT_RECENT_ACTIVITY_LINK' => URL::build('/suggestions/category/'.$category->id.'/', 'sort=recent-activity')
 ));
 
 // Load modules + template
@@ -154,7 +157,7 @@ $template->addJSScript('$(\'.ui.search\')
   .search({
     type: \'category\',
     apiSettings: {
-      url: \'/suggestions/search_api/?q={query}\'
+      url: \''.URL::build('/suggestions/search_api/', 'q=').'{query}\'
     },
     minCharacters: 3
   })

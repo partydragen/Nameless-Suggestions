@@ -239,6 +239,7 @@ $smarty->assign(array(
     'SUGGESTIONS' => $suggestions_language->get('general', 'suggestions'),
     'BACK' => $language->get('general', 'back'),
     'BACK_LINK' => URL::build('/suggestions/'),
+    'EDIT_LINK' => URL::build('/suggestions/edit/', 'sid=' . $suggestion->id),
     'TITLE' => Output::getClean($suggestion->title),
     'POSTER_USERNAME' => $author_user->getDisplayname(),
     'POSTER_PROFILE' => $author_user->getProfileURL(),
@@ -273,7 +274,7 @@ $template->addJSScript('$(\'.ui.search\')
   .search({
     type: \'category\',
     apiSettings: {
-      url: \'/suggestions/search_api/?q={query}\'
+      url: \''.URL::build('/suggestions/search_api/', 'q=').'{query}\'
     },
     minCharacters: 3
   })

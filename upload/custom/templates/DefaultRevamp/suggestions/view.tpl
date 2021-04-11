@@ -45,7 +45,7 @@
 			
 			{if isset($CAN_MODERATE)}
 			<span class="right floated">
-				<a class="ui small yellow icon button" data-toggle="tooltip" data-content="Edit" href="/suggestions/edit/?sid={$ID}"><i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i></a>
+				<a class="ui small yellow icon button" data-toggle="tooltip" data-content="Edit" href="{$EDIT_LINK}"><i class="fas fa-pencil-alt fa-fw" aria-hidden="true"></i></a>
 				<button class="ui small red icon button" rel="tooltip" data-content="Delete" onclick="$('#deleteModal').modal('show');"><i class="fas fa-trash fa-fw" aria-hidden="true"></i></button>
 			</span>
 			{/if}

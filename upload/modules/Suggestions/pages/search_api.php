@@ -13,13 +13,13 @@ if(!isset($_GET['q'])){
 $query = '%' . htmlspecialchars($_GET['q']) . '%';
 
 // Query database and get results
-$results = array('results' => array(), 'action' => array('url' => '/suggestions', 'text' => 'Full Search'));
+$results = array('results' => array(), 'action' => array('url' => URL::build('/suggestions'), 'text' => 'Full Search'));
 
 $knowledgebase = $queries->getLike('suggestions', 'deleted = 0 AND status_id != 2 AND title', '%' . $query . '%');
 
 if(count($knowledgebase)){
 	foreach($knowledgebase as $item){
-		$results['results']['communities']['results'][] = array('title' => htmlspecialchars('#'.$item->id. ' - ' . $item->title), 'url' => '/suggestions/view/' . $item->id);
+		$results['results']['communities']['results'][] = array('title' => htmlspecialchars('#'.$item->id. ' - ' . $item->title), 'url' => URL::build('/suggestions/view/' . $item->id));
 	}
 }
 
