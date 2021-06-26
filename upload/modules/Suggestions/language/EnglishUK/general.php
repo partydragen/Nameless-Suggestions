@@ -10,9 +10,9 @@
 $language = array(
     'suggestions' => 'Suggestions',
     'no_suggestions' => 'No suggestions found.',
-    'new_suggestion' => 'New Suggestion',
-    'none_statuses_defined' => 'None statuses found',
-    'none_categories_defined' => 'None categories found',
+    'new_suggestion' => 'Crate New Suggestion',
+    'none_statuses_defined' => 'No statuses found',
+    'none_categories_defined' => 'No categories found',
     'title' => 'Title',
     'last_reply' => 'Last Reply',
     'stats' => 'Stats',
@@ -31,8 +31,8 @@ $language = array(
     'editing_suggestion' => 'Editing Suggestion',
     
     // Errors
-    'title_required' => 'You must enter a title',
-    'content_required' => 'You must enter a content',
+    'title_required' => 'You must enter a title!',
+    'content_required' => 'You must enter the suggestion content!',
     'title_minimum' => 'The title must be a minimum of 6 characters',
     'content_minimum' => 'The content must be a minimum of 6 characters',
     'title_maximum' => 'The title must be a maximum of 128 characters',
@@ -41,5 +41,5 @@ $language = array(
     
     // Hook
     'hook_new_suggestion' => 'New suggestion by {x}',
-    'hook_new_comment' => 'New comment by {x} - Suggestion have {y} likes and {z} dislikes',
+    'hook_new_comment' => 'New comment by {x} - The suggestion has {y} likes and {z} dislikes.',
 );
