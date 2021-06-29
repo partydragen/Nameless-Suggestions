@@ -8,7 +8,10 @@
  */
 
 // Can the user view the panel?
-$user->handlePanelPageLoad('suggestions.manage');
+if(!$user->handlePanelPageLoad('suggestions.manage')) {
+    require_once(ROOT_PATH . '/403.php');
+    die();
+}
 
 define('PAGE', 'panel');
 define('PARENT_PAGE', 'suggestions_configuration');
