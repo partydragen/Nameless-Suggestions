@@ -1,4 +1,15 @@
-<?php
+<?php 
+/*
+ *	Made by Partydragen
+ *  https://github.com/partydragen/Nameless-Suggestions
+ *  https://partydragen.com
+ *  NamelessMC version 2.0.0-pr10
+ *
+ *  License: MIT
+ *
+ *  Suggestions module initialisation file
+ */
+
 class Suggestions_Module extends Module {
     private $_language;
     private $_suggestions_language;
@@ -9,8 +20,8 @@ class Suggestions_Module extends Module {
         
         $name = 'Suggestions';
         $author = '<a href="https://partydragen.com" target="_blank" rel="nofollow noopener">Partydragen</a>';
-        $module_version = '1.2.0';
-        $nameless_version = '2.0.0-pr9';
+        $module_version = '1.3.0';
+        $nameless_version = '2.0.0-pr10';
         
         parent::__construct($this, $name, $author, $module_version, $nameless_version);
         
