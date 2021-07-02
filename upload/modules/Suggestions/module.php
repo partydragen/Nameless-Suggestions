@@ -145,7 +145,7 @@ class Suggestions_Module extends Module {
                 } else
                     $icon = $cache->retrieve('suggestions_settings_icon');
 
-                $navs[2]->addItemToDropdown('suggestions_configuration', 'suggestions_settings', $this->_suggestions_language->get('admin', 'settings'), URL::build('/panel/suggestions/settings'), 'top', $order, $icon);
+                $navs[2]->addItemToDropdown('suggestions_configuration', 'suggestions_settings', $this->_suggestions_language->get('admin', 'settings'), URL::build('/panel/suggestions/settings'), 'top', null, $icon, $order);
                 
                 if(!$cache->isCached('suggestions_categories_icon')){
                     $icon = '<i class="nav-icon fas fa-folder"></i>';
@@ -154,7 +154,7 @@ class Suggestions_Module extends Module {
                     $icon = $cache->retrieve('suggestions_categories_icon');
 
                     
-                $navs[2]->addItemToDropdown('suggestions_configuration', 'suggestions_categories', $this->_suggestions_language->get('admin', 'categories'), URL::build('/panel/suggestions/categories'), 'top', $order, $icon);
+                $navs[2]->addItemToDropdown('suggestions_configuration', 'suggestions_categories', $this->_suggestions_language->get('admin', 'categories'), URL::build('/panel/suggestions/categories'), 'top', null, $icon, $order);
                 
                 if(!$cache->isCached('suggestions_statuses_icon')){
                     $icon = '<i class="nav-icon fas fa-tags"></i>';
@@ -162,7 +162,7 @@ class Suggestions_Module extends Module {
                 } else
                     $icon = $cache->retrieve('suggestions_statuses_icon');
 
-                $navs[2]->addItemToDropdown('suggestions_configuration', 'suggestions_statuses', $this->_suggestions_language->get('admin', 'statuses'), URL::build('/panel/suggestions/statuses'), 'top', $order, $icon);
+                $navs[2]->addItemToDropdown('suggestions_configuration', 'suggestions_statuses', $this->_suggestions_language->get('admin', 'statuses'), URL::build('/panel/suggestions/statuses'), 'top', null, $icon, $order);
             }
         }
         
