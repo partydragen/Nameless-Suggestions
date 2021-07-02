@@ -97,7 +97,7 @@ if(Input::exists()){
                     die();
                 }
             } else {
-                $errors[] = 'You need to be logged in to vote!';
+                $errors[] = $suggestions_language->get('general', 'login_to_vote');
             }
         } else if(Input::get('action') == 'comment') {
             // New Comment
@@ -126,7 +126,7 @@ if(Input::exists()){
                 ));
                 
                 $discordAlert = array(
-                    'event' => 'newSuggestion',
+                    'event' => 'newSuggestionComment',
                     'username' => $user->getDisplayname(),
                     'content' => str_replace(array('{x}', '{y}', '{z}'), array($user->getDisplayname(), Output::getClean($suggestion->likes), Output::getClean($suggestion->dislikes)), $suggestions_language->get('general', 'hook_new_comment')),
                     'content_full' => str_replace('&nbsp;', '', strip_tags(htmlspecialchars_decode(Input::get('content')))),
@@ -159,7 +159,7 @@ if(Input::exists()){
                     }
                 }
             
-                HookHandler::executeEvent('newSuggestion', $discordAlert);
+                HookHandler::executeEvent('newSuggestionComment', $discordAlert);
                 Redirect::to(URL::build('/suggestions/view/' . $suggestion->id . '-' . Util::stringToURL($suggestion->title)));
                 die();
             } else {

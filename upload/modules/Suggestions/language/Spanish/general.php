@@ -28,6 +28,7 @@ $language = array(
 	'newest' => 'El más reciente',
 	'comments' => 'Comentarios',
 	'new_comment' => 'Nuevo comentario',
+    'new_suggestion_comment' => 'New suggestion comment',
     'editing_suggestion' => 'Editing Suggestion',
     
     // Errors
@@ -38,6 +39,7 @@ $language = array(
     'title_maximum' => 'The title must be a maximum of 128 characters',
     'comment_minimum' => 'The comment must be a minimum of 3 characters',
     'comment_maximum' => 'The comment must be a maximum of 10000 characters',
+    'login_to_vote' => 'You need to be logged in to vote!',
     
     // Hook
     'hook_new_suggestion' => 'New suggestion by {x}',

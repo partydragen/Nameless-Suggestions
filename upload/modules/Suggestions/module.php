@@ -53,6 +53,7 @@ class Suggestions_Module extends Module {
         }
         
         HookHandler::registerEvent('newSuggestion', $this->_suggestions_language->get('general', 'new_suggestion'));
+        HookHandler::registerEvent('newSuggestionComment', $this->_suggestions_language->get('general', 'new_suggestion_comment'));
     }
     
     public function onInstall(){

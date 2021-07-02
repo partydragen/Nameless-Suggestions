@@ -28,6 +28,7 @@ $language = array(
 	'newest' => 'Nejnovější',
 	'comments' => 'Komentáře',
 	'new_comment' => 'Nový komentář',
+    'new_suggestion_comment' => 'New suggestion comment',
     'editing_suggestion' => 'Úprava návrhu',
     
     // Errors
@@ -38,6 +39,7 @@ $language = array(
     'title_maximum' => 'Název může obsahovat maximálně 128 znaků',
     'comment_minimum' => 'Komentář musí obsahovat alespoň 3 znaky',
     'comment_maximum' => 'Komentář může obsahovat maximálně 10 000 znaků',
+    'login_to_vote' => 'You need to be logged in to vote!',
     
     // Hook
     'hook_new_suggestion' => 'Nový návrh od uživatele {x}',
