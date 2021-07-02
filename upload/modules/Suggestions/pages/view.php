@@ -135,7 +135,7 @@ if(Input::exists()){
                     'url' => rtrim(Util::getSelfURL(), '/') . URL::build('/suggestions/view/' . $suggestion->id . '-' . Util::stringToURL(Output::getClean($suggestion->title)))
                 );
                 
-                if($user->canViewACP()){
+                if($user->canViewStaffCP()){
                     if($suggestion->status_id != htmlspecialchars(Input::get('status'))) {
                         $queries->update('suggestions', $suggestion->id, array(
                             'status_id' => htmlspecialchars(Input::get('status')),
@@ -181,7 +181,7 @@ if(Input::exists()){
                 }
             }
         } else if(Input::get('action') == 'deleteSuggestion') {
-            if($user->canViewACP()){
+            if($user->canViewStaffCP()){
                 $queries->update('suggestions', $suggestion->id, array(
                     'deleted' => 1
                 ));
@@ -205,7 +205,7 @@ if($user->isLoggedIn()){
         $voted = $user_voted[0]->type;
     }
     
-    if($user->canViewACP()){
+    if($user->canViewStaffCP()){
         $smarty->assign(array(
             'CAN_MODERATE' => true,
             'STATUSES' => $suggestions->getStatuses()

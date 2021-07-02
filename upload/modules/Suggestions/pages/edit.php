@@ -15,7 +15,7 @@ if(!$user->isLoggedIn()){
     die();
 }
 
-if(!$user->canViewACP()){
+if(!$user->canViewStaffCP()){
     require('404.php');
     die();
 }
