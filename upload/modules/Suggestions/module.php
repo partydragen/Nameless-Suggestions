@@ -192,7 +192,7 @@ class Suggestions_Module extends Module {
                         'CURRENT_VERSION' => str_replace('{x}', $this->getVersion(), $this->_suggestions_language->get('admin', 'current_version_x')),
                         'NEW_VERSION' => str_replace('{x}', Output::getClean($update_check->new_version), $this->_suggestions_language->get('admin', 'new_version_x')),
                         'UPDATE' => $this->_suggestions_language->get('admin', 'view_resource'),
-                        'UPDATE_LINK' => 'https://partydragen.com/resources/resource/4-suggestions-system/'
+                        'UPDATE_LINK' => Output::getClean($update_check->link)
                     ));
                 }
             }
