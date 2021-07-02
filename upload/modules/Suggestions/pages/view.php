@@ -106,34 +106,37 @@ if(Input::exists()){
 
             $validation = $validate->check($_POST, array(
                 'content' => array(
-                    'required' => true,
                     'min' => 3,
                     'max' => 10000
                 )
             ));
 
             if($validation->passed()){
-                $queries->create('suggestions_comments', array(
-                    'suggestion_id' => $suggestion->id,
-                    'user_id' => $user->data()->id,
-                    'created' => date('U'),
-                    'content' => Output::getClean(nl2br(Input::get('content')))
-                ));
+                $discordAlert = array();
+                if(!empty(Input::get('content'))) {
+                    // New comment
+                    $queries->create('suggestions_comments', array(
+                        'suggestion_id' => $suggestion->id,
+                        'user_id' => $user->data()->id,
+                        'created' => date('U'),
+                        'content' => Output::getClean(nl2br(Input::get('content')))
+                    ));
 
-                $queries->update('suggestions', $suggestion->id, array(
-                    'updated_by' => $user->data()->id,
-                    'last_updated' => date('U')
-                ));
-                
-                $discordAlert = array(
-                    'event' => 'newSuggestionComment',
-                    'username' => $user->getDisplayname(),
-                    'content' => str_replace(array('{x}', '{y}', '{z}'), array($user->getDisplayname(), Output::getClean($suggestion->likes), Output::getClean($suggestion->dislikes)), $suggestions_language->get('general', 'hook_new_comment')),
-                    'content_full' => str_replace('&nbsp;', '', strip_tags(htmlspecialchars_decode(Input::get('content')))),
-                    'avatar_url' => $user->getAvatar(null, 128, true),
-                    'title' => Output::getClean('#' . $suggestion->id . ' - ' . $suggestion->title),
-                    'url' => rtrim(Util::getSelfURL(), '/') . URL::build('/suggestions/view/' . $suggestion->id . '-' . Util::stringToURL(Output::getClean($suggestion->title)))
-                );
+                    $queries->update('suggestions', $suggestion->id, array(
+                        'updated_by' => $user->data()->id,
+                        'last_updated' => date('U')
+                    ));
+                    
+                    $discordAlert = array(
+                        'event' => 'newSuggestionComment',
+                        'username' => $user->getDisplayname(),
+                        'content' => str_replace(array('{x}', '{y}', '{z}'), array($user->getDisplayname(), Output::getClean($suggestion->likes), Output::getClean($suggestion->dislikes)), $suggestions_language->get('general', 'hook_new_comment')),
+                        'content_full' => str_replace('&nbsp;', '', strip_tags(htmlspecialchars_decode(Input::get('content')))),
+                        'avatar_url' => $user->getAvatar(null, 128, true),
+                        'title' => Output::getClean('#' . $suggestion->id . ' - ' . $suggestion->title),
+                        'url' => rtrim(Util::getSelfURL(), '/') . URL::build('/suggestions/view/' . $suggestion->id . '-' . Util::stringToURL(Output::getClean($suggestion->title)))
+                    );
+                }
                 
                 if($user->canViewStaffCP()){
                     if($suggestion->status_id != htmlspecialchars(Input::get('status'))) {
@@ -159,7 +162,10 @@ if(Input::exists()){
                     }
                 }
             
-                HookHandler::executeEvent('newSuggestionComment', $discordAlert);
+                if(!empty(Input::get('content'))) {
+                    HookHandler::executeEvent('newSuggestionComment', $discordAlert);
+                }
+                
                 Redirect::to(URL::build('/suggestions/view/' . $suggestion->id . '-' . Util::stringToURL($suggestion->title)));
                 die();
             } else {
