@@ -192,7 +192,7 @@ if(Input::exists()){
         }
     } else {
         // Invalid token
-        $errors[] = 'Invalid token!';
+        $errors[] = $language->get('general', 'invalid_token');
     }
 }
 

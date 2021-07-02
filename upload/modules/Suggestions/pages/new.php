@@ -101,6 +101,8 @@ if(Input::exists()){
                 }
             }
         }
+    } else {
+        $errors[] = $language->get('general', 'invalid_token');
     }
 }
 

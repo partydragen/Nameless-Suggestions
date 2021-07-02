@@ -23,28 +23,28 @@ if(isset($_GET['sort'])){
     switch($_GET['sort']) {
         case 'recent-activity':
             $sort = 'last_updated';
-            $sort_by = 'Recent Activity';
+            $sort_by = $suggestions_language->get('general', 'recent_activity');
             $url = URL::build('/suggestions/', 'sort=recent-activity&', true);
         break;
         case 'newest':
             $sort = 'created';
-            $sort_by = 'Newest';
+            $sort_by = $suggestions_language->get('general', 'newest');
             $url = URL::build('/suggestions/', 'sort=newest&', true);
         break;
         case 'likes':
             $sort = 'likes';
-            $sort_by = 'Likes';
+            $sort_by = $suggestions_language->get('general', 'likes');
             $url = URL::build('/suggestions/', 'sort=likes&', true);
         break;
         default:
             $sort = 'created';
-            $sort_by = 'Newest';
+            $sort_by = $suggestions_language->get('general', 'newest');
             $url = URL::build('/suggestions/', true);
         break;
     }
 } else {
     $sort = 'created';
-    $sort_by = 'Newest';
+    $sort_by = $suggestions_language->get('general', 'newest');
     $url = URL::build('/suggestions/', true);
 }
  
