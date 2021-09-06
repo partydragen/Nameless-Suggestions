@@ -20,27 +20,28 @@ $suggestions = new Suggestions();
 $sid = explode('/', $route);
 $sid = $sid[count($sid) - 1];
 
-if(!isset($sid[count($sid) - 1])){
-    Redirect::to(URL::build('/suggestions/'));
+if (!strlen($sid)) {
+    require_once(ROOT_PATH . '/404.php');
     die();
 }
+
 $sid = explode('-', $sid);
 if(!is_numeric($sid[0])){
-    Redirect::to(URL::build('/suggestions/'));
+    require_once(ROOT_PATH . '/404.php');
     die();
 }
 
 // Get the suggestion information
 $suggestion = $queries->getWhere('suggestions', array('id', '=', $sid[0]));
 if(!count($suggestion)){
-    Redirect::to(URL::build('/suggestions/'));
+    require_once(ROOT_PATH . '/404.php');
     die();
 }
 
 $suggestion = $suggestion[0];
 
 if($suggestion->deleted == 1){
-    Redirect::to(URL::build('/suggestions/'));
+    require_once(ROOT_PATH . '/404.php');
     die();
 }
 
@@ -132,7 +133,7 @@ if(Input::exists()){
                         'username' => $user->getDisplayname(),
                         'content' => str_replace(array('{x}', '{y}', '{z}'), array($user->getDisplayname(), Output::getClean($suggestion->likes), Output::getClean($suggestion->dislikes)), $suggestions_language->get('general', 'hook_new_comment')),
                         'content_full' => str_replace('&nbsp;', '', strip_tags(htmlspecialchars_decode(Input::get('content')))),
-                        'avatar_url' => $user->getAvatar(null, 128, true),
+                        'avatar_url' => $user->getAvatar(128, true),
                         'title' => Output::getClean('#' . $suggestion->id . ' - ' . $suggestion->title),
                         'url' => rtrim(Util::getSelfURL(), '/') . URL::build('/suggestions/view/' . $suggestion->id . '-' . Util::stringToURL(Output::getClean($suggestion->title)))
                     );
@@ -195,6 +196,13 @@ if(Input::exists()){
                 
             Redirect::to(URL::build('/suggestions/'));
             die();
+        } else if(Input::get('action') == 'deleteComment') {
+            if($user->canViewStaffCP() && is_numeric(Input::get('cid'))) {
+                $queries->delete('suggestions_comments', array('id', '=', Input::get('cid')));
+            }
+                
+            Redirect::to(URL::build('/suggestions/view/' . $suggestion->id . '-' . Util::stringToURL($suggestion->title)));
+            die();
         }
     } else {
         // Invalid token
@@ -224,20 +232,34 @@ $comments = $queries->getWhere('suggestions_comments', array('suggestion_id', '=
 $smarty_comments = array();
 foreach($comments as $comment){
     $comment_user = new User($comment->user_id);
-    
-    $smarty_comments[] = array(
-        'username' => $comment_user->getDisplayname(),
-        'profile' => $comment_user->getProfileURL(),
-        'style' => $comment_user->getGroupClass(),
-        'avatar' => $comment_user->getAvatar(),
-        'content' => Output::getPurified(Output::getDecoded($comment->content)),
-        'date' => date('d M Y, H:i', $comment->created),
-        'date_friendly' => $timeago->inWords(date('Y-m-d H:i:s', $comment->created), $language->getTimeLanguage())
-    );
+    if($comment_user->data()) {
+        $smarty_comments[] = array(
+            'id' => $comment->id,
+            'username' => $comment_user->getDisplayname(),
+            'profile' => $comment_user->getProfileURL(),
+            'style' => $comment_user->getGroupClass(),
+            'avatar' => $comment_user->getAvatar(),
+            'content' => Output::getPurified(Output::getDecoded($comment->content)),
+            'date' => date('d M Y, H:i', $comment->created),
+            'date_friendly' => $timeago->inWords(date('Y-m-d H:i:s', $comment->created), $language->getTimeLanguage())
+        );
+    }
 }
 
+if(Session::exists('suggestions_success'))
+    $success = Session::flash('suggestions_success');
+
+if(isset($success))
+    $smarty->assign(array(
+        'SUCCESS' => $success,
+        'SUCCESS_TITLE' => $language->get('general', 'success')
+    ));
+
 if(isset($errors) && count($errors))
-    $smarty->assign('ERRORS', $errors);
+    $smarty->assign(array(
+        'ERRORS' => $errors,
+        'ERRORS_TITLE' => $language->get('general', 'error')
+    ));
 
 $author_user = new User($suggestion->user_id);
 $smarty->assign(array(
@@ -267,7 +289,13 @@ $smarty->assign(array(
     'COMMENTS_LIST' => $smarty_comments,
     'SUBMIT' => $language->get('general', 'submit'),
     'STATUS' => Output::getClean($suggestion->status_id),
-    'BY' => $language->get('user', 'by')
+    'BY' => $language->get('user', 'by'),
+    'CONFIRM_DELETE' => $language->get('general', 'confirm_delete'),
+    'CONFIRM_DELETE_SUGGESTION' => $language->get('general', 'confirm_deletion'),
+    'CONFIRM_DELETE_COMMENT' => $language->get('general', 'confirm_deletion'),
+    'CANCEL' => $language->get('general', 'cancel'),
+    'DELETE' => $language->get('general', 'delete'),
+    'EDIT' => $language->get('general', 'edit'),
 ));
 
 // Load modules + template

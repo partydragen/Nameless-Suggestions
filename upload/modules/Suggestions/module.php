@@ -2,8 +2,7 @@
 /*
  *	Made by Partydragen
  *  https://github.com/partydragen/Nameless-Suggestions
- *  https://partydragen.com
- *  NamelessMC version 2.0.0-pr10
+ *  https://partydragen.com1
  *
  *  License: MIT
  *
@@ -21,7 +20,7 @@ class Suggestions_Module extends Module {
         $name = 'Suggestions';
         $author = '<a href="https://partydragen.com" target="_blank" rel="nofollow noopener">Partydragen</a>';
         $module_version = '1.3.1';
-        $nameless_version = '2.0.0-pr10';
+        $nameless_version = '2.0.0-pr11';
         
         parent::__construct($this, $name, $author, $module_version, $nameless_version);
         
@@ -169,8 +168,10 @@ class Suggestions_Module extends Module {
         
         // Check for module updates
         if(isset($_GET['route']) && $user->isLoggedIn() && $user->hasPermission('admincp.update')){
-            if(rtrim($_GET['route'], '/') == '/suggestions' || rtrim($_GET['route'], '/') == '/panel/suggestions/settings' || rtrim($_GET['route'], '/') == '/panel/suggestions/categories' || rtrim($_GET['route'], '/') == '/panel/suggestions/statuses'){
-
+            // Page belong to this module?
+            $page = $pages->getActivePage();
+            if($page['module'] == 'Suggestions'){
+                
                 $cache->setCache('suggestions_module_cache');
                 if($cache->isCached('update_check')){
                     $update_check = $cache->retrieve('update_check');
