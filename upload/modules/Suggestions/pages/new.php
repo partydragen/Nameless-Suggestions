@@ -40,6 +40,14 @@ if(Input::exists()){
         ));
                     
         if($validation->passed()){
+            // Check post spam
+            $last_post = $queries->orderWhere('suggestions', 'user_id = ' . $user->data()->id, 'created', 'DESC LIMIT 1');
+            if (count($last_post)) {
+                if ($last_post[0]->created > strtotime("-30 seconds")) {
+                    $errors[] = str_replace('{x}', (strtotime(date('Y-m-d H:i:s', $last_post[0]->created)) - strtotime("-30 seconds")), $suggestions_language->get('general', 'spam_wait'));
+                }
+            }
+        
             // Check if category exists
             $category = DB::getInstance()->query('SELECT id FROM nl2_suggestions_categories WHERE id = ? AND deleted = 0', array(htmlspecialchars(Input::get('category'))))->results();
             if(!count($category)) {

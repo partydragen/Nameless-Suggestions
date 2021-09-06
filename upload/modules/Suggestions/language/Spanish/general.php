@@ -30,6 +30,7 @@ $language = array(
 	'new_comment' => 'Nuevo comentario',
     'new_suggestion_comment' => 'New suggestion comment',
     'editing_suggestion' => 'Editing Suggestion',
+    'spam_wait' => 'Please wait {x} seconds before posting again.',
     
     // Errors
     'title_required' => 'You must enter a title',

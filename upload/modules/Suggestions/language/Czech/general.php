@@ -30,6 +30,7 @@ $language = array(
     'new_comment' => 'Nový komentář',
     'new_suggestion_comment' => 'Nový komentář u návrhu',
     'editing_suggestion' => 'Úprava návrhu',
+    'spam_wait' => 'Please wait {x} seconds before posting again.',
     
     // Errors
     'title_required' => 'Musíte zadat název',
