@@ -64,7 +64,7 @@ if(Input::exists()){
                     'username' => $user->getDisplayname(),
                     'content' => str_replace(array('{x}'), array($user->getDisplayname()), $suggestions_language->get('general', 'hook_new_suggestion')),
                     'content_full' => str_replace('&nbsp;', '', strip_tags(htmlspecialchars_decode(Input::get('content')))),
-                    'avatar_url' => $user->getAvatar(null, 128, true),
+                    'avatar_url' => $user->getAvatar(128, true),
                     'title' => Output::getClean('#' . $suggestion_id . ' - ' . Input::get('title')),
                     'url' => rtrim(Util::getSelfURL(), '/') . URL::build('/suggestions/view/' . $suggestion_id . '-' . Util::stringToURL(Output::getClean(Input::get('title'))))
                 ));
