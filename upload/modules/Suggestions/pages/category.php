@@ -20,20 +20,21 @@ $suggestions = new Suggestions();
 $cid = explode('/', $route);
 $cid = $cid[count($cid) - 1];
 
-if(!isset($cid[count($cid) - 1])){
-    Redirect::to(URL::build('/suggestions/'));
+if (!strlen($cid)) {
+    require_once(ROOT_PATH . '/404.php');
     die();
 }
+
 $cid = explode('-', $cid);
 if(!is_numeric($cid[0])){
-    Redirect::to(URL::build('/suggestions/'));
+    require_once(ROOT_PATH . '/404.php');
     die();
 }
 
 // Get the suggestion information
 $category = $queries->getWhere('suggestions_categories', array('id', '=', $cid[0]));
 if(!count($category)){
-    Redirect::to(URL::build('/suggestions/'));
+    require_once(ROOT_PATH . '/404.php');
     die();
 }
 
