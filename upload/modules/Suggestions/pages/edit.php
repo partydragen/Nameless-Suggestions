@@ -3,7 +3,7 @@
  *  Made by Partydragen
  *  https://github.com/partydragen/Nameless-Suggestions
  *  https://partydragen.com/
- *  NamelessMC version 2.0.0-pr8
+ *  NamelessMC version 2.0.0-pr11
  *
  *  License: MIT
  *
@@ -66,15 +66,22 @@ if(Input::exists()){
         ));
                     
         if($validation->passed()){
-            $queries->update("suggestions", $suggestion->id, array(
-                'category_id' => htmlspecialchars(Input::get('category')),
-                'status_id' => htmlspecialchars(Input::get('status')),
-                'title' => htmlspecialchars(Input::get('title')),
-                'content' => htmlspecialchars(nl2br(Input::get('content'))),
-            ));
-                        
-            Redirect::to(URL::build('/suggestions/view/' . $suggestion->id));
-            die();
+            // Check if category exists
+            $category = DB::getInstance()->query('SELECT id FROM nl2_suggestions_categories WHERE id = ? AND deleted = 0', array(htmlspecialchars(Input::get('category'))))->results();
+            if(!count($category)) {
+                $errors[] = 'Invalid Category';
+            }
+            if(!count($errors)) {
+                $queries->update("suggestions", $suggestion->id, array(
+                    'category_id' => htmlspecialchars(Input::get('category')),
+                    'status_id' => htmlspecialchars(Input::get('status')),
+                    'title' => htmlspecialchars(Input::get('title')),
+                    'content' => htmlspecialchars(nl2br(Input::get('content'))),
+                ));
+                            
+                Redirect::to(URL::build('/suggestions/view/' . $suggestion->id));
+                die();
+            }
         } else {
             foreach($validation->errors() as $error){
                 if(strpos($error, 'is required') !== false){
