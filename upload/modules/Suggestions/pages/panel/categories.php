@@ -34,7 +34,6 @@ if(!isset($_GET['action'])){
     }
     
     $smarty->assign(array(
-        'CATEGORIES' => $suggestions_language->get('admin', 'categories'),
         'CATEGORIES_LIST' => $categories_array,
         'NEW_CATEGORY' => $suggestions_language->get('admin', 'new_category'),
         'NEW_CATEGORY_LINK' => URL::build('/panel/suggestions/categories/', 'action=new'),
@@ -207,6 +206,7 @@ $smarty->assign(array(
     'PAGE' => PANEL_PAGE,
     'TOKEN' => Token::get(),
     'SUBMIT' => $language->get('general', 'submit'),
+    'CATEGORIES' => $suggestions_language->get('admin', 'categories'),
     'SUGGESTIONS' => $suggestions_language->get('general', 'suggestions'),
     'PREMIUM' => $premium
 ));
