@@ -52,18 +52,17 @@ if(!isset($_GET['action'])){
                 $errors = array();
                 if(Token::check(Input::get('token'))){
                     // Validate input
-                    $validate = new Validate();
-                    $validation = $validate->check($_POST, array(
+                    $validation = Validate::check($_POST, [
                         'name' => array(
                             'required' => true,
                             'min' => 2,
                             'max' => 32
                         )
-                    ));
+                    ]);
                     
-                    if($validation->passed()){
+                    if ($validation->passed()) {
                         // Save to database
-                        $queries->create('suggestions_categories', array(
+                        $DB::getInstance()->insert('suggestions_categories', array(
                             'name' => Output::getClean(Input::get('name')),
                             'display_order' => Output::getClean(Input::get('order')),
                         ));
@@ -105,33 +104,31 @@ if(!isset($_GET['action'])){
             }
             $category = $category[0];
             
-            if(Input::exists()){
-                $errors = array();
-                if(Token::check(Input::get('token'))){
+            if (Input::exists()) {
+                $errors = [];
+
+                if (Token::check(Input::get('token'))) {
                     // Validate input
-                    $validate = new Validate();
-                    $validation = $validate->check($_POST, array(
+                    $validation = Validate::check($_POST, [
                         'name' => array(
                             'required' => true,
                             'min' => 2,
                             'max' => 32
                         )
-                    ));
+                    ]);
                     
-                    if($validation->passed()){
+                    if ($validation->passed()) {
                         // Save to database
-                        $queries->update('suggestions_categories', $category->id, array(
+                        $DB::getInstance()->update('suggestions_categories', $category->id, array(
                             'name' => Output::getClean(Input::get('name')),
                             'display_order' => Output::getClean(Input::get('order')),
                         ));
                         
                         Session::flash('staff_suggestions', $suggestions_language->get('admin', 'category_updated_successfully'));
                         Redirect::to(URL::build('/panel/suggestions/categories/', 'action=edit&id=' . Output::getClean($category->id)));
-                        die();
                     } else {
-                        // Errors
-                        foreach($validation->errors() as $item){
-                        }
+                        // Validation Errors
+                        $errors = $validation->errors();
                     }
                 } else {
                     $errors[] = $language->get('general', 'invalid_token');
@@ -159,7 +156,7 @@ if(!isset($_GET['action'])){
             
             $category = DB::getInstance()->query('SELECT * FROM nl2_suggestions_categories WHERE id = ? AND deleted = 0', array($_GET['id']))->results();
             if(count($category)) {
-                $queries->update('suggestions_categories', $category[0]->id, array(
+                $DB::getInstance()->update('suggestions_categories', $category[0]->id, array(
                     'deleted' => date('U')
                 ));
                 Session::flash('staff_suggestions', $suggestions_language->get('admin', 'category_deleted_successfully'));
@@ -181,7 +178,7 @@ if($cache->isCached('premium')){
 }
 
 // Load modules + template
-Module::loadPage($user, $pages, $cache, $smarty, array($navigation, $cc_nav, $mod_nav), $widgets);
+Module::loadPage($user, $pages, $cache, $smarty, [$navigation, $cc_nav, $staffcp_nav], $widgets, $template);
 
 if(Session::exists('staff_suggestions'))
     $success = Session::flash('staff_suggestions');
@@ -210,9 +207,6 @@ $smarty->assign(array(
     'SUGGESTIONS' => $suggestions_language->get('general', 'suggestions'),
     'PREMIUM' => $premium
 ));
-
-$page_load = microtime(true) - $start;
-define('PAGE_LOAD_TIME', str_replace('{x}', round($page_load, 3), $language->get('general', 'page_loaded_in')));
 
 $template->onPageLoad();
 

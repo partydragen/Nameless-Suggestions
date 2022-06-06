@@ -46,23 +46,25 @@ class Suggestions {
     }
     
     // Get Recently updated
-    public function getRecentActivity($user, $timeago, $language, $limit = 10){
+    public function getRecentActivity($user, $language, $limit = 10){
+        $timeago = new TimeAgo(TIMEZONE);
+
         $suggestions_query = $this->_db->query('SELECT * FROM nl2_suggestions WHERE deleted = 0 ORDER BY last_updated DESC LIMIT ' . $limit)->results();
-        $suggestions_array = array();
-        
+        $suggestions_array = [];
+
         foreach($suggestions_query as $item){
             $updated_by_user = new User($item->updated_by);
-            
-            $suggestions_array[] = array(
+
+            $suggestions_array[] = [
                 'title' => Output::getClean($item->title),
                 'link' => URL::build('/suggestions/view/' . $item->id . '-' . Util::stringToURL($item->title)),
-                'updated_rough' => $timeago->inWords(date('d M Y, H:i', $item->last_updated), $language->getTimeLanguage()),
+                'updated_rough' => $timeago->inWords($item->last_updated, $language),
                 'updated' => date('d M Y, H:i', $item->last_updated),
                 'updated_by_avatar' => $updated_by_user->getAvatar(),
                 'updated_by_username' => $updated_by_user->getDisplayname(),
                 'updated_by_style' => $updated_by_user->getGroupClass(),
                 'updated_by_link' => $updated_by_user->getProfileURL(),
-            );
+            ];
         }
         return $suggestions_array;
     }
@@ -76,11 +78,11 @@ class Suggestions {
 
         // Check for updates
         if (!$current_version) {
-            $current_version = $queries->getWhere('settings', array('name', '=', 'nameless_version'));
+            $current_version = DB::getInstance()->get('settings', array('name', '=', 'nameless_version'))->results();
             $current_version = $current_version[0]->value;
         }
 
-        $uid = $queries->getWhere('settings', array('name', '=', 'unique_id'));
+        $uid = DB::getInstance()->get('settings', array('name', '=', 'unique_id'))->results();
         $uid = $uid[0]->value;
         
         $enabled_modules = Module::getModules();

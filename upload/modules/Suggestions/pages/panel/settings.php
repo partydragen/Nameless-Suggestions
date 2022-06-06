@@ -22,35 +22,35 @@ require_once(ROOT_PATH . '/core/templates/backend_init.php');
 // Deal with input
 if (Input::exists()) {
     if (Token::check(Input::get('token'))) {
-                // Get link location
-                if(isset($_POST['link_location'])){
-                    switch($_POST['link_location']){
-                        case 1:
-                        case 2:
-                        case 3:
-                        case 4:
-                            $location = $_POST['link_location'];
-                            break;
-                        default:
-                            $location = 1;
-                    }
-                } else
+        // Get link location
+        if (isset($_POST['link_location'])) {
+            switch($_POST['link_location']){
+                case 1:
+                case 2:
+                case 3:
+                case 4:
+                    $location = $_POST['link_location'];
+                    break;
+                default:
                     $location = 1;
+            }
+        } else {
+            $location = 1;
                 
-                // Update Icon cache
-                $cache->setCache('navbar_icons');
-                $cache->store('suggestions_icon', Input::get('icon'));
-                
-                // Update Link location cache
-                $cache->setCache('suggestions_module_cache');
-                $cache->store('link_location', $location);
+            // Update Icon cache
+            $cache->setCache('navbar_icons');
+            $cache->store('suggestions_icon', Input::get('icon'));
 
-                Session::flash('suggestions_success', $suggestions_language->get('admin', 'settings_updated_successfully'));
-                Redirect::to(URL::build('/panel/suggestions/settings'));
-                die();
+            // Update Link location cache
+            $cache->setCache('suggestions_module_cache');
+            $cache->store('link_location', $location);
+
+            Session::flash('suggestions_success', $suggestions_language->get('admin', 'settings_updated_successfully'));
+            Redirect::to(URL::build('/panel/suggestions/settings'));
+        }
     } else {
         // Invalid token
-        $errors = array($language->get('general', 'invalid_token'));
+        $errors[] = $language->get('general', 'invalid_token');
     }
 }
 
@@ -69,7 +69,7 @@ if($cache->isCached('premium')){
 }
 
 // Load modules + template
-Module::loadPage($user, $pages, $cache, $smarty, array($navigation, $cc_nav, $mod_nav), $widgets);
+Module::loadPage($user, $pages, $cache, $smarty, [$navigation, $cc_nav, $staffcp_nav], $widgets, $template);
 
 if(Session::exists('suggestions_success'))
     $success = Session::flash('suggestions_success');
@@ -107,9 +107,6 @@ $smarty->assign(array(
     'SUBMIT' => $language->get('general', 'submit'),
     'PREMIUM' => $premium
 ));
-
-$page_load = microtime(true) - $start;
-define('PAGE_LOAD_TIME', str_replace('{x}', round($page_load, 3), $language->get('general', 'page_loaded_in')));
 
 $template->onPageLoad();
 

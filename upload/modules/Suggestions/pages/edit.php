@@ -24,7 +24,6 @@ if(!$user->canViewStaffCP()){
 define('PAGE', 'suggestions');
 $page_title = $suggestions_language->get('general', 'suggestions');
 require_once(ROOT_PATH . '/core/templates/frontend_init.php');
-$timeago = new Timeago(TIMEZONE);
 
 require_once(ROOT_PATH . '/modules/Suggestions/classes/Suggestions.php');
 $suggestions = new Suggestions();
@@ -41,7 +40,7 @@ if(isset($_GET['sid'])){
     die();
 }
 
-$suggestion = $queries->getWhere('suggestions', array('id', '=', $sid));
+$suggestion = DB::getInstance()->get('suggestions', array('id', '=', $sid))->results();
 if(!count($suggestion)){
     Redirect::to(URL::build('/suggestions/'));
     die();
@@ -52,8 +51,7 @@ if(Input::exists()){
     if(Token::check(Input::get('token'))){
         $errors = array();
         
-        $validate = new Validate();
-        $validation = $validate->check($_POST, array(
+        $validation = Validate::check($_POST, [
             'title' => array(
                 'required' => true,
                 'min' => 5,
@@ -65,25 +63,25 @@ if(Input::exists()){
             )
         ));
                     
-        if($validation->passed()){
+        i f($validation->passed()) {
             // Check if category exists
             $category = DB::getInstance()->query('SELECT id FROM nl2_suggestions_categories WHERE id = ? AND deleted = 0', array(htmlspecialchars(Input::get('category'))))->results();
             if(!count($category)) {
                 $errors[] = 'Invalid Category';
             }
+
             if(!count($errors)) {
-                $queries->update("suggestions", $suggestion->id, array(
+                $DB::getInstance()->update("suggestions", $suggestion->id, array(
                     'category_id' => htmlspecialchars(Input::get('category')),
                     'status_id' => htmlspecialchars(Input::get('status')),
                     'title' => htmlspecialchars(Input::get('title')),
                     'content' => htmlspecialchars(nl2br(Input::get('content'))),
                 ));
-                            
+
                 Redirect::to(URL::build('/suggestions/view/' . $suggestion->id));
-                die();
             }
         } else {
-            foreach($validation->errors() as $error){
+            foreach ($validation->errors() as $error) {
                 if(strpos($error, 'is required') !== false){
                     switch($error){
                         case (strpos($error, 'title') !== false):
@@ -138,7 +136,7 @@ $smarty->assign(array(
 ));
 
 // Load modules + template
-Module::loadPage($user, $pages, $cache, $smarty, array($navigation, $cc_nav, $mod_nav), $widgets);
+Module::loadPage($user, $pages, $cache, $smarty, [$navigation, $cc_nav, $staffcp_nav], $widgets, $template);
 
 $template->onPageLoad();
 

@@ -50,10 +50,10 @@ if(isset($_GET['sort'])){
  
 $suggestions_query = DB::getInstance()->query('SELECT nl2_suggestions.*, html FROM nl2_suggestions LEFT JOIN nl2_suggestions_statuses ON nl2_suggestions_statuses.id=nl2_suggestions.status_id WHERE nl2_suggestions.deleted = 0 AND status_id != 2 ORDER BY '.$sort.' DESC')->results();
 
-if(count($suggestions_query)){
+if (count($suggestions_query)) {
     // Get page
-    if(isset($_GET['p'])){
-        if(!is_numeric($_GET['p'])){
+    if (isset($_GET['p'])) {
+        if (!is_numeric($_GET['p'])) {
             Redirect::to($url);
             die();
         } else {
@@ -67,13 +67,18 @@ if(count($suggestions_query)){
     } else {
         $p = 1;
     }
-        
-    $paginator = new Paginator((isset($template_pagination) ? $template_pagination : array()));
+
+    // Pagination
+    $paginator = new Paginator(
+        $template_pagination ?? null,
+        $template_pagination_left ?? null,
+        $template_pagination_right ?? null
+    );
     $results = $paginator->getLimited($suggestions_query, 16, $p, count($suggestions_query));
     $pagination = $paginator->generate(7, $url);
-    
+
     $smarty->assign('PAGINATION', $pagination);
-        
+
     $suggestions_array = array();
     foreach($results->data as $item){
         $author_user = new User($item->user_id);
@@ -83,15 +88,15 @@ if(count($suggestions_query)){
             'title' => Output::getClean($item->title),
             'status' => $item->html,
             'link' => URL::build('/suggestions/view/' . $item->id . '-' . Util::stringToURL($item->title)),
-            'created_rough' => $timeago->inWords(date('d M Y, H:i', $item->created), $language->getTimeLanguage()),
-            'created' => date('d M Y, H:i', $item->created),
+            'created_rough' => $timeago->inWords($item->created, $language),
+            'created' => date(DATE_FORMAT, $item->created),
             'author_username' => $author_user->getDisplayname(),
             'author_style' => $author_user->getGroupClass(),
             'author_link' => $author_user->getProfileURL(),
             'likes' => Output::getClean($item->likes),
             'dislikes' => Output::getClean($item->dislikes),
-            'updated_rough' => $timeago->inWords(date('d M Y, H:i', $item->last_updated), $language->getTimeLanguage()),
-            'updated' => date('d M Y, H:i', $item->last_updated),
+            'updated_rough' => $timeago->inWords($item->last_updated, $language),
+            'updated' => date(DATE_FORMAT, $item->last_updated),
             'updated_by_username' => $updated_by_user->getDisplayname(),
             'updated_by_style' => $updated_by_user->getGroupClass(),
             'updated_by_link' => $updated_by_user->getProfileURL(),
@@ -121,17 +126,14 @@ $smarty->assign(array(
     'NEWEST' => $suggestions_language->get('general', 'newest'),
     'SEARCH_KEYWORD' => $suggestions_language->get('general', 'search_keyword'),
     'RECENT_ACTIVITY' => $suggestions_language->get('general', 'recent_activity'),
-    'RECENT_ACTIVITY_LIST' => $suggestions->getRecentActivity($user, $timeago, $language),
+    'RECENT_ACTIVITY_LIST' => $suggestions->getRecentActivity($user, $language),
     'SORT_NEWEST_LINK' => URL::build('/suggestions/', 'sort=newest'),
     'SORT_LIKES_LINK' => URL::build('/suggestions/', 'sort=likes'),
     'SORT_RECENT_ACTIVITY_LINK' => URL::build('/suggestions/', 'sort=recent-activity')
 ));
 
 // Load modules + template
-Module::loadPage($user, $pages, $cache, $smarty, array($navigation, $cc_nav, $mod_nav), $widgets);
-
-$page_load = microtime(true) - $start;
-define('PAGE_LOAD_TIME', str_replace('{x}', round($page_load, 3), $language->get('general', 'page_loaded_in')));
+Module::loadPage($user, $pages, $cache, $smarty, [$navigation, $cc_nav, $staffcp_nav], $widgets, $template);
 
 $template->addJSScript('$(\'.ui.search\')
   .search({

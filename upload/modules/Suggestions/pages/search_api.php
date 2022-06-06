@@ -1,6 +1,10 @@
 <?php
 /*
- *  Nameless Hosting - knowledgebase search API
+ *  Made by Partydragen
+ *  https://github.com/partydragen/Nameless-Suggestions
+ *  https://partydragen.com/
+ *
+ *  Suggestions page
  */
 
 header('Content-Type: application/json');
@@ -15,10 +19,10 @@ $query = '%' . htmlspecialchars($_GET['q']) . '%';
 // Query database and get results
 $results = array('results' => array(), 'action' => array('url' => URL::build('/suggestions'), 'text' => 'Full Search'));
 
-$knowledgebase = $queries->getLike('suggestions', 'deleted = 0 AND status_id != 2 AND title', '%' . $query . '%');
+$search = DB::getInstance()->query("SELECT * FROM nl2_suggestions WHERE deleted = 0 AND status_id != 2 AND title LIKE = '$query'")->results();
 
-if(count($knowledgebase)){
-	foreach($knowledgebase as $item){
+if(count($search)){
+	foreach($search as $item){
 		$results['results']['communities']['results'][] = array('title' => htmlspecialchars('#'.$item->id. ' - ' . $item->title), 'url' => URL::build('/suggestions/view/' . $item->id));
 	}
 }

@@ -53,12 +53,12 @@ if(!isset($_GET['action'])){
 } else {
     switch($_GET['action']){
         case 'new':
-            if(Input::exists()){
+            if (Input::exists()) {
                 $errors = array();
-                if(Token::check(Input::get('token'))){
+
+                if (Token::check(Input::get('token'))) {
                     // Validate input
-                    $validate = new Validate();
-                    $validation = $validate->check($_POST, array(
+                    $validation = Validate::check($_POST, [
                         'name' => array(
                             'required' => true,
                             'min' => 2,
@@ -69,33 +69,31 @@ if(!isset($_GET['action'])){
                             'min' => 2,
                             'max' => 1024
                         )
-                    ));
-                    
-                    if($validation->passed()){
+                    ]);
+
+                    if ($validation->passed()) {
                         // is status marked as open
                         if(isset($_POST['open']) && $_POST['open'] == 'on') $open = 1;
                         else $open = 0;
-                        
+
                         // Save to database
-                        $queries->create('suggestions_statuses', array(
+                        $DB::getInstance()->insert('suggestions_statuses', array(
                             'name' => Output::getClean(Input::get('name')),
                             'html' => Input::get('html'),
                             'open' => $open,
                         ));
-                        
+
                         Session::flash('staff_suggestions', $suggestions_language->get('admin', 'status_created_successfully'));
                         Redirect::to(URL::build('/panel/suggestions/statuses'));
-                        die();
                     } else {
-                        // Errors
-                        foreach($validation->errors() as $item){
-                        }
+                        // Validation Errors
+                        $errors = $validation->errors();
                     }
                 } else {
                     $errors[] = $language->get('general', 'invalid_token');
                 }
             }
-            
+
             $smarty->assign(array(
                 'CREATING_NEW_STATUS' => $suggestions_language->get('admin', 'creating_new_status'),
                 'BACK' => $language->get('general', 'back'),
@@ -104,29 +102,27 @@ if(!isset($_GET['action'])){
                 'STATUS_HTML' => $suggestions_language->get('admin', 'status_html'),
                 'MARKED_AS_OPEN' => $suggestions_language->get('admin', 'marked_as_open'),
             ));
-            
+
             $template_file = 'suggestions/statuses_new.tpl';
         break;
         case 'edit':
             // Edit Status
-            if(!isset($_GET['id']) || !is_numeric($_GET['id'])){
+            if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
                 Redirect::to(URL::build('/panel/suggestions/statuses'));
-                die();
             }
-            
+
             $status = DB::getInstance()->query('SELECT * FROM nl2_suggestions_statuses WHERE id = ? AND deleted = 0', array($_GET['id']))->results();
-            if(!count($status)) {
+            if (!count($status)) {
                 Redirect::to(URL::build('/panel/suggestions/statuses'));
-                die();
             }
             $status = $status[0];
-            
-            if(Input::exists()){
-                $errors = array();
-                if(Token::check(Input::get('token'))){
+
+            if (Input::exists()) {
+                $errors = [];
+
+                if (Token::check(Input::get('token'))) {
                     // Validate input
-                    $validate = new Validate();
-                    $validation = $validate->check($_POST, array(
+                    $validation = Validate::check($_POST, [
                         'name' => array(
                             'required' => true,
                             'min' => 2,
@@ -137,33 +133,31 @@ if(!isset($_GET['action'])){
                             'min' => 2,
                             'max' => 1024
                         )
-                    ));
-                    
-                    if($validation->passed()){
+                    ]);
+
+                    if ($validation->passed()) {
                         // is status marked as open
                         if(isset($_POST['open']) && $_POST['open'] == 'on') $open = 1;
                         else $open = 0;
-                        
+
                         // Save to database
-                        $queries->update('suggestions_statuses', $status->id, array(
+                        $DB::getInstance()->update('suggestions_statuses', $status->id, array(
                             'name' => Output::getClean(Input::get('name')),
                             'html' => Input::get('html'),
                             'open' => $open,
                         ));
-                        
+
                         Session::flash('staff_suggestions', $suggestions_language->get('admin', 'status_updated_successfully'));
                         Redirect::to(URL::build('/panel/suggestions/statuses', 'action=edit&id=' . Output::getClean($status->id)));
-                        die();
                     } else {
-                        // Errors
-                        foreach($validation->errors() as $item){
-                        }
+                        // Validation Errors
+                        $errors = $validation->errors();
                     }
                 } else {
                     $errors[] = $language->get('general', 'invalid_token');
                 }
             }
-            
+
             $smarty->assign(array(
                 'EDITING_STATUS' => str_replace('{x}', Output::getClean($status->name), $suggestions_language->get('admin', 'editing_x')),
                 'BACK' => $language->get('general', 'back'),
@@ -175,29 +169,26 @@ if(!isset($_GET['action'])){
                 'MARKED_AS_OPEN' => $suggestions_language->get('admin', 'marked_as_open'),
                 'MARKED_AS_OPEN_VALUE' => Output::getClean($status->open),
             ));
-            
+
             $template_file = 'suggestions/statuses_edit.tpl';
         break;
         case 'delete':
             // Edit Status
             if(!isset($_GET['id']) || !is_numeric($_GET['id'])){
                 Redirect::to(URL::build('/panel/suggestions/statuses'));
-                die();
             }
-            
+
             $status = DB::getInstance()->query('SELECT * FROM nl2_suggestions_statuses WHERE id = ? AND deleted = 0', array($_GET['id']))->results();
             if(count($status)) {
-                $queries->update('suggestions_statuses', $status[0]->id, array(
+                $DB::getInstance()->update('suggestions_statuses', $status[0]->id, array(
                     'deleted' => date('U')
                 ));
                 Session::flash('staff_suggestions', $suggestions_language->get('admin', 'status_deleted_successfully'));
             }
             Redirect::to(URL::build('/panel/suggestions/statuses'));
-            die();
         break;
         default:
             Redirect::to(URL::build('/panel/suggestions/statuses'));
-            die();
         break;
     }
 }
@@ -209,7 +200,7 @@ if($cache->isCached('premium')){
 }
 
 // Load modules + template
-Module::loadPage($user, $pages, $cache, $smarty, array($navigation, $cc_nav, $mod_nav), $widgets);
+Module::loadPage($user, $pages, $cache, $smarty, [$navigation, $cc_nav, $staffcp_nav], $widgets, $template);
 
 if(Session::exists('staff_suggestions'))
     $success = Session::flash('staff_suggestions');
@@ -237,26 +228,6 @@ $smarty->assign(array(
     'SUGGESTIONS' => $suggestions_language->get('general', 'suggestions'),
     'PREMIUM' => $premium
 ));
-
-if(isset($_GET['action'])){
-    $template->addCSSFiles(array(
-        (defined('CONFIG_PATH') ? CONFIG_PATH : '') . '/core/assets/plugins/switchery/switchery.min.css' => array()
-    ));
-
-    $template->addJSFiles(array(
-        (defined('CONFIG_PATH') ? CONFIG_PATH : '') . '/core/assets/plugins/switchery/switchery.min.js' => array()
-    ));
-
-    $template->addJSScript('
-        var elems = Array.prototype.slice.call(document.querySelectorAll(\'.js-switch\'));
-        elems.forEach(function(html) {
-            var switchery = new Switchery(html, {color: \'#23923d\', secondaryColor: \'#e56464\'});
-        });
-    ');
-}
-
-$page_load = microtime(true) - $start;
-define('PAGE_LOAD_TIME', str_replace('{x}', round($page_load, 3), $language->get('general', 'page_loaded_in')));
 
 $template->onPageLoad();
 

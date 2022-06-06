@@ -15,4 +15,4 @@ $suggestions_language = new Language(ROOT_PATH . '/modules/Suggestions/language'
 
 // Initialise module
 require_once(ROOT_PATH . '/modules/Suggestions/module.php');
-$module = new Suggestions_Module($language, $suggestions_language, $pages, $queries, $navigation, $cache);
+$module = new Suggestions_Module($language, $suggestions_language, $pages, $navigation, $cache);

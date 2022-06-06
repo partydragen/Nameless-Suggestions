@@ -17,7 +17,6 @@ define('PAGE', 'suggestions');
 $page_title = $suggestions_language->get('general', 'suggestions');
 
 require_once(ROOT_PATH . '/core/templates/frontend_init.php');
-$timeago = new Timeago(TIMEZONE);
 
 require_once(ROOT_PATH . '/modules/Suggestions/classes/Suggestions.php');
 $suggestions = new Suggestions();
@@ -26,8 +25,7 @@ if(Input::exists()){
     if(Token::check(Input::get('token'))){
         $errors = array();
         
-        $validate = new Validate();
-        $validation = $validate->check($_POST, array(
+        $validation = Validate::check($_POST, [
             'title' => array(
                 'required' => true,
                 'min' => 6,
@@ -37,11 +35,11 @@ if(Input::exists()){
                 'required' => true,
                 'min' => 6,
             )
-        ));
+        ]);
                     
         if($validation->passed()){
             // Check post spam
-            $last_post = $queries->orderWhere('suggestions', 'user_id = ' . $user->data()->id, 'created', 'DESC LIMIT 1');
+            $last_post = DB::getInstance()->orderWhere('suggestions', 'user_id = ' . $user->data()->id, 'created', 'DESC LIMIT 1')->results();
             if (count($last_post)) {
                 if ($last_post[0]->created > strtotime("-30 seconds")) {
                     $errors[] = str_replace('{x}', (strtotime(date('Y-m-d H:i:s', $last_post[0]->created)) - strtotime("-30 seconds")), $suggestions_language->get('general', 'spam_wait'));
@@ -55,7 +53,7 @@ if(Input::exists()){
             }
             
             if(!count($errors)) {
-                $queries->create('suggestions', array(
+                $DB::getInstance()->insert('suggestions', array(
                     'user_id' => $user->data()->id,
                     'updated_by' => $user->data()->id,
                     'category_id' => $category[0]->id,
@@ -65,9 +63,9 @@ if(Input::exists()){
                     'content' => htmlspecialchars(nl2br(Input::get('content'))),
                 ));
                 
-                $suggestion_id = $queries->getLastId();
+                $suggestion_id = DB::getInstance()->lastId();
                 
-                HookHandler::executeEvent('newSuggestion', array(
+                EventHandler::executeEvent('newSuggestion', array(
                     'event' => 'newSuggestion',
                     'username' => $user->getDisplayname(),
                     'content' => str_replace(array('{x}'), array($user->getDisplayname()), $suggestions_language->get('general', 'hook_new_suggestion')),
@@ -134,10 +132,7 @@ $smarty->assign(array(
 ));
 
 // Load modules + template
-Module::loadPage($user, $pages, $cache, $smarty, array($navigation, $cc_nav, $mod_nav), $widgets);
-
-$page_load = microtime(true) - $start;
-define('PAGE_LOAD_TIME', str_replace('{x}', round($page_load, 3), $language->get('general', 'page_loaded_in')));
+Module::loadPage($user, $pages, $cache, $smarty, [$navigation, $cc_nav, $staffcp_nav], $widgets, $template);
 
 $template->addJSScript('$(\'.ui.search\')
   .search({
