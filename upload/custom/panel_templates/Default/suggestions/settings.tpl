@@ -56,13 +56,6 @@
                                 <input type="text" class="form-control" name="icon" id="inputIcon" placeholder="{$ICON_EXAMPLE}" value="{$ICON_VALUE}">
                             </div>
                             <div class="form-group">
-                                <label for="premium">Premium Plan (Check <a href="https://partydragen.com/subscribe/" target="_blank">https://partydragen.com/subscribe/</a> for more details)</label>
-                                <select class="form-control" id="premium" name="premium" disabled>
-                                    <option value="0"{if !$PREMIUM} selected{/if}>Free Plan</option>
-                                    <option value="1"{if $PREMIUM} selected{/if}>Premium Plan}</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
                                 <input type="hidden" name="token" value="{$TOKEN}">
                                 <input type="submit" class="btn btn-primary" value="{$SUBMIT}">
                             </div>

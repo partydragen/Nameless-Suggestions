@@ -8,7 +8,7 @@
  */
 
 // Can the user view the panel?
-if(!$user->handlePanelPageLoad('suggestions.manage')) {
+if (!$user->handlePanelPageLoad('suggestions.manage')) {
     require_once(ROOT_PATH . '/403.php');
     die();
 }
@@ -24,7 +24,7 @@ if (Input::exists()) {
     if (Token::check(Input::get('token'))) {
         // Get link location
         if (isset($_POST['link_location'])) {
-            switch($_POST['link_location']){
+            switch($_POST['link_location']) {
                 case 1:
                 case 2:
                 case 3:
@@ -36,7 +36,7 @@ if (Input::exists()) {
             }
         } else {
             $location = 1;
-                
+
             // Update Icon cache
             $cache->setCache('navbar_icons');
             $cache->store('suggestions_icon', Input::get('icon'));
@@ -62,33 +62,27 @@ $icon = $cache->retrieve('suggestions_icon');
 $cache->setCache('suggestions_module_cache');
 $link_location = $cache->retrieve('link_location');
 
-$premium = false;
-$cache->setCache('partydragen');
-if($cache->isCached('premium')){
-    $premium = $cache->retrieve('premium');
-}
-
 // Load modules + template
 Module::loadPage($user, $pages, $cache, $smarty, [$navigation, $cc_nav, $staffcp_nav], $widgets, $template);
 
-if(Session::exists('suggestions_success'))
+if (Session::exists('suggestions_success'))
     $success = Session::flash('suggestions_success');
 
-if(isset($success)){
-    $smarty->assign(array(
+if (isset($success)) {
+    $smarty->assign([
         'SUCCESS_TITLE' => $language->get('general', 'success'),
         'SUCCESS' => $success
-    ));
+    ]);
 }
 
-if(isset($errors) && count($errors)){
-    $smarty->assign(array(
+if (isset($errors) && count($errors)) {
+    $smarty->assign([
         'ERRORS_TITLE' => $language->get('general', 'error'),
         'ERRORS' => $errors
-    ));
+    ]);
 }
 
-$smarty->assign(array(
+$smarty->assign([
     'PARENT_PAGE' => PARENT_PAGE,
     'DASHBOARD' => $language->get('admin', 'dashboard'),
     'PAGE' => PANEL_PAGE,
@@ -104,9 +98,8 @@ $smarty->assign(array(
     'ICON_EXAMPLE' => htmlspecialchars($suggestions_language->get('admin', 'icon_example')),
     'ICON_VALUE' => Output::getClean(htmlspecialchars_decode($icon)),
     'TOKEN' => Token::get(),
-    'SUBMIT' => $language->get('general', 'submit'),
-    'PREMIUM' => $premium
-));
+    'SUBMIT' => $language->get('general', 'submit')
+]);
 
 $template->onPageLoad();
 

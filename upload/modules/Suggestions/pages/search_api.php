@@ -10,20 +10,20 @@
 header('Content-Type: application/json');
 
 // Get search query
-if(!isset($_GET['q'])){
-	die(json_encode(array('error' => 'No search query set')));
+if (!isset($_GET['q'])) {
+	die(json_encode(['error' => 'No search query set']));
 }
 
 $query = '%' . htmlspecialchars($_GET['q']) . '%';
 
 // Query database and get results
-$results = array('results' => array(), 'action' => array('url' => URL::build('/suggestions'), 'text' => 'Full Search'));
+$results = ['results' => [], 'action' => ['url' => URL::build('/suggestions'), 'text' => 'Full Search']];
 
-$search = DB::getInstance()->query("SELECT * FROM nl2_suggestions WHERE deleted = 0 AND status_id != 2 AND title LIKE = '$query'")->results();
+$search = DB::getInstance()->query("SELECT * FROM nl2_suggestions WHERE deleted = 0 AND status_id != 2 AND title LIKE '$query'")->results();
 
-if(count($search)){
-	foreach($search as $item){
-		$results['results']['communities']['results'][] = array('title' => htmlspecialchars('#'.$item->id. ' - ' . $item->title), 'url' => URL::build('/suggestions/view/' . $item->id));
+if (count($search)) {
+	foreach ($search as $item) {
+		$results['results']['communities']['results'][] = ['title' => htmlspecialchars('#'.$item->id. ' - ' . $item->title), 'url' => URL::build('/suggestions/view/' . $item->id)];
 	}
 }
 

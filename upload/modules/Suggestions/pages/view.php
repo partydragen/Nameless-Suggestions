@@ -11,7 +11,7 @@
 define('PAGE', 'suggestions');
 $page_title = $suggestions_language->get('general', 'suggestions');
 require_once(ROOT_PATH . '/core/templates/frontend_init.php');
-$timeago = new Timeago(TIMEZONE);
+$timeago = new TimeAgo(TIMEZONE);
 
 require_once(ROOT_PATH . '/modules/Suggestions/classes/Suggestions.php');
 $suggestions = new Suggestions();
@@ -26,55 +26,58 @@ if (!strlen($sid)) {
 }
 
 $sid = explode('-', $sid);
-if(!is_numeric($sid[0])){
+if (!is_numeric($sid[0])) {
     require_once(ROOT_PATH . '/404.php');
     die();
 }
 
 // Get the suggestion information
-$suggestion = DB::getInstance()->get('suggestions', array('id', '=', $sid[0]))->results();
-if(!count($suggestion)){
+$suggestion = DB::getInstance()->get('suggestions', ['id', '=', $sid[0]])->results();
+if (!count($suggestion)) {
     require_once(ROOT_PATH . '/404.php');
     die();
 }
 
 $suggestion = $suggestion[0];
 
-if($suggestion->deleted == 1){
+if ($suggestion->deleted == 1) {
     require_once(ROOT_PATH . '/404.php');
     die();
 }
 
 // Deal with input
-if(Input::exists()){
-    if(Token::check(Input::get('token'))){
-        $errors = array();
+if (Input::exists()) {
+    if (Token::check(Input::get('token'))) {
+        $errors = [];
         
-        if(Input::get('action') == 'vote') {
+        if (Input::get('action') == 'vote') {
             // User must be logged in to proceed
-            if($user->isLoggedIn()){
-                $user_vote = DB::getInstance()->query('SELECT id, type FROM nl2_suggestions_votes WHERE user_id = ? AND suggestion_id = ?', array($user->data()->id, $suggestion->id))->results();
-                if(count($user_vote)){
+            if ($user->isLoggedIn()) {
+                $user_vote = DB::getInstance()->query('SELECT id, type FROM nl2_suggestions_votes WHERE user_id = ? AND suggestion_id = ?', [$user->data()->id, $suggestion->id])->results();
+
+                if (count($user_vote)) {
                     $user_vote = $user_vote[0];
-                    if($user_vote->type == $_POST['vote']){
+
+                    if ($user_vote->type == $_POST['vote']) {
                         // Undo vote
-                        DB::getInstance()->delete('suggestions_votes', array('id', '=', $user_vote->id));
-                        
-                        if($user_vote->type == 1) {
+                        DB::getInstance()->delete('suggestions_votes', ['id', '=', $user_vote->id]);
+
+                        if ($user_vote->type == 1) {
                             DB::getInstance()->query('UPDATE nl2_suggestions SET likes = likes - 1 WHERE id = ?', [$suggestion->id]);
+
                         } else {
                             DB::getInstance()->query('UPDATE nl2_suggestions SET dislikes = dislikes - 1 WHERE id = ?', [$suggestion->id]);
                         }
                         Redirect::to(URL::build('/suggestions/view/' . $suggestion->id . '-' . Util::stringToURL($suggestion->title)));
-                        die();
                     } else {
                         // Change existing vote
-                        $DB::getInstance()->update('suggestions_votes', $user_vote->id, array(
+                        DB::getInstance()->update('suggestions_votes', $user_vote->id, [
                             'type' => $_POST['vote']
-                        ));
-                        
-                        if($_POST['vote'] == 1) {
+                        ]);
+
+                        if ($_POST['vote'] == 1) {
                             DB::getInstance()->query('UPDATE nl2_suggestions SET likes = likes + 1, dislikes = dislikes - 1 WHERE id = ?', [$suggestion->id]);
+
                         } else {
                             DB::getInstance()->query('UPDATE nl2_suggestions SET dislikes = dislikes + 1, likes = likes - 1 WHERE id = ?', [$suggestion->id]);
                         }
@@ -82,13 +85,13 @@ if(Input::exists()){
                     }
                 } else {
                     // Input new vote
-                    $DB::getInstance()->insert('suggestions_votes', array(
+                    DB::getInstance()->insert('suggestions_votes', [
                         'user_id' => $user->data()->id,
                         'suggestion_id' => $suggestion->id,
                         'type' => $_POST['vote']
-                    ));
-                    
-                    if($_POST['vote'] == 1) {
+                    ]);
+
+                    if ($_POST['vote'] == 1) {
                         DB::getInstance()->increment('suggestions', $suggestion->id, 'likes');
                     } else {
                         DB::getInstance()->increment('suggestions', $suggestion->id, 'dislikes');
@@ -98,113 +101,111 @@ if(Input::exists()){
             } else {
                 $errors[] = $suggestions_language->get('general', 'login_to_vote');
             }
-        } else if(Input::get('action') == 'comment') {
+        } else if (Input::get('action') == 'comment') {
             // New Comment
             $validation = Validate::check($_POST, [
-                'content' => array(
-                    'min' => 3,
-                    'max' => 10000
-                )
+                'content' => [
+                    Validate::MIN => 3,
+                    Validate::MAX => 10000
+                ]
+            ])->messages([
+                'content' => [
+                    Validate::MIN => $suggestions_language->get('general', 'comment_minimum'),
+                    Validate::MAX => $suggestions_language->get('general', 'comment_maximum')
+                ]
             ]);
 
             if ($validation->passed()) {
-                $discordAlert = array();
-                if(!empty(Input::get('content'))) {
+                $discordAlert = [];
+
+                if (!empty(Input::get('content'))) {
                     // New comment
-                    
+
                     // Check post spam
                     $last_post = DB::getInstance()->orderWhere('suggestions_comments', 'user_id = ' . $user->data()->id, 'created', 'DESC LIMIT 1')->results();
                     if (count($last_post)) {
                         if ($last_post[0]->created > strtotime("-10 seconds")) {
-                            $errors[] = str_replace('{x}', (strtotime(date('Y-m-d H:i:s', $last_post[0]->created)) - strtotime("-10 seconds")), $suggestions_language->get('general', 'spam_wait'));
+                            $errors[] = $suggestions_language->get('general', 'spam_wait', [
+                                'seconds' => strtotime(date('Y-m-d H:i:s', $last_post[0]->created)) - strtotime("-10 seconds")
+                            ]);
                         }
                     }
-            
-                    if(!count($errors)) {
-                        $DB::getInstance()->insert('suggestions_comments', array(
+
+                    if (!count($errors)) {
+                        DB::getInstance()->insert('suggestions_comments', [
                             'suggestion_id' => $suggestion->id,
                             'user_id' => $user->data()->id,
                             'created' => date('U'),
                             'content' => Output::getClean(nl2br(Input::get('content')))
-                        ));
+                        ]);
 
-                        $DB::getInstance()->update('suggestions', $suggestion->id, array(
+                        DB::getInstance()->update('suggestions', $suggestion->id, [
                             'updated_by' => $user->data()->id,
                             'last_updated' => date('U')
-                        ));
+                        ]);
                         
-                        $discordAlert = array(
+                        $discordAlert = [
                             'event' => 'newSuggestionComment',
                             'username' => $user->getDisplayname(),
-                            'content' => str_replace(array('{x}', '{y}', '{z}'), array($user->getDisplayname(), Output::getClean($suggestion->likes), Output::getClean($suggestion->dislikes)), $suggestions_language->get('general', 'hook_new_comment')),
+                            'content' => $suggestions_language->get('general', 'hook_new_comment', [
+                                'user' => $user->getDisplayname(),
+                                'likes' => Output::getClean($suggestion->likes),
+                                'dislikes' =>Output::getClean($suggestion->dislikes)
+                            ]),
                             'content_full' => str_replace('&nbsp;', '', strip_tags(htmlspecialchars_decode(Input::get('content')))),
                             'avatar_url' => $user->getAvatar(128, true),
                             'title' => Output::getClean('#' . $suggestion->id . ' - ' . $suggestion->title),
                             'url' => rtrim(Util::getSelfURL(), '/') . URL::build('/suggestions/view/' . $suggestion->id . '-' . Util::stringToURL(Output::getClean($suggestion->title)))
-                        );
+                        ];
                     }
                 }
                 
-                if($user->canViewStaffCP()){
-                    if($suggestion->status_id != htmlspecialchars(Input::get('status'))) {
-                        $DB::getInstance()->update('suggestions', $suggestion->id, array(
-                            'status_id' => htmlspecialchars(Input::get('status')),
-                        ));
+                if ($user->canViewStaffCP()) {
+                    if ($suggestion->status_id != htmlspecialchars(Input::get('status'))) {
+                        DB::getInstance()->update('suggestions', $suggestion->id, [
+                            'status_id' => Input::get('status'),
+                        ]);
 
-                        switch(htmlspecialchars(Input::get('status'))) {
+                        switch (Input::get('status')) {
                             case 2:
-                                $color = hexdec( "f50606" );
+                                $color = "f50606";
                             break;
                             case 3:
-                                $color = hexdec( "11ff00" );
+                                $color = "11ff00";
                             break;
                             case 4:
-                                $color = hexdec( "ff6100" );
+                                $color = "ff6100";
                             break;
                             default:
-                                $color = hexdec( "f50606" );
+                                $color = "f50606";
                             break;
                         }
                         $discordAlert['color'] = $color;
                     }
                 }
             
-                if(!empty(Input::get('content'))) {
+                if (!empty(Input::get('content'))) {
                     EventHandler::executeEvent('newSuggestionComment', $discordAlert);
                 }
                 
-                if(!count($errors)) {
+                if (!count($errors)) {
                     Redirect::to(URL::build('/suggestions/view/' . $suggestion->id . '-' . Util::stringToURL($suggestion->title)));
                 }
             } else {
-                // Display error
-                foreach($validation->errors() as $error){
-                    if(strpos($error, 'minimum') !== false){
-                        switch($error){
-                            case (strpos($error, 'content') !== false):
-                                $errors[] = $suggestions_language->get('general', 'comment_minimum');
-                            break;
-                        }
-                    } else if(strpos($error, 'maximum') !== false){
-                        switch($error){
-                            case (strpos($error, 'content') !== false):
-                                $errors[] = $suggestions_language->get('general', 'comment_maximum');
-                            break;
-                        }
-                    }
-                }
+                // Validation Errors
+                $errors = $validation->errors();
             }
-        } else if(Input::get('action') == 'deleteSuggestion') {
-            if($user->canViewStaffCP()){
-                $DB::getInstance()->update('suggestions', $suggestion->id, array(
+        } else if (Input::get('action') == 'deleteSuggestion') {
+            if ($user->canViewStaffCP()) {
+                DB::getInstance()->update('suggestions', $suggestion->id, [
                     'deleted' => 1
-                ));
+                ]);
             }
-                
+
             Redirect::to(URL::build('/suggestions/'));
-        } else if(Input::get('action') == 'deleteComment') {
-            if($user->canViewStaffCP() && is_numeric(Input::get('cid'))) {
-                DB::getInstance()->delete('suggestions_comments', array('id', '=', Input::get('cid')));
+        } else if (Input::get('action') == 'deleteComment') {
+            if ($user->canViewStaffCP() && is_numeric(Input::get('cid'))) {
+                DB::getInstance()->delete('suggestions_comments', ['id', '=', Input::get('cid')]);
             }
 
             Redirect::to(URL::build('/suggestions/view/' . $suggestion->id . '-' . Util::stringToURL($suggestion->title)));
@@ -216,30 +217,30 @@ if(Input::exists()){
 }
 
 $voted = 0;
-if($user->isLoggedIn()){
+if ($user->isLoggedIn()) {
     $smarty->assign('CAN_COMMENT', true);
 
-    $user_voted = DB::getInstance()->query('SELECT id, type FROM nl2_suggestions_votes WHERE user_id = ? AND suggestion_id = ?', array($user->data()->id, $suggestion->id))->results();
-    if(count($user_voted)){
+    $user_voted = DB::getInstance()->query('SELECT id, type FROM nl2_suggestions_votes WHERE user_id = ? AND suggestion_id = ?', [$user->data()->id, $suggestion->id])->results();
+    if (count($user_voted)) {
         $voted = $user_voted[0]->type;
     }
 
-    if($user->canViewStaffCP()){
-        $smarty->assign(array(
+    if ($user->canViewStaffCP()) {
+        $smarty->assign([
             'CAN_MODERATE' => true,
             'STATUSES' => $suggestions->getStatuses()
-        ));
+        ]);
     }
 }
 
 // Get comments
-$comments = DB::getInstance()->get('suggestions_comments', array('suggestion_id', '=', $suggestion->id))->results();
-$smarty_comments = array();
-foreac h($comments as $comment) {
+$comments = DB::getInstance()->get('suggestions_comments', ['suggestion_id', '=', $suggestion->id])->results();
+$smarty_comments = [];
+foreach ($comments as $comment) {
     $comment_user = new User($comment->user_id);
 
-    if($comment_user->exists()) {
-        $smarty_comments[] = array(
+    if ($comment_user->exists()) {
+        $smarty_comments[] = [
             'id' => $comment->id,
             'username' => $comment_user->getDisplayname(),
             'profile' => $comment_user->getProfileURL(),
@@ -248,27 +249,27 @@ foreac h($comments as $comment) {
             'content' => Output::getPurified(Output::getDecoded($comment->content)),
             'date' => date(DATE_FORMAT, $comment->created),
             'date_friendly' => $timeago->inWords($comment->created, $language)
-        );
+        ];
     }
 }
 
-if(Session::exists('suggestions_success'))
+if (Session::exists('suggestions_success'))
     $success = Session::flash('suggestions_success');
 
-if(isset($success))
-    $smarty->assign(array(
+if (isset($success))
+    $smarty->assign([
         'SUCCESS' => $success,
         'SUCCESS_TITLE' => $language->get('general', 'success')
-    ));
+    ]);
 
-if(isset($errors) && count($errors))
-    $smarty->assign(array(
+if (isset($errors) && count($errors))
+    $smarty->assign([
         'ERRORS' => $errors,
         'ERRORS_TITLE' => $language->get('general', 'error')
-    ));
+    ]);
 
 $author_user = new User($suggestion->user_id);
-$smarty->assign(array(
+$smarty->assign([
     'ID' => Output::getClean($suggestion->id),
     'SUGGESTIONS' => $suggestions_language->get('general', 'suggestions'),
     'BACK' => $language->get('general', 'back'),
@@ -279,8 +280,8 @@ $smarty->assign(array(
     'POSTER_PROFILE' => $author_user->getProfileURL(),
     'POSTER_STYLE' => $author_user->getGroupClass(),
     'POSTER_AVATAR' => $author_user->getAvatar(),
-    'POSTER_DATE' => date('d M Y, H:i', $suggestion->created),
-    'POSTER_DATE_FRIENDLY' => $timeago->inWords(date('Y-m-d H:i:s', $suggestion->created), $language->getTimeLanguage()),
+    'POSTER_DATE' => date(DATE_FORMAT, $suggestion->created),
+    'POSTER_DATE_FRIENDLY' => $timeago->inWords($suggestion->created, $language),
     'CONTENT' => Output::getPurified(Output::getDecoded($suggestion->content)),
     'LIKES' => Output::getClean($suggestion->likes),
     'DISLIKES' => Output::getClean($suggestion->dislikes),
@@ -302,7 +303,7 @@ $smarty->assign(array(
     'CANCEL' => $language->get('general', 'cancel'),
     'DELETE' => $language->get('general', 'delete'),
     'EDIT' => $language->get('general', 'edit'),
-));
+]);
 
 // Load modules + template
 Module::loadPage($user, $pages, $cache, $smarty, [$navigation, $cc_nav, $staffcp_nav], $widgets, $template);

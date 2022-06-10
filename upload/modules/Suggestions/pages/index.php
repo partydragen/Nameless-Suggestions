@@ -14,13 +14,13 @@
 define('PAGE', 'suggestions');
 $page_title = $suggestions_language->get('general', 'suggestions');
 require_once(ROOT_PATH . '/core/templates/frontend_init.php');
-$timeago = new Timeago(TIMEZONE);
+$timeago = new TimeAgo(TIMEZONE);
 
 require_once(ROOT_PATH . '/modules/Suggestions/classes/Suggestions.php');
 $suggestions = new Suggestions();
 
-if(isset($_GET['sort'])){
-    switch($_GET['sort']) {
+if (isset($_GET['sort'])) {
+    switch ($_GET['sort']) {
         case 'recent-activity':
             $sort = 'last_updated';
             $sort_by = $suggestions_language->get('general', 'recent_activity');
@@ -57,10 +57,9 @@ if (count($suggestions_query)) {
             Redirect::to($url);
             die();
         } else {
-            if($_GET['p'] == 1){
+            if ($_GET['p'] == 1) {
                 // Avoid bug in pagination class
                 Redirect::to($url);
-                die();
             }
             $p = $_GET['p'];
         }
@@ -79,12 +78,12 @@ if (count($suggestions_query)) {
 
     $smarty->assign('PAGINATION', $pagination);
 
-    $suggestions_array = array();
-    foreach($results->data as $item){
+    $suggestions_array = [];
+    foreach($results->data as $item) {
         $author_user = new User($item->user_id);
         $updated_by_user = new User($item->updated_by);
         
-        $suggestions_array[] = array(
+        $suggestions_array[] = [
             'title' => Output::getClean($item->title),
             'status' => $item->html,
             'link' => URL::build('/suggestions/view/' . $item->id . '-' . Util::stringToURL($item->title)),
@@ -100,15 +99,15 @@ if (count($suggestions_query)) {
             'updated_by_username' => $updated_by_user->getDisplayname(),
             'updated_by_style' => $updated_by_user->getGroupClass(),
             'updated_by_link' => $updated_by_user->getProfileURL(),
-        );
+        ];
     }
     
-    $smarty->assign(array(
+    $smarty->assign([
         'SUGGESTIONS_LIST' => $suggestions_array
-    ));
+    ]);
 }
 
-$smarty->assign(array(
+$smarty->assign([
     'SUGGESTIONS' => $suggestions_language->get('general', 'suggestions'),
     'NO_SUGGESTIONS' => $suggestions_language->get('general', 'no_suggestions'),
     'NEW_SUGGESTION' => $suggestions_language->get('general', 'new_suggestion'),
@@ -130,7 +129,7 @@ $smarty->assign(array(
     'SORT_NEWEST_LINK' => URL::build('/suggestions/', 'sort=newest'),
     'SORT_LIKES_LINK' => URL::build('/suggestions/', 'sort=likes'),
     'SORT_RECENT_ACTIVITY_LINK' => URL::build('/suggestions/', 'sort=recent-activity')
-));
+]);
 
 // Load modules + template
 Module::loadPage($user, $pages, $cache, $smarty, [$navigation, $cc_nav, $staffcp_nav], $widgets, $template);

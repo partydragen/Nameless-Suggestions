@@ -53,9 +53,9 @@
                                 <label for="InputName">{$STATUS_HTML}</label>
                                 <input type="text" name="html" class="form-control" id="InputHTML" placeholder="{$STATUS_HTML}" value="{$STATUS_HTML_VALUE}">
                             </div>
-                            <div class="form-group">
-                                <label for="inputOpen">{$MARKED_AS_OPEN}</label>
-                                <input id="inputOpen" name="open" type="checkbox" class="js-switch"{if $MARKED_AS_OPEN_VALUE eq 1} checked{/if} />
+                           <div class="form-group custom-control custom-switch">
+                                <input id="inputOpen" name="open" type="checkbox" class="custom-control-input"{if $MARKED_AS_OPEN_VALUE eq 1} checked{/if} />
+                                <label class="custom-control-label" for="inputOpen">{$MARKED_AS_OPEN}</label>
                             </div>
                             <div class="form-group">
                                 <input type="hidden" name="token" value="{$TOKEN}">

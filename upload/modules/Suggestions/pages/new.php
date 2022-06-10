@@ -7,11 +7,11 @@
  *  Suggestions page
  */
  
-if(!$user->isLoggedIn()){
+if (!$user->isLoggedIn()) {
     Redirect::to(URL::build('/login'));
     die();
 }
- 
+
 // Always define page name for navbar
 define('PAGE', 'suggestions');
 $page_title = $suggestions_language->get('general', 'suggestions');
@@ -21,101 +21,87 @@ require_once(ROOT_PATH . '/core/templates/frontend_init.php');
 require_once(ROOT_PATH . '/modules/Suggestions/classes/Suggestions.php');
 $suggestions = new Suggestions();
 
-if(Input::exists()){
-    if(Token::check(Input::get('token'))){
-        $errors = array();
-        
+if (Input::exists()) {
+    if (Token::check(Input::get('token'))) {
+        $errors = [];
+
         $validation = Validate::check($_POST, [
-            'title' => array(
-                'required' => true,
-                'min' => 6,
-                'max' => 128,
-            ),
-            'content' => array(
-                'required' => true,
-                'min' => 6,
-            )
+            'title' => [
+                Validate::REQUIRED => true,
+                Validate::MIN => 6,
+                Validate::MAX => 128,
+            ],
+            'content' => [
+                Validate::REQUIRED => true,
+                Validate::MIN => 6,
+                Validate::MAX => 50000
+            ]
+        ])->messages([
+            'title' => [
+                Validate::REQUIRED => $suggestions_language->get('general', 'title_required'),
+                Validate::MIN => $suggestions_language->get('general', 'title_minimum'),
+                Validate::MAX => $suggestions_language->get('general', 'title_maximum'),
+            ],
+            'content' => [
+                Validate::REQUIRED => $suggestions_language->get('general', 'content_required'),
+                Validate::MIN => $suggestions_language->get('general', 'content_minimum')
+            ]
         ]);
-                    
-        if($validation->passed()){
+
+        if ($validation->passed()) {
             // Check post spam
             $last_post = DB::getInstance()->orderWhere('suggestions', 'user_id = ' . $user->data()->id, 'created', 'DESC LIMIT 1')->results();
             if (count($last_post)) {
                 if ($last_post[0]->created > strtotime("-30 seconds")) {
-                    $errors[] = str_replace('{x}', (strtotime(date('Y-m-d H:i:s', $last_post[0]->created)) - strtotime("-30 seconds")), $suggestions_language->get('general', 'spam_wait'));
+                    $errors[] = $suggestions_language->get('general', 'spam_wait', [
+                        'seconds' => strtotime(date('Y-m-d H:i:s', $last_post[0]->created)) - strtotime("-30 seconds")
+                    ]);
                 }
             }
-        
+
             // Check if category exists
-            $category = DB::getInstance()->query('SELECT id FROM nl2_suggestions_categories WHERE id = ? AND deleted = 0', array(htmlspecialchars(Input::get('category'))))->results();
-            if(!count($category)) {
+            $category = DB::getInstance()->query('SELECT id FROM nl2_suggestions_categories WHERE id = ? AND deleted = 0', [Input::get('category')])->results();
+            if (!count($category)) {
                 $errors[] = 'Invalid Category';
             }
-            
-            if(!count($errors)) {
-                $DB::getInstance()->insert('suggestions', array(
+
+            if (!count($errors)) {
+                DB::getInstance()->insert('suggestions', [
                     'user_id' => $user->data()->id,
                     'updated_by' => $user->data()->id,
                     'category_id' => $category[0]->id,
                     'created' => date('U'),
                     'last_updated' => date('U'),
-                    'title' => htmlspecialchars(Input::get('title')),
+                    'title' => Input::get('title'),
                     'content' => htmlspecialchars(nl2br(Input::get('content'))),
-                ));
-                
+                ]);
                 $suggestion_id = DB::getInstance()->lastId();
-                
-                EventHandler::executeEvent('newSuggestion', array(
+
+                EventHandler::executeEvent('newSuggestion', [
                     'event' => 'newSuggestion',
                     'username' => $user->getDisplayname(),
-                    'content' => str_replace(array('{x}'), array($user->getDisplayname()), $suggestions_language->get('general', 'hook_new_suggestion')),
+                    'content' => $suggestions_language->get('general', 'hook_new_suggestion', ['user' => $user->getDisplayname()]),
                     'content_full' => str_replace('&nbsp;', '', strip_tags(htmlspecialchars_decode(Input::get('content')))),
                     'avatar_url' => $user->getAvatar(128, true),
                     'title' => Output::getClean('#' . $suggestion_id . ' - ' . Input::get('title')),
                     'url' => rtrim(Util::getSelfURL(), '/') . URL::build('/suggestions/view/' . $suggestion_id . '-' . Util::stringToURL(Output::getClean(Input::get('title'))))
-                ));
-                
+                ]);
+
                 Redirect::to(URL::build('/suggestions/view/' . $suggestion_id));
-                die();
             }
         } else {
-            foreach($validation->errors() as $error){
-                if(strpos($error, 'is required') !== false){
-                    switch($error){
-                        case (strpos($error, 'title') !== false):
-                            $errors[] = $suggestions_language->get('general', 'title_required');
-                        break;
-                        case (strpos($error, 'content') !== false):
-                            $errors[] = $suggestions_language->get('general', 'content_required');
-                        break;
-                    }
-                } else if(strpos($error, 'minimum') !== false){
-                    switch($error){
-                        case (strpos($error, 'title') !== false):
-                            $errors[] = $suggestions_language->get('general', 'title_minimum');
-                        break;
-                        case (strpos($error, 'content') !== false):
-                            $errors[] = $suggestions_language->get('general', 'content_minimum');
-                        break;
-                    }
-                } else if(strpos($error, 'maximum') !== false){
-                    switch($error){
-                        case (strpos($error, 'title') !== false):
-                            $errors[] = $suggestions_language->get('general', 'title_maximum');
-                        break;
-                    }
-                }
-            }
+            // Validation errors
+            $errors = $validation->errors();
         }
     } else {
         $errors[] = $language->get('general', 'invalid_token');
     }
 }
 
-if(isset($errors) && count($errors))
+if (isset($errors) && count($errors))
     $smarty->assign('ERRORS', $errors);
 
-$smarty->assign(array(
+$smarty->assign([
     'SUGGESTIONS' => $suggestions_language->get('general', 'suggestions'),
     'NEW_SUGGESTION' => $suggestions_language->get('general', 'new_suggestion'),
     'BACK' => $language->get('general', 'back'),
@@ -129,7 +115,7 @@ $smarty->assign(array(
     'CATEGORIES' => $suggestions->getCategories(),
     'TOKEN' => Token::get(),
     'SUBMIT' => $language->get('general', 'submit')
-));
+]);
 
 // Load modules + template
 Module::loadPage($user, $pages, $cache, $smarty, [$navigation, $cc_nav, $staffcp_nav], $widgets, $template);

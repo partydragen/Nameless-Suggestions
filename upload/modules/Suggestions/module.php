@@ -10,10 +10,13 @@
  */
 
 class Suggestions_Module extends Module {
+
+    private DB $_db;
     private $_language;
     private $_suggestions_language;
 
-    public function __construct($language, $suggestions_language, $pages, $navigation, $cache){
+    public function __construct($language, $suggestions_language, $pages, $navigation, $cache) {
+        $this->_db = DB::getInstance();
         $this->_language = $language;
         $this->_suggestions_language = $suggestions_language;
 
@@ -38,14 +41,14 @@ class Suggestions_Module extends Module {
 
         // Check if module version changed
         $cache->setCache('suggestions_module_cache');
-        if(!$cache->isCached('module_version')){
+        if (!$cache->isCached('module_version')) {
             $cache->store('module_version', $module_version);
         } else {
-            if($module_version != $cache->retrieve('module_version')) {
+            if ($module_version != $cache->retrieve('module_version')) {
                 // Version have changed, Perform actions
                 $cache->store('module_version', $module_version);
 
-                if($cache->isCached('update_check')){
+                if ($cache->isCached('update_check')) {
                     $cache->erase('update_check');
                 }
             }
@@ -55,28 +58,28 @@ class Suggestions_Module extends Module {
         EventHandler::registerEvent('newSuggestionComment', $this->_suggestions_language->get('general', 'new_suggestion_comment'));
     }
 
-    public function onInstall(){
+    public function onInstall() {
         // Initialise
         $this->initialise();
     }
 
-    public function onUninstall(){
+    public function onUninstall() {
         // Not necessary
     }
 
-    public function onEnable(){
+    public function onEnable() {
         // Check if we need to initialise again
         $this->initialise();
     }
 
-    public function onDisable(){
+    public function onDisable() {
         // Not necessary
     }
 
-    public function onPageLoad($user, $pages, $cache, $smarty, $navs, $widgets, $template){
+    public function onPageLoad($user, $pages, $cache, $smarty, $navs, $widgets, $template) {
         // navigation link location
         $cache->setCache('suggestions_module_cache');
-        if(!$cache->isCached('link_location')){
+        if (!$cache->isCached('link_location')) {
             $link_location = 1;
             $cache->store('link_location', 1);
         } else {
@@ -85,7 +88,7 @@ class Suggestions_Module extends Module {
 
         // Add link to navbar
         $cache->setCache('navbar_order');
-        if(!$cache->isCached('suggestions_order')){
+        if (!$cache->isCached('suggestions_order')) {
             $order = 24;
             $cache->store('suggestions_order', 24);
         } else {
@@ -93,13 +96,13 @@ class Suggestions_Module extends Module {
         }
 
         $cache->setCache('navbar_icons');
-        if(!$cache->isCached('suggestions_icon')){
+        if (!$cache->isCached('suggestions_icon')) {
             $icon = '';
         } else {
             $icon = $cache->retrieve('suggestions_icon');
         }
 
-        switch($link_location){
+        switch ($link_location) {
             case 1:
                 // Navbar
                 $navs[0]->add('suggestions', $this->_suggestions_language->get('general', 'suggestions'), URL::build('/suggestions'), 'top', null, $order, $icon);
@@ -114,23 +117,23 @@ class Suggestions_Module extends Module {
             break;
         }
 
-        if(defined('BACK_END')){
+        if (defined('BACK_END')) {
             // Navigation
             $cache->setCache('panel_sidebar');
 
-            PermissionHandler::registerPermissions('Suggestions', array(
+            PermissionHandler::registerPermissions('Suggestions', [
                 'suggestions.manage' => $this->_suggestions_language->get('admin', 'suggestions_manage')
-            ));
+            ]);
 
-            if($user->hasPermission('suggestions.manage')){
-                if(!$cache->isCached('suggestions_order')){
+            if ($user->hasPermission('suggestions.manage')) {
+                if (!$cache->isCached('suggestions_order')) {
                     $order = 48;
                     $cache->store('suggestions_order', 48);
                 } else {
                     $order = $cache->retrieve('suggestions_order');
                 }
 
-                if(!$cache->isCached('suggestions_icon')){
+                if (!$cache->isCached('suggestions_icon')) {
                     $icon = '<i class="nav-icon fas fa-wrench"></i>';
                     $cache->store('suggestions_icon', $icon);
                 } else
@@ -139,7 +142,7 @@ class Suggestions_Module extends Module {
                 $navs[2]->add('suggestions_divider', mb_strtoupper($this->_suggestions_language->get('admin', 'suggestions_module'), 'UTF-8'), 'divider', 'top', null, $order, '');
                 $navs[2]->addDropdown('suggestions_configuration', $this->_suggestions_language->get('general', 'suggestions'), 'top', $order, $icon);
 
-                if(!$cache->isCached('suggestions_settings_icon')){
+                if (!$cache->isCached('suggestions_settings_icon')) {
                     $icon = '<i class="nav-icon fas fa-cogs"></i>';
                     $cache->store('suggestions_settings_icon', $icon);
                 } else
@@ -147,7 +150,7 @@ class Suggestions_Module extends Module {
 
                 $navs[2]->addItemToDropdown('suggestions_configuration', 'suggestions_settings', $this->_suggestions_language->get('admin', 'settings'), URL::build('/panel/suggestions/settings'), 'top', null, $icon, $order);
 
-                if(!$cache->isCached('suggestions_categories_icon')){
+                if (!$cache->isCached('suggestions_categories_icon')) {
                     $icon = '<i class="nav-icon fas fa-folder"></i>';
                     $cache->store('suggestions_categories_icon', $icon);
                 } else
@@ -155,7 +158,7 @@ class Suggestions_Module extends Module {
 
                 $navs[2]->addItemToDropdown('suggestions_configuration', 'suggestions_categories', $this->_suggestions_language->get('admin', 'categories'), URL::build('/panel/suggestions/categories'), 'top', null, $icon, $order);
 
-                if(!$cache->isCached('suggestions_statuses_icon')){
+                if (!$cache->isCached('suggestions_statuses_icon')) {
                     $icon = '<i class="nav-icon fas fa-tags"></i>';
                     $cache->store('suggestions_statuses_icon', $icon);
                 } else
@@ -166,10 +169,10 @@ class Suggestions_Module extends Module {
         }
 
         // Check for module updates
-        if(isset($_GET['route']) && $user->isLoggedIn() && $user->hasPermission('admincp.update')){
+        if (isset($_GET['route']) && $user->isLoggedIn() && $user->hasPermission('admincp.update')) {
             // Page belong to this module?
             $page = $pages->getActivePage();
-            if($page['module'] == 'Suggestions'){
+            if ($page['module'] == 'Suggestions') {
 
                 $cache->setCache('suggestions_module_cache');
                 if ($cache->isCached('update_check')) {
@@ -198,92 +201,92 @@ class Suggestions_Module extends Module {
     public function getDebugInfo(): array {
         return [];
     }
-    
-    private function initialise(){
+
+    private function initialise() {
         // Generate tables
-        if(!DB::getInstance()->showTables('suggestions')) {
+        if (!$this->_db->showTables('suggestions')) {
             try {
-                DB::getInstance()->createTable('suggestions', ' `id` int(11) NOT NULL AUTO_INCREMENT, `user_id` int(11) NOT NULL, `updated_by` int(11) NOT NULL, `category_id` int(11) NOT NULL, `status_id` int(11) NOT NULL DEFAULT \'1\', `created` int(11) NOT NULL, `last_updated` int(11) NOT NULL, `title` varchar(150) NOT NULL, `content` mediumtext, `likes` int(11) NOT NULL DEFAULT \'0\', `dislikes` int(11) NOT NULL DEFAULT \'0\', `deleted` int(11) NOT NULL DEFAULT \'0\', PRIMARY KEY (`id`)');
-            } catch(Exception $e){
+                $this->_db->createTable('suggestions', ' `id` int(11) NOT NULL AUTO_INCREMENT, `user_id` int(11) NOT NULL, `updated_by` int(11) NOT NULL, `category_id` int(11) NOT NULL, `status_id` int(11) NOT NULL DEFAULT \'1\', `created` int(11) NOT NULL, `last_updated` int(11) NOT NULL, `title` varchar(150) NOT NULL, `content` mediumtext, `likes` int(11) NOT NULL DEFAULT \'0\', `dislikes` int(11) NOT NULL DEFAULT \'0\', `deleted` int(11) NOT NULL DEFAULT \'0\', PRIMARY KEY (`id`)');
+            } catch(Exception $e) {
                 // Error
             }
         }
 
-        if(!DB::getInstance()->showTables('suggestions_categories')) {
+        if (!$this->_db->showTables('suggestions_categories')) {
             try {
-                DB::getInstance()->createTable('suggestions_categories', ' `id` int(11) NOT NULL AUTO_INCREMENT, `name` varchar(32) NOT NULL, `display_order` int(11) NOT NULL, `deleted` int(11) NOT NULL DEFAULT \'0\', PRIMARY KEY (`id`)');
-            } catch(Exception $e){
+                $this->_db->createTable('suggestions_categories', ' `id` int(11) NOT NULL AUTO_INCREMENT, `name` varchar(32) NOT NULL, `display_order` int(11) NOT NULL, `deleted` int(11) NOT NULL DEFAULT \'0\', PRIMARY KEY (`id`)');
+            } catch(Exception $e) {
                 // Error
             }
         }
 
-        if(!DB::getInstance()->showTables('suggestions_comments')) {
+        if (!$this->_db->showTables('suggestions_comments')) {
             try {
-                DB::getInstance()->createTable('suggestions_comments', ' `id` int(11) NOT NULL AUTO_INCREMENT, `suggestion_id` int(11) NOT NULL, `user_id` int(11) NOT NULL, `created` int(11) NOT NULL, `content` mediumtext, PRIMARY KEY (`id`)');
-            } catch(Exception $e){
+                $this->_db->createTable('suggestions_comments', ' `id` int(11) NOT NULL AUTO_INCREMENT, `suggestion_id` int(11) NOT NULL, `user_id` int(11) NOT NULL, `created` int(11) NOT NULL, `content` mediumtext, PRIMARY KEY (`id`)');
+            } catch(Exception $e) {
                 // Error
             }
         }
 
-        if(!DB::getInstance()->showTables('suggestions_statuses')) {
+        if (!$this->_db->showTables('suggestions_statuses')) {
             try {
-                DB::getInstance()->createTable('suggestions_statuses', ' `id` int(11) NOT NULL AUTO_INCREMENT, `name` varchar(32) NOT NULL, `html` varchar(1024) NOT NULL, `open` tinyint(1) NOT NULL DEFAULT \'1\', `deleted` int(11) NOT NULL DEFAULT \'0\', PRIMARY KEY (`id`)');
-                
-                $DB::getInstance()->insert('suggestions_statuses', array(
+                $this->_db->createTable('suggestions_statuses', ' `id` int(11) NOT NULL AUTO_INCREMENT, `name` varchar(32) NOT NULL, `html` varchar(1024) NOT NULL, `open` tinyint(1) NOT NULL DEFAULT \'1\', `deleted` int(11) NOT NULL DEFAULT \'0\', PRIMARY KEY (`id`)');
+
+                $this->_db->insert('suggestions_statuses', [
                     'name' => 'Open',
                     'html' => '<span class="badge badge-success">Open</span>',
                     'open' => 1
-                ));
-                
-                $DB::getInstance()->insert('suggestions_statuses', array(
+                ]);
+
+                $this->_db->insert('suggestions_statuses', [
                     'name' => 'Closed',
                     'html' => '<span class="badge badge-danger">Closed</span>',
                     'open' => 0
-                ));
-                
-                $DB::getInstance()->insert('suggestions_statuses', array(
+                ]);
+
+                $this->_db->insert('suggestions_statuses', [
                     'name' => 'Complete',
                     'html' => '<span class="badge badge-success">Complete</span>',
                     'open' => 1
-                ));
-                
-                $DB::getInstance()->insert('suggestions_statuses', array(
+                ]);
+
+                $this->_db->insert('suggestions_statuses', [
                     'name' => 'In progress',
                     'html' => '<span class="badge badge-warning">In progress</span>',
                     'open' => 1
-                ));
-            } catch(Exception $e){
+                ]);
+            } catch (Exception $e) {
                 // Error
             }
         }
 
-        if(!DB::getInstance()->showTables('suggestions_votes')) {
+        if (!$this->_db->showTables('suggestions_votes')) {
             try {
-                DB::getInstance()->createTable('suggestions_votes', ' `id` int(11) NOT NULL AUTO_INCREMENT, `user_id` int(11) NOT NULL, `suggestion_id` int(11) NOT NULL, `type` tinyint(1) NOT NULL, PRIMARY KEY (`id`)');
-            } catch(Exception $e){
+                $this->_db->createTable('suggestions_votes', ' `id` int(11) NOT NULL AUTO_INCREMENT, `user_id` int(11) NOT NULL, `suggestion_id` int(11) NOT NULL, `type` tinyint(1) NOT NULL, PRIMARY KEY (`id`)');
+            } catch(Exception $e) {
                 // Error
             }
         }
 
-        if(!DB::getInstance()->showTables('suggestions_settings')) {
+        if (!$this->_db->showTables('suggestions_settings')) {
             try {
-                DB::getInstance()->createTable('suggestions_settings', ' `id` int(11) NOT NULL AUTO_INCREMENT, `name` varchar(64) NOT NULL, `value` varchar(2048) DEFAULT NULL, PRIMARY KEY (`id`)');
-            } catch(Exception $e){
+                $this->_db->createTable('suggestions_settings', ' `id` int(11) NOT NULL AUTO_INCREMENT, `name` varchar(64) NOT NULL, `value` varchar(2048) DEFAULT NULL, PRIMARY KEY (`id`)');
+            } catch(Exception $e) {
                 // Error
             }
         }
 
         try {
             // Update main admin group permissions
-            $group = DB::getInstance()->get('groups', array('id', '=', 2))->results();
+            $group = $this->_db->get('groups', ['id', '=', 2])->results();
             $group = $group[0];
-            
+
             $group_permissions = json_decode($group->permissions, TRUE);
             $group_permissions['suggestions.manage'] = 1;
-            
+
             $group_permissions = json_encode($group_permissions);
-            DB::getInstance()->update('groups', 2, array('permissions' => $group_permissions));
-        } catch(Exception $e){
+            $this->_db->update('groups', 2, ['permissions' => $group_permissions]);
+        } catch (Exception $e) {
             // Error
         }
     }

@@ -11,7 +11,7 @@
 define('PAGE', 'suggestions');
 $page_title = $suggestions_language->get('general', 'suggestions');
 require_once(ROOT_PATH . '/core/templates/frontend_init.php');
-$timeago = new Timeago(TIMEZONE);
+$timeago = new TimeAgo(TIMEZONE);
 
 require_once(ROOT_PATH . '/modules/Suggestions/classes/Suggestions.php');
 $suggestions = new Suggestions();
@@ -26,21 +26,21 @@ if (!strlen($cid)) {
 }
 
 $cid = explode('-', $cid);
-if(!is_numeric($cid[0])){
+if (!is_numeric($cid[0])) {
     require_once(ROOT_PATH . '/404.php');
     die();
 }
 
 // Get the suggestion information
-$category = DB::getInstance()->get('suggestions_categories', array('id', '=', $cid[0]))->results();
-if(!count($category)){
+$category = DB::getInstance()->get('suggestions_categories', ['id', '=', $cid[0]])->results();
+if (!count($category)) {
     require_once(ROOT_PATH . '/404.php');
     die();
 }
 
 $category = $category[0];
 
-if(isset($_GET['sort'])){
+if (isset($_GET['sort'])) {
     switch($_GET['sort']) {
         case 'recent-activity':
             $sort = 'last_updated';
@@ -69,18 +69,16 @@ if(isset($_GET['sort'])){
     $url = URL::build('/suggestions/category/'.$category->id.'/', true);
 }
 
-$suggestions_query = DB::getInstance()->query('SELECT nl2_suggestions.*, html FROM nl2_suggestions LEFT JOIN nl2_suggestions_statuses ON nl2_suggestions_statuses.id=nl2_suggestions.status_id WHERE nl2_suggestions.deleted = 0 AND status_id != 2 AND category_id = ? ORDER BY '.$sort.' DESC', array($category->id))->results();
-if(count($suggestions_query)){
+$suggestions_query = DB::getInstance()->query('SELECT nl2_suggestions.*, html FROM nl2_suggestions LEFT JOIN nl2_suggestions_statuses ON nl2_suggestions_statuses.id=nl2_suggestions.status_id WHERE nl2_suggestions.deleted = 0 AND status_id != 2 AND category_id = ? ORDER BY '.$sort.' DESC', [$category->id])->results();
+if (count($suggestions_query)) {
     // Get page
-    if(isset($_GET['p'])){
-        if(!is_numeric($_GET['p'])){
+    if (isset($_GET['p'])) {
+        if (!is_numeric($_GET['p'])) {
             Redirect::to($url);
-            die();
         } else {
-            if($_GET['p'] == 1){
+            if ($_GET['p'] == 1) {
                 // Avoid bug in pagination class
                 Redirect::to($url);
-                die();
             }
             $p = $_GET['p'];
         }
@@ -88,7 +86,12 @@ if(count($suggestions_query)){
         $p = 1;
     }
 
-    $paginator = new Paginator((isset($template_pagination) ? $template_pagination : array()));
+    // Pagination
+    $paginator = new Paginator(
+        $template_pagination ?? null,
+        $template_pagination_left ?? null,
+        $template_pagination_right ?? null
+    );
     $results = $paginator->getLimited($suggestions_query, 16, $p, count($suggestions_query));
     $pagination = $paginator->generate(7, $url);
 
@@ -99,7 +102,7 @@ if(count($suggestions_query)){
         $author_user = new User($item->user_id);
         $updated_by_user = new User($item->updated_by);
 
-        $suggestions_array[] = array(
+        $suggestions_array[] = [
             'title' => Output::getClean($item->title),
             'status' => $item->html,
             'link' => URL::build('/suggestions/view/' . $item->id . '-' . Util::stringToURL($item->title)),
@@ -115,15 +118,15 @@ if(count($suggestions_query)){
             'updated_by_username' => $updated_by_user->getDisplayname(),
             'updated_by_style' => $updated_by_user->getGroupClass(),
             'updated_by_link' => $updated_by_user->getProfileURL(),
-        );
+        ];
     }
 
-    $smarty->assign(array(
+    $smarty->assign([
         'SUGGESTIONS_LIST' => $suggestions_array
-    ));
+    ]);
 }
 
-$smarty->assign(array(
+$smarty->assign([
     'SUGGESTIONS' => $suggestions_language->get('general', 'suggestions'),
     'NO_SUGGESTIONS' => $suggestions_language->get('general', 'no_suggestions'),
     'NEW_SUGGESTION' => $suggestions_language->get('general', 'new_suggestion'),
@@ -146,7 +149,7 @@ $smarty->assign(array(
     'SORT_NEWEST_LINK' => URL::build('/suggestions/category/'.$category->id.'/', 'sort=newest'),
     'SORT_LIKES_LINK' => URL::build('/suggestions/category/'.$category->id.'/', 'sort=likes'),
     'SORT_RECENT_ACTIVITY_LINK' => URL::build('/suggestions/category/'.$category->id.'/', 'sort=recent-activity')
-));
+]);
 
 // Load modules + template
 Module::loadPage($user, $pages, $cache, $smarty, [$navigation, $cc_nav, $staffcp_nav], $widgets, $template);

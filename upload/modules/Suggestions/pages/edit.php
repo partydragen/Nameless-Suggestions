@@ -10,12 +10,12 @@
  *  Suggestions page
  */
  
-if(!$user->isLoggedIn()){
+if (!$user->isLoggedIn()) {
     Redirect::to(URL::build('/login'));
     die();
 }
 
-if(!$user->canViewStaffCP()){
+if (!$user->canViewStaffCP()) {
     require('404.php');
     die();
 }
@@ -28,96 +28,79 @@ require_once(ROOT_PATH . '/core/templates/frontend_init.php');
 require_once(ROOT_PATH . '/modules/Suggestions/classes/Suggestions.php');
 $suggestions = new Suggestions();
 
-if(isset($_GET['sid'])){
-    if(is_numeric($_GET['sid'])) {
+if (isset($_GET['sid'])) {
+    if (is_numeric($_GET['sid'])) {
         $sid = $_GET['sid'];
     } else {
         Redirect::to(URL::build('/suggestions/'));
-        die();
     }
 } else {
     Redirect::to(URL::build('/suggestions/'));
-    die();
 }
 
-$suggestion = DB::getInstance()->get('suggestions', array('id', '=', $sid))->results();
-if(!count($suggestion)){
+$suggestion = DB::getInstance()->get('suggestions', ['id', '=', $sid])->results();
+if (!count($suggestion)) {
     Redirect::to(URL::build('/suggestions/'));
-    die();
 }
 $suggestion = $suggestion[0];
 
-if(Input::exists()){
-    if(Token::check(Input::get('token'))){
-        $errors = array();
-        
+if (Input::exists()) {
+    if (Token::check(Input::get('token'))) {
+        $errors = [];
+
         $validation = Validate::check($_POST, [
-            'title' => array(
-                'required' => true,
-                'min' => 5,
-                'max' => 128,
-            ),
-            'content' => array(
-                'required' => true,
-                'min' => 5,
-            )
-        ));
-                    
-        i f($validation->passed()) {
+            'title' => [
+                Validate::REQUIRED => true,
+                Validate::MIN => 6,
+                Validate::MAX => 128,
+            ],
+            'content' => [
+                Validate::REQUIRED => true,
+                Validate::MIN => 6,
+                Validate::MAX => 50000
+            ]
+        ])->messages([
+            'title' => [
+                Validate::REQUIRED => $suggestions_language->get('general', 'title_required'),
+                Validate::MIN => $suggestions_language->get('general', 'title_minimum'),
+                Validate::MAX => $suggestions_language->get('general', 'title_maximum'),
+            ],
+            'content' => [
+                Validate::REQUIRED => $suggestions_language->get('general', 'content_required'),
+                Validate::MIN => $suggestions_language->get('general', 'content_minimum')
+            ]
+        ]);
+
+        if ($validation->passed()) {
             // Check if category exists
-            $category = DB::getInstance()->query('SELECT id FROM nl2_suggestions_categories WHERE id = ? AND deleted = 0', array(htmlspecialchars(Input::get('category'))))->results();
-            if(!count($category)) {
+            $category = DB::getInstance()->query('SELECT id FROM nl2_suggestions_categories WHERE id = ? AND deleted = 0', [Input::get('category')])->results();
+            if (!count($category)) {
                 $errors[] = 'Invalid Category';
             }
 
-            if(!count($errors)) {
-                $DB::getInstance()->update("suggestions", $suggestion->id, array(
+            if (!count($errors)) {
+                DB::getInstance()->update("suggestions", $suggestion->id, [
                     'category_id' => htmlspecialchars(Input::get('category')),
                     'status_id' => htmlspecialchars(Input::get('status')),
                     'title' => htmlspecialchars(Input::get('title')),
                     'content' => htmlspecialchars(nl2br(Input::get('content'))),
-                ));
+                ]);
 
                 Redirect::to(URL::build('/suggestions/view/' . $suggestion->id));
             }
         } else {
-            foreach ($validation->errors() as $error) {
-                if(strpos($error, 'is required') !== false){
-                    switch($error){
-                        case (strpos($error, 'title') !== false):
-                            $errors[] = $suggestions_language->get('general', 'title_required');
-                        break;
-                        case (strpos($error, 'content') !== false):
-                            $errors[] = $suggestions_language->get('general', 'content_required');
-                        break;
-                    }
-                } else if(strpos($error, 'minimum') !== false){
-                    switch($error){
-                        case (strpos($error, 'title') !== false):
-                            $errors[] = $suggestions_language->get('general', 'title_minimum');
-                        break;
-                        case (strpos($error, 'content') !== false):
-                            $errors[] = $suggestions_language->get('general', 'content_minimum');
-                        break;
-                    }
-                } else if(strpos($error, 'maximum') !== false){
-                    switch($error){
-                        case (strpos($error, 'title') !== false):
-                            $errors[] = $suggestions_language->get('general', 'title_maximum');
-                        break;
-                    }
-                }
-            }
+            // Validation errors
+            $errors = $validate->errors();
         }
     } else {
         $errors[] = $language->get('general', 'invalid_token');
     }
 }
 
-if(isset($errors) && count($errors))
+if (isset($errors) && count($errors))
     $smarty->assign('ERRORS', $errors);
 
-$smarty->assign(array(
+$smarty->assign([
     'EDITING_SUGGESTION' => $suggestions_language->get('general', 'editing_suggestion'),
     'SUGGESTION_TITLE' => $suggestions_language->get('general', 'title'),
     'TITLE_VALUE' => Output::getClean($suggestion->title),
@@ -133,7 +116,7 @@ $smarty->assign(array(
     'STATUSES' => $suggestions->getStatuses(),
     'TOKEN' => Token::get(),
     'SUBMIT' => $language->get('general', 'submit')
-));
+]);
 
 // Load modules + template
 Module::loadPage($user, $pages, $cache, $smarty, [$navigation, $cc_nav, $staffcp_nav], $widgets, $template);

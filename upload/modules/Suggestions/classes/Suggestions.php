@@ -16,83 +16,72 @@ class Suggestions {
     }
     
     // Get Categories
-    public function getCategories(){
-        $categories = DB::getInstance()->query('SELECT * FROM nl2_suggestions_categories WHERE deleted = 0')->results();
-        $category_array = array();
-        
-        foreach($categories as $category){
-            $category_array[] = array(
+    public function getCategories() {
+        $categories = [];
+        $categories_query = $this->_db->query('SELECT * FROM nl2_suggestions_categories WHERE deleted = 0')->results();
+        foreach ($categories_query as $category) {
+            $categories[] = [
                 'id' => Output::getClean($category->id),
                 'name' => Output::getClean($category->name),
                 'link' => URL::build('/suggestions/category/' . $category->id . '-' . Util::stringToURL($category->name))
-            );
+            ];
         }
-        return $category_array;
+
+        return $categories;
     }
     
     // Get Statuses
-    public function getStatuses(){
-        $statuses = DB::getInstance()->query('SELECT * FROM nl2_suggestions_statuses WHERE deleted = 0')->results();
-        $status_array = array();
-        
-        foreach($statuses as $status){
-            $status_array[] = array(
+    public function getStatuses() {
+        $statuses = [];
+        $statuses_query = $this->_db->query('SELECT * FROM nl2_suggestions_statuses WHERE deleted = 0')->results();
+        foreach ($statuses_query as $status) {
+            $statuses[] = [
                 'id' => Output::getClean($status->id),
                 'name' => Output::getClean($status->name),
                 'html' => Output::getClean($status->html)
-            );
+            ];
         }
-        return $status_array;
+        return $statuses;
     }
     
     // Get Recently updated
-    public function getRecentActivity($user, $language, $limit = 10){
+    public function getRecentActivity($user, $language, $limit = 10) {
         $timeago = new TimeAgo(TIMEZONE);
 
+        $suggestions = [];
         $suggestions_query = $this->_db->query('SELECT * FROM nl2_suggestions WHERE deleted = 0 ORDER BY last_updated DESC LIMIT ' . $limit)->results();
-        $suggestions_array = [];
-
-        foreach($suggestions_query as $item){
+        foreach ($suggestions_query as $item) {
             $updated_by_user = new User($item->updated_by);
 
-            $suggestions_array[] = [
+            $suggestions[] = [
                 'title' => Output::getClean($item->title),
                 'link' => URL::build('/suggestions/view/' . $item->id . '-' . Util::stringToURL($item->title)),
                 'updated_rough' => $timeago->inWords($item->last_updated, $language),
-                'updated' => date('d M Y, H:i', $item->last_updated),
+                'updated' => date(DATE_FORMAT, $item->last_updated),
                 'updated_by_avatar' => $updated_by_user->getAvatar(),
                 'updated_by_username' => $updated_by_user->getDisplayname(),
                 'updated_by_style' => $updated_by_user->getGroupClass(),
                 'updated_by_link' => $updated_by_user->getProfileURL(),
             ];
         }
-        return $suggestions_array;
+        return $suggestions;
     }
     
     /*
      *  Check for Module updates
      *  Returns JSON object with information about any updates
      */
-    public static function updateCheck($current_version = null) {
-        $queries = new Queries();
+    public static function updateCheck() {
+        $current_version = Util::getSetting('nameless_version');
+        $uid = Util::getSetting('unique_id');
 
-        // Check for updates
-        if (!$current_version) {
-            $current_version = DB::getInstance()->get('settings', array('name', '=', 'nameless_version'))->results();
-            $current_version = $current_version[0]->value;
-        }
-
-        $uid = DB::getInstance()->get('settings', array('name', '=', 'unique_id'))->results();
-        $uid = $uid[0]->value;
-        
         $enabled_modules = Module::getModules();
-        foreach($enabled_modules as $enabled_item){
-            if($enabled_item->getName() == 'Suggestions'){
+        foreach ($enabled_modules as $enabled_item) {
+            if ($enabled_item->getName() == 'Suggestions') {
                 $module = $enabled_item;
                 break;
             }
         }
-        
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -106,7 +95,7 @@ class Suggestions {
         if (isset($info->message)) {
             die($info->message);
         }
-        
+
         return $update_check;
     }
 }
