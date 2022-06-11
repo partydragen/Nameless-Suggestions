@@ -44,28 +44,28 @@ if (isset($_GET['sort'])) {
         case 'recent-activity':
             $sort = 'last_updated';
             $sort_by = $suggestions_language->get('general', 'recent_activity');
-            $url = URL::build('/suggestions/category/'.$category->id.'/', 'sort=recent-activity&', true);
+            $url = URL::build('/suggestions/category/' . $category->id . '-' . Util::stringToURL($category->name), 'sort=recent-activity');
         break;
         case 'newest':
             $sort = 'created';
             $sort_by = $suggestions_language->get('general', 'newest');
-            $url = URL::build('/suggestions/category/'.$category->id.'/', 'sort=newest&', true);
+            $url = URL::build('/suggestions/category/' . $category->id . '-' . Util::stringToURL($category->name), 'sort=newest');
         break;
         case 'likes':
             $sort = 'likes';
             $sort_by = $suggestions_language->get('general', 'likes');
-            $url = URL::build('/suggestions/category/'.$category->id.'/', 'sort=likes&', true);
+            $url = URL::build('/suggestions/category/' . $category->id . '-' . Util::stringToURL($category->name), 'sort=likes');
         break;
         default:
             $sort = 'created';
             $sort_by = $suggestions_language->get('general', 'newest');
-            $url = URL::build('/suggestions/category/'.$category->id.'/', true);
+            $url = URL::build('/suggestions/category/' . $category->id . '-' . Util::stringToURL($category->name));
         break;
     }
 } else {
     $sort = 'created';
     $sort_by = $suggestions_language->get('general', 'newest');
-    $url = URL::build('/suggestions/category/'.$category->id.'/', true);
+    $url = URL::build('/suggestions/category/' . $category->id . '-' . Util::stringToURL($category->name));
 }
 
 $suggestions_query = DB::getInstance()->query('SELECT nl2_suggestions.*, html FROM nl2_suggestions LEFT JOIN nl2_suggestions_statuses ON nl2_suggestions_statuses.id=nl2_suggestions.status_id WHERE nl2_suggestions.deleted = 0 AND status_id != 2 AND category_id = ? ORDER BY '.$sort.' DESC', [$category->id])->results();
