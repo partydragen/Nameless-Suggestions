@@ -51,13 +51,13 @@
 			  <input type="hidden" name="action" value="vote">
 			  <input type="hidden" name="token" value="{$TOKEN}">
 			  <input type="hidden" name="vote" value="1">
-			  <a href="#" onclick="$(this).closest('form').submit();" style="padding:10px;{if {$VOTED} == 1} color:green;{/if}" rel="tooltip" data-content="Like"><i class="fa fa-thumbs-up"></i> {$LIKES}</a>
+			  <a href="#" onclick="$(this).closest('form').submit();" style="padding:10px;{if {$VOTED} == 1} color:green;{/if}" rel="tooltip" data-content="Like"><i class="fa fa-thumbs-up"></i> {$LIKES_VALUE}</a>
 			</form>
 			<form style="display:inline;" action="" method="post">
 			  <input type="hidden" name="action" value="vote">
 			  <input type="hidden" name="token" value="{$TOKEN}">
 			  <input type="hidden" name="vote" value="2">
-			  <a href="#" onclick="$(this).closest('form').submit();" style="padding:10px;{if {$VOTED} == 2} color:green;{/if}" rel="tooltip" data-content="Dislike"><i class="fa fa-thumbs-down"></i> {$DISLIKES}</a>
+			  <a href="#" onclick="$(this).closest('form').submit();" style="padding:10px;{if {$VOTED} == 2} color:green;{/if}" rel="tooltip" data-content="Dislike"><i class="fa fa-thumbs-down"></i> {$DISLIKES_VALUE}</a>
 			</form>
 		  </div>
 			
@@ -105,6 +105,38 @@
 		
 		<div class="ui six wide tablet four wide computer column">
 		  {include file='suggestions/search.tpl'}
+          
+          <div class="ui aligned segment">
+            <h4 class="ui header">{$SUGGESTION}</h4>
+            <div class="ui divider"></div>
+
+            <div class="description">
+              <div class="ui list">
+                <div class="item">
+                  <span class="text">{$VIEWS_TEXT}</span>
+                  <div class="description right floated"><b>{$VIEWS_VALUE}</b></div>
+                </div>
+                <div class="item">
+                  <span class="text">{$LIKES_TEXT}</span>
+                  <div class="description right floated"><b>{$LIKES_VALUE}</b></div>
+                </div>
+                <div class="item">
+                  <span class="text">{$DISLIKES_TEXT}</span>
+                  <div class="description right floated"><b>{$DISLIKES_VALUE}</b></div>
+                </div>
+                <div class="item">
+                  <span class="text">{$CATEGORY_TEXT}</span>
+                  <div class="description right floated"><b>{$CATEGORY_VALUE}</b></div>
+                </div>
+                <div class="item">
+                  <span class="text">{$STATUS_TEXT}</span>
+                  <div class="description right floated"><b>{$STATUS_VALUE}</b></div>
+                </div>
+              </div>
+            </div>
+
+           </div>
+          
 		  {include file='suggestions/recent_activity.tpl'}
 		</div>
 		
