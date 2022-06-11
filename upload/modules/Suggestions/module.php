@@ -22,7 +22,7 @@ class Suggestions_Module extends Module {
 
         $name = 'Suggestions';
         $author = '<a href="https://partydragen.com" target="_blank" rel="nofollow noopener">Partydragen</a>';
-        $module_version = '1.4.0';
+        $module_version = '1.5.0';
         $nameless_version = '2.0.0-pr13';
 
         parent::__construct($this, $name, $author, $module_version, $nameless_version);
@@ -45,7 +45,9 @@ class Suggestions_Module extends Module {
             $cache->store('module_version', $module_version);
         } else {
             if ($module_version != $cache->retrieve('module_version')) {
-                // Version have changed, Perform actions
+                 // Version have changed, Perform actions
+                $this->initialiseUpdate($cache->retrieve('module_version'));
+
                 $cache->store('module_version', $module_version);
 
                 if ($cache->isCached('update_check')) {
@@ -212,12 +214,24 @@ class Suggestions_Module extends Module {
     public function getDebugInfo(): array {
         return [];
     }
+    
+    private function initialiseUpdate($old_version) {
+        $old_version = str_replace(array(".", "-"), "", $old_version);
+
+        if ($old_version < 150) {
+            try {
+                $this->_db->addColumn('suggestions', '`views`', 'int(11) NOT NULL DEFAULT \'0\'');
+            } catch (Exception $e) {
+                // Error
+            }
+        }
+    }
 
     private function initialise() {
         // Generate tables
         if (!$this->_db->showTables('suggestions')) {
             try {
-                $this->_db->createTable('suggestions', ' `id` int(11) NOT NULL AUTO_INCREMENT, `user_id` int(11) NOT NULL, `updated_by` int(11) NOT NULL, `category_id` int(11) NOT NULL, `status_id` int(11) NOT NULL DEFAULT \'1\', `created` int(11) NOT NULL, `last_updated` int(11) NOT NULL, `title` varchar(150) NOT NULL, `content` mediumtext, `likes` int(11) NOT NULL DEFAULT \'0\', `dislikes` int(11) NOT NULL DEFAULT \'0\', `deleted` int(11) NOT NULL DEFAULT \'0\', PRIMARY KEY (`id`)');
+                $this->_db->createTable('suggestions', ' `id` int(11) NOT NULL AUTO_INCREMENT, `user_id` int(11) NOT NULL, `updated_by` int(11) NOT NULL, `category_id` int(11) NOT NULL, `status_id` int(11) NOT NULL DEFAULT \'1\', `created` int(11) NOT NULL, `last_updated` int(11) NOT NULL, `title` varchar(150) NOT NULL, `content` mediumtext, `likes` int(11) NOT NULL DEFAULT \'0\', `dislikes` int(11) NOT NULL DEFAULT \'0\', `views` int(11) NOT NULL DEFAULT \'0\', `deleted` int(11) NOT NULL DEFAULT \'0\', PRIMARY KEY (`id`)');
             } catch(Exception $e) {
                 // Error
             }

@@ -51,6 +51,7 @@ class SuggestionInfoEndpoint extends KeyAuthEndpoint {
             ],
             'title' => Output::getClean($suggestion->data()->title),
             'content' => Output::getDecoded($suggestion->data()->content),
+            'views' => $suggestion->data()->views,
             'likes_count' => $suggestion->data()->likes,
             'dislikes_count' => $suggestion->data()->dislikes,
             'likes' => $likes_list,

@@ -115,7 +115,7 @@ $smarty->assign([
     'CATEGORIES_LIST' => $suggestions->getCategories(),
     'SORT_BY' => $suggestions_language->get('general', 'sort_by'),
     'SORT_BY_VALUE' => $sort_by,
-    'BY' => $language->get('user', 'by'),
+    'BY' => $suggestions_language->get('general', 'by'),
     'SUGGESTION_TITLE' => $suggestions_language->get('general', 'title'),
     'STATS' => $suggestions_language->get('general', 'stats'),
     'LAST_REPLY' => $suggestions_language->get('general', 'last_reply'),

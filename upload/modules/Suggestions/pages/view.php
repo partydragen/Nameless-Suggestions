@@ -128,7 +128,7 @@ if (Input::exists()) {
                             'status_id' => Input::get('status'),
                         ]);
 
-                        switch (Input::get('status')) {
+                        /*switch (Input::get('status')) {
                             case 2:
                                 $color = "f50606";
                             break;
@@ -142,7 +142,7 @@ if (Input::exists()) {
                                 $color = "f50606";
                             break;
                         }
-                        $discordAlert['color'] = $color;
+                        $discordAlert['color'] = $color;*/
                     }
                 }
             
@@ -175,6 +175,19 @@ if (Input::exists()) {
     } else {
         // Invalid token
         $errors[] = $language->get('general', 'invalid_token');
+    }
+}
+
+// View count
+if ($user->isLoggedIn() || Cookie::exists('alert-box')) {
+    if(!Cookie::exists('nl-suggestion-' . $suggestion->data()->id)) {
+        DB::getInstance()->increment('suggestions', $suggestion->data()->id, 'views');
+        Cookie::put('nl-suggestion-' . $suggestion->data()->id, "true", 3600);
+    }
+} else {
+    if(!Session::exists('nl-suggestion-' . $suggestion->data()->id)){
+        DB::getInstance()->increment('suggestions', $suggestion->data()->id, 'views');
+        Session::put("nl-suggestion-" . $suggestion->data()->id, "true");
     }
 }
 
@@ -215,6 +228,12 @@ foreach ($comments as $comment) {
     }
 }
 
+$status = DB::getInstance()->query('SELECT * FROM nl2_suggestions_statuses WHERE id = ?', [$suggestion->data()->status_id]);
+$status = $status->first();
+
+$category = DB::getInstance()->query('SELECT * FROM nl2_suggestions_categories WHERE id = ?', [$suggestion->data()->category_id]);
+$category = $category->first();
+
 if (Session::exists('suggestions_success'))
     $success = Session::flash('suggestions_success');
 
@@ -234,6 +253,7 @@ $author_user = new User($suggestion->data()->user_id);
 $smarty->assign([
     'ID' => Output::getClean($suggestion->data()->id),
     'SUGGESTIONS' => $suggestions_language->get('general', 'suggestions'),
+    'SUGGESTION' => $suggestions_language->get('general', 'suggestion'),
     'BACK' => $language->get('general', 'back'),
     'BACK_LINK' => URL::build('/suggestions/'),
     'EDIT_LINK' => URL::build('/suggestions/edit/', 'sid=' . $suggestion->data()->id),
@@ -258,13 +278,23 @@ $smarty->assign([
     'COMMENTS_LIST' => $smarty_comments,
     'SUBMIT' => $language->get('general', 'submit'),
     'STATUS' => Output::getClean($suggestion->data()->status_id),
-    'BY' => $language->get('user', 'by'),
+    'BY' => $suggestions_language->get('general', 'by'),
     'CONFIRM_DELETE' => $language->get('general', 'confirm_delete'),
     'CONFIRM_DELETE_SUGGESTION' => $language->get('general', 'confirm_deletion'),
     'CONFIRM_DELETE_COMMENT' => $language->get('general', 'confirm_deletion'),
     'CANCEL' => $language->get('general', 'cancel'),
     'DELETE' => $language->get('general', 'delete'),
     'EDIT' => $language->get('general', 'edit'),
+    'VIEWS_TEXT' => $suggestions_language->get('general', 'views'),
+    'VIEWS_VALUE' => Output::getClean($suggestion->data()->views),
+    'LIKES_TEXT' => $suggestions_language->get('general', 'likes'),
+    'LIKES_VALUE' => Output::getClean($suggestion->data()->likes),
+    'DISLIKES_TEXT' => $suggestions_language->get('general', 'dislikes'),
+    'DISLIKES_VALUE' => Output::getClean($suggestion->data()->dislikes),
+    'CATEGORY_TEXT' => $suggestions_language->get('general', 'category'),
+    'CATEGORY_VALUE' => $category ? Output::getClean($category->name) : 'Unknown',
+    'STATUS_TEXT' => $suggestions_language->get('general', 'status'),
+    'STATUS_VALUE' => $status ? Output::getClean($status->name) : 'Unknown',
 ]);
 
 // Load modules + template
