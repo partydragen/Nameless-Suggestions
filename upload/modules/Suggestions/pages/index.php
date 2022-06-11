@@ -16,7 +16,6 @@ $page_title = $suggestions_language->get('general', 'suggestions');
 require_once(ROOT_PATH . '/core/templates/frontend_init.php');
 $timeago = new TimeAgo(TIMEZONE);
 
-require_once(ROOT_PATH . '/modules/Suggestions/classes/Suggestions.php');
 $suggestions = new Suggestions();
 
 if (isset($_GET['sort'])) {
@@ -79,7 +78,7 @@ if (count($suggestions_query)) {
     $smarty->assign('PAGINATION', $pagination);
 
     $suggestions_array = [];
-    foreach($results->data as $item) {
+    foreach ($results->data as $item) {
         $author_user = new User($item->user_id);
         $updated_by_user = new User($item->updated_by);
         

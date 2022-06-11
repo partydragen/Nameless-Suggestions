@@ -13,7 +13,6 @@ $page_title = $suggestions_language->get('general', 'suggestions');
 require_once(ROOT_PATH . '/core/templates/frontend_init.php');
 $timeago = new TimeAgo(TIMEZONE);
 
-require_once(ROOT_PATH . '/modules/Suggestions/classes/Suggestions.php');
 $suggestions = new Suggestions();
 
 // Get category ID

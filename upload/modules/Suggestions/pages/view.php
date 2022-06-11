@@ -13,7 +13,6 @@ $page_title = $suggestions_language->get('general', 'suggestions');
 require_once(ROOT_PATH . '/core/templates/frontend_init.php');
 $timeago = new TimeAgo(TIMEZONE);
 
-require_once(ROOT_PATH . '/modules/Suggestions/classes/Suggestions.php');
 $suggestions = new Suggestions();
 
 // Get suggestion ID
@@ -32,15 +31,13 @@ if (!is_numeric($sid[0])) {
 }
 
 // Get the suggestion information
-$suggestion = DB::getInstance()->get('suggestions', ['id', '=', $sid[0]])->results();
-if (!count($suggestion)) {
+$suggestion = new Suggestion($sid[0]);
+if (!$suggestion->exists()) {
     require_once(ROOT_PATH . '/404.php');
     die();
 }
 
-$suggestion = $suggestion[0];
-
-if ($suggestion->deleted == 1) {
+if ($suggestion->data()->deleted == 1) {
     require_once(ROOT_PATH . '/404.php');
     die();
 }
@@ -49,55 +46,16 @@ if ($suggestion->deleted == 1) {
 if (Input::exists()) {
     if (Token::check(Input::get('token'))) {
         $errors = [];
-        
+
         if (Input::get('action') == 'vote') {
             // User must be logged in to proceed
             if ($user->isLoggedIn()) {
-                $user_vote = DB::getInstance()->query('SELECT id, type FROM nl2_suggestions_votes WHERE user_id = ? AND suggestion_id = ?', [$user->data()->id, $suggestion->id])->results();
-
-                if (count($user_vote)) {
-                    $user_vote = $user_vote[0];
-
-                    if ($user_vote->type == $_POST['vote']) {
-                        // Undo vote
-                        DB::getInstance()->delete('suggestions_votes', ['id', '=', $user_vote->id]);
-
-                        if ($user_vote->type == 1) {
-                            DB::getInstance()->query('UPDATE nl2_suggestions SET likes = likes - 1 WHERE id = ?', [$suggestion->id]);
-
-                        } else {
-                            DB::getInstance()->query('UPDATE nl2_suggestions SET dislikes = dislikes - 1 WHERE id = ?', [$suggestion->id]);
-                        }
-                        Redirect::to(URL::build('/suggestions/view/' . $suggestion->id . '-' . Util::stringToURL($suggestion->title)));
-                    } else {
-                        // Change existing vote
-                        DB::getInstance()->update('suggestions_votes', $user_vote->id, [
-                            'type' => $_POST['vote']
-                        ]);
-
-                        if ($_POST['vote'] == 1) {
-                            DB::getInstance()->query('UPDATE nl2_suggestions SET likes = likes + 1, dislikes = dislikes - 1 WHERE id = ?', [$suggestion->id]);
-
-                        } else {
-                            DB::getInstance()->query('UPDATE nl2_suggestions SET dislikes = dislikes + 1, likes = likes - 1 WHERE id = ?', [$suggestion->id]);
-                        }
-                        Redirect::to(URL::build('/suggestions/view/' . $suggestion->id . '-' . Util::stringToURL($suggestion->title)));
-                    }
-                } else {
-                    // Input new vote
-                    DB::getInstance()->insert('suggestions_votes', [
-                        'user_id' => $user->data()->id,
-                        'suggestion_id' => $suggestion->id,
-                        'type' => $_POST['vote']
-                    ]);
-
-                    if ($_POST['vote'] == 1) {
-                        DB::getInstance()->increment('suggestions', $suggestion->id, 'likes');
-                    } else {
-                        DB::getInstance()->increment('suggestions', $suggestion->id, 'dislikes');
-                    }
-                    Redirect::to(URL::build('/suggestions/view/' . $suggestion->id . '-' . Util::stringToURL($suggestion->title)));
+                $type = $_POST['vote'];
+                if ($type == 1 || $type == 2) {
+                    $suggestion->setVote($user, $type);
                 }
+
+                Redirect::to($suggestion->getURL());
             } else {
                 $errors[] = $suggestions_language->get('general', 'login_to_vote');
             }
@@ -133,36 +91,40 @@ if (Input::exists()) {
 
                     if (!count($errors)) {
                         DB::getInstance()->insert('suggestions_comments', [
-                            'suggestion_id' => $suggestion->id,
+                            'suggestion_id' => $suggestion->data()->id,
                             'user_id' => $user->data()->id,
                             'created' => date('U'),
-                            'content' => Output::getClean(nl2br(Input::get('content')))
+                            'content' => nl2br(Input::get('content'))
                         ]);
+                        $comment_id = DB::getInstance()->lastId();
 
-                        DB::getInstance()->update('suggestions', $suggestion->id, [
+                        $suggestion->update([
                             'updated_by' => $user->data()->id,
                             'last_updated' => date('U')
                         ]);
                         
                         $discordAlert = [
                             'event' => 'newSuggestionComment',
+                            'suggestion_id' => $suggestion->data()->id,
+                            'comment_id' => $comment_id,
+                            'user_id' => $user->data()->id,
                             'username' => $user->getDisplayname(),
                             'content' => $suggestions_language->get('general', 'hook_new_comment', [
                                 'user' => $user->getDisplayname(),
-                                'likes' => Output::getClean($suggestion->likes),
-                                'dislikes' =>Output::getClean($suggestion->dislikes)
+                                'likes' => Output::getClean($suggestion->data()->likes),
+                                'dislikes' =>Output::getClean($suggestion->data()->dislikes)
                             ]),
                             'content_full' => str_replace('&nbsp;', '', strip_tags(htmlspecialchars_decode(Input::get('content')))),
                             'avatar_url' => $user->getAvatar(128, true),
-                            'title' => Output::getClean('#' . $suggestion->id . ' - ' . $suggestion->title),
-                            'url' => rtrim(Util::getSelfURL(), '/') . URL::build('/suggestions/view/' . $suggestion->id . '-' . Util::stringToURL(Output::getClean($suggestion->title)))
+                            'title' => Output::getClean('#' . $suggestion->data()->id . ' - ' . $suggestion->data()->title),
+                            'url' => rtrim(Util::getSelfURL(), '/') . $suggestion->getURL()
                         ];
                     }
                 }
                 
                 if ($user->canViewStaffCP()) {
-                    if ($suggestion->status_id != htmlspecialchars(Input::get('status'))) {
-                        DB::getInstance()->update('suggestions', $suggestion->id, [
+                    if ($suggestion->data()->status_id != htmlspecialchars(Input::get('status'))) {
+                        $suggestion->update([
                             'status_id' => Input::get('status'),
                         ]);
 
@@ -189,7 +151,7 @@ if (Input::exists()) {
                 }
                 
                 if (!count($errors)) {
-                    Redirect::to(URL::build('/suggestions/view/' . $suggestion->id . '-' . Util::stringToURL($suggestion->title)));
+                    Redirect::to($suggestion->getURL());
                 }
             } else {
                 // Validation Errors
@@ -197,7 +159,7 @@ if (Input::exists()) {
             }
         } else if (Input::get('action') == 'deleteSuggestion') {
             if ($user->canViewStaffCP()) {
-                DB::getInstance()->update('suggestions', $suggestion->id, [
+                DB::getInstance()->update('suggestions', $suggestion->data()->id, [
                     'deleted' => 1
                 ]);
             }
@@ -208,7 +170,7 @@ if (Input::exists()) {
                 DB::getInstance()->delete('suggestions_comments', ['id', '=', Input::get('cid')]);
             }
 
-            Redirect::to(URL::build('/suggestions/view/' . $suggestion->id . '-' . Util::stringToURL($suggestion->title)));
+            Redirect::to($suggestion->getURL());
         }
     } else {
         // Invalid token
@@ -220,7 +182,7 @@ $voted = 0;
 if ($user->isLoggedIn()) {
     $smarty->assign('CAN_COMMENT', true);
 
-    $user_voted = DB::getInstance()->query('SELECT id, type FROM nl2_suggestions_votes WHERE user_id = ? AND suggestion_id = ?', [$user->data()->id, $suggestion->id])->results();
+    $user_voted = DB::getInstance()->query('SELECT id, type FROM nl2_suggestions_votes WHERE user_id = ? AND suggestion_id = ?', [$user->data()->id, $suggestion->data()->id])->results();
     if (count($user_voted)) {
         $voted = $user_voted[0]->type;
     }
@@ -234,7 +196,7 @@ if ($user->isLoggedIn()) {
 }
 
 // Get comments
-$comments = DB::getInstance()->get('suggestions_comments', ['suggestion_id', '=', $suggestion->id])->results();
+$comments = DB::getInstance()->get('suggestions_comments', ['suggestion_id', '=', $suggestion->data()->id])->results();
 $smarty_comments = [];
 foreach ($comments as $comment) {
     $comment_user = new User($comment->user_id);
@@ -268,23 +230,23 @@ if (isset($errors) && count($errors))
         'ERRORS_TITLE' => $language->get('general', 'error')
     ]);
 
-$author_user = new User($suggestion->user_id);
+$author_user = new User($suggestion->data()->user_id);
 $smarty->assign([
-    'ID' => Output::getClean($suggestion->id),
+    'ID' => Output::getClean($suggestion->data()->id),
     'SUGGESTIONS' => $suggestions_language->get('general', 'suggestions'),
     'BACK' => $language->get('general', 'back'),
     'BACK_LINK' => URL::build('/suggestions/'),
-    'EDIT_LINK' => URL::build('/suggestions/edit/', 'sid=' . $suggestion->id),
-    'TITLE' => Output::getClean($suggestion->title),
+    'EDIT_LINK' => URL::build('/suggestions/edit/', 'sid=' . $suggestion->data()->id),
+    'TITLE' => Output::getClean($suggestion->data()->title),
     'POSTER_USERNAME' => $author_user->getDisplayname(),
     'POSTER_PROFILE' => $author_user->getProfileURL(),
     'POSTER_STYLE' => $author_user->getGroupClass(),
     'POSTER_AVATAR' => $author_user->getAvatar(),
-    'POSTER_DATE' => date(DATE_FORMAT, $suggestion->created),
-    'POSTER_DATE_FRIENDLY' => $timeago->inWords($suggestion->created, $language),
-    'CONTENT' => Output::getPurified(Output::getDecoded($suggestion->content)),
-    'LIKES' => Output::getClean($suggestion->likes),
-    'DISLIKES' => Output::getClean($suggestion->dislikes),
+    'POSTER_DATE' => date(DATE_FORMAT, $suggestion->data()->created),
+    'POSTER_DATE_FRIENDLY' => $timeago->inWords($suggestion->data()->created, $language),
+    'CONTENT' => Output::getPurified(Output::getDecoded($suggestion->data()->content)),
+    'LIKES' => Output::getClean($suggestion->data()->likes),
+    'DISLIKES' => Output::getClean($suggestion->data()->dislikes),
     'VOTED' => $voted,
     'TOKEN' => Token::get(),
     'SEARCH_KEYWORD' => $suggestions_language->get('general', 'search_keyword'),
@@ -295,7 +257,7 @@ $smarty->assign([
     'NO_COMMENTS' => $language->get('moderator', 'no_comments'),
     'COMMENTS_LIST' => $smarty_comments,
     'SUBMIT' => $language->get('general', 'submit'),
-    'STATUS' => Output::getClean($suggestion->status_id),
+    'STATUS' => Output::getClean($suggestion->data()->status_id),
     'BY' => $language->get('user', 'by'),
     'CONFIRM_DELETE' => $language->get('general', 'confirm_delete'),
     'CONFIRM_DELETE_SUGGESTION' => $language->get('general', 'confirm_deletion'),

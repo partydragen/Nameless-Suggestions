@@ -18,7 +18,6 @@ $page_title = $suggestions_language->get('general', 'suggestions');
 
 require_once(ROOT_PATH . '/core/templates/frontend_init.php');
 
-require_once(ROOT_PATH . '/modules/Suggestions/classes/Suggestions.php');
 $suggestions = new Suggestions();
 
 if (Input::exists()) {
@@ -66,28 +65,11 @@ if (Input::exists()) {
             }
 
             if (!count($errors)) {
-                DB::getInstance()->insert('suggestions', [
-                    'user_id' => $user->data()->id,
-                    'updated_by' => $user->data()->id,
-                    'category_id' => $category[0]->id,
-                    'created' => date('U'),
-                    'last_updated' => date('U'),
-                    'title' => Input::get('title'),
-                    'content' => htmlspecialchars(nl2br(Input::get('content'))),
-                ]);
-                $suggestion_id = DB::getInstance()->lastId();
+                // Create suggestion
+                $suggestion = new Suggestion();
+                $suggestion->create($user, Input::get('title'), nl2br(Input::get('content')), $category[0]->id);
 
-                EventHandler::executeEvent('newSuggestion', [
-                    'event' => 'newSuggestion',
-                    'username' => $user->getDisplayname(),
-                    'content' => $suggestions_language->get('general', 'hook_new_suggestion', ['user' => $user->getDisplayname()]),
-                    'content_full' => str_replace('&nbsp;', '', strip_tags(htmlspecialchars_decode(Input::get('content')))),
-                    'avatar_url' => $user->getAvatar(128, true),
-                    'title' => Output::getClean('#' . $suggestion_id . ' - ' . Input::get('title')),
-                    'url' => rtrim(Util::getSelfURL(), '/') . URL::build('/suggestions/view/' . $suggestion_id . '-' . Util::stringToURL(Output::getClean(Input::get('title'))))
-                ]);
-
-                Redirect::to(URL::build('/suggestions/view/' . $suggestion_id));
+                Redirect::to($suggestion->getURL());
             }
         } else {
             // Validation errors

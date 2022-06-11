@@ -38,11 +38,10 @@ if (isset($_GET['sid'])) {
     Redirect::to(URL::build('/suggestions/'));
 }
 
-$suggestion = DB::getInstance()->get('suggestions', ['id', '=', $sid])->results();
-if (!count($suggestion)) {
+$suggestion = new Suggestion($sid);
+if (!$suggestion->exists()) {
     Redirect::to(URL::build('/suggestions/'));
 }
-$suggestion = $suggestion[0];
 
 if (Input::exists()) {
     if (Token::check(Input::get('token'))) {
@@ -79,14 +78,14 @@ if (Input::exists()) {
             }
 
             if (!count($errors)) {
-                DB::getInstance()->update("suggestions", $suggestion->id, [
-                    'category_id' => htmlspecialchars(Input::get('category')),
-                    'status_id' => htmlspecialchars(Input::get('status')),
-                    'title' => htmlspecialchars(Input::get('title')),
-                    'content' => htmlspecialchars(nl2br(Input::get('content'))),
+                $suggestion->update([
+                    'category_id' => Input::get('category'),
+                    'status_id' => Input::get('status'),
+                    'title' => Input::get('title'),
+                    'content' => nl2br(Input::get('content')),
                 ]);
 
-                Redirect::to(URL::build('/suggestions/view/' . $suggestion->id));
+                Redirect::to($suggestion->getURL());
             }
         } else {
             // Validation errors
@@ -103,15 +102,15 @@ if (isset($errors) && count($errors))
 $smarty->assign([
     'EDITING_SUGGESTION' => $suggestions_language->get('general', 'editing_suggestion'),
     'SUGGESTION_TITLE' => $suggestions_language->get('general', 'title'),
-    'TITLE_VALUE' => Output::getClean($suggestion->title),
+    'TITLE_VALUE' => Output::getClean($suggestion->data()->title),
     'CONTENT' => $suggestions_language->get('general', 'content'),
-    'CONTENT_VALUE' => str_replace("&lt;br /&gt;", "", Output::getClean(Output::getDecoded($suggestion->content))),
+    'CONTENT_VALUE' => str_replace("&lt;br /&gt;", "", Output::getClean(Output::getDecoded($suggestion->data()->content))),
     'CATEGORY' => $suggestions_language->get('general', 'category'),
-    'CATEGORY_VALUE' => Output::getClean($suggestion->category_id),
+    'CATEGORY_VALUE' => Output::getClean($suggestion->data()->category_id),
     'STATUS' => $suggestions_language->get('general', 'status'),
-    'STATUS_VALUE' => Output::getClean($suggestion->status_id),
+    'STATUS_VALUE' => Output::getClean($suggestion->data()->status_id),
     'CANCEL' => $language->get('general', 'cancel'),
-    'CANCEL_LINK' => URL::build('/suggestions/view/' . $suggestion->id),
+    'CANCEL_LINK' => $suggestion->getURL(),
     'CATEGORIES' => $suggestions->getCategories(),
     'STATUSES' => $suggestions->getStatuses(),
     'TOKEN' => Token::get(),
