@@ -15,7 +15,7 @@ class Suggestions_Module extends Module {
     private $_language;
     private $_suggestions_language;
 
-    public function __construct($language, $suggestions_language, $pages, $navigation, $cache) {
+    public function __construct(Language $language, Language $suggestions_language, Pages $pages, Navigation $navigation, Cache $cache, Endpoints $endpoints) {
         $this->_db = DB::getInstance();
         $this->_language = $language;
         $this->_suggestions_language = $suggestions_language;
@@ -56,6 +56,17 @@ class Suggestions_Module extends Module {
 
         EventHandler::registerEvent('newSuggestion', $this->_suggestions_language->get('general', 'new_suggestion'));
         EventHandler::registerEvent('newSuggestionComment', $this->_suggestions_language->get('general', 'new_suggestion_comment'));
+
+        $endpoints->loadEndpoints(ROOT_PATH . '/modules/Suggestions/includes/endpoints');
+
+        Endpoints::registerTransformer('suggestion', 'Suggestions', static function (Nameless2API $api, string $value) {
+            $suggestion = new Suggestion($value);
+            if ($suggestion->exists()) {
+                return $suggestion;
+            }
+
+            $api->throwError(SuggestionsApiErrors::ERROR_SUGGESTION_NOT_FOUND);
+        });
     }
 
     public function onInstall() {
