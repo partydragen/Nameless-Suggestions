@@ -43,7 +43,7 @@ class SuggestionInfoEndpoint extends KeyAuthEndpoint {
             'status' => [
                 'id' => $suggestion->data()->status_id,
                 'name' => $status ? $status->name : 'Unknown',
-                'open' => $status ? $status->open : 0
+                'open' => $status ? ($status->open ? true : false) : false
             ],
             'category' => [
                 'id' => $suggestion->data()->category_id,
@@ -52,6 +52,8 @@ class SuggestionInfoEndpoint extends KeyAuthEndpoint {
             'title' => Output::getClean($suggestion->data()->title),
             'content' => Output::getDecoded($suggestion->data()->content),
             'views' => $suggestion->data()->views,
+            'created' => $suggestion->data()->created,
+            'last_updated' => $suggestion->data()->last_updated,
             'likes_count' => $suggestion->data()->likes,
             'dislikes_count' => $suggestion->data()->dislikes,
             'likes' => $likes_list,
