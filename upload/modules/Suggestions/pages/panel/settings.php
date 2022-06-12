@@ -36,18 +36,18 @@ if (Input::exists()) {
             }
         } else {
             $location = 1;
-
-            // Update Icon cache
-            $cache->setCache('navbar_icons');
-            $cache->store('suggestions_icon', Input::get('icon'));
-
-            // Update Link location cache
-            $cache->setCache('suggestions_module_cache');
-            $cache->store('link_location', $location);
-
-            Session::flash('suggestions_success', $suggestions_language->get('admin', 'settings_updated_successfully'));
-            Redirect::to(URL::build('/panel/suggestions/settings'));
         }
+
+        // Update Icon cache
+        $cache->setCache('navbar_icons');
+        $cache->store('suggestions_icon', Input::get('icon'));
+
+        // Update Link location cache
+        $cache->setCache('suggestions_module_cache');
+        $cache->store('link_location', $location);
+
+        Session::flash('suggestions_success', $suggestions_language->get('admin', 'settings_updated_successfully'));
+        Redirect::to(URL::build('/panel/suggestions/settings'));
     } else {
         // Invalid token
         $errors[] = $language->get('general', 'invalid_token');
