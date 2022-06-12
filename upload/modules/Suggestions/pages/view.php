@@ -217,6 +217,7 @@ foreach ($comments as $comment) {
     if ($comment_user->exists()) {
         $smarty_comments[] = [
             'id' => $comment->id,
+            'user_id' => $comment->user_id,
             'username' => $comment_user->getDisplayname(),
             'profile' => $comment_user->getProfileURL(),
             'style' => $comment_user->getGroupClass(),
@@ -258,10 +259,11 @@ $smarty->assign([
     'BACK_LINK' => URL::build('/suggestions/'),
     'EDIT_LINK' => URL::build('/suggestions/edit/', 'sid=' . $suggestion->data()->id),
     'TITLE' => Output::getClean($suggestion->data()->title),
-    'POSTER_USERNAME' => $author_user->getDisplayname(),
-    'POSTER_PROFILE' => $author_user->getProfileURL(),
-    'POSTER_STYLE' => $author_user->getGroupClass(),
-    'POSTER_AVATAR' => $author_user->getAvatar(),
+    'POSTER_ID' => $author_user->exists() ? $author_user->data()->id : 0,
+    'POSTER_USERNAME' => $author_user->exists() ? $author_user->getDisplayname() : $language->get('general', 'deleted_user'),
+    'POSTER_PROFILE' => $author_user->exists() ? $author_user->getProfileURL() : '#',
+    'POSTER_STYLE' => $author_user->exists() ? $author_user->getGroupClass() : '',
+    'POSTER_AVATAR' => $author_user->exists() ? $author_user->getAvatar() : 'https://avatars.dicebear.com/api/initials/'.$language->get('general', 'deleted_user').'.svg?size=64',
     'POSTER_DATE' => date(DATE_FORMAT, $suggestion->data()->created),
     'POSTER_DATE_FRIENDLY' => $timeago->inWords($suggestion->data()->created, $language),
     'CONTENT' => Output::getPurified(Output::getDecoded($suggestion->data()->content)),
@@ -292,9 +294,9 @@ $smarty->assign([
     'DISLIKES_TEXT' => $suggestions_language->get('general', 'dislikes'),
     'DISLIKES_VALUE' => Output::getClean($suggestion->data()->dislikes),
     'CATEGORY_TEXT' => $suggestions_language->get('general', 'category'),
-    'CATEGORY_VALUE' => $category ? Output::getClean($category->name) : 'Unknown',
+    'CATEGORY_VALUE' => $category ? Output::getClean($category->name) : $suggestions_language->get('general', 'unassigned'),
     'STATUS_TEXT' => $suggestions_language->get('general', 'status'),
-    'STATUS_VALUE' => $status ? Output::getClean($status->name) : 'Unknown',
+    'STATUS_VALUE' => $status ? Output::getClean($status->name) : $suggestions_language->get('general', 'unassigned'),
 ]);
 
 // Load modules + template

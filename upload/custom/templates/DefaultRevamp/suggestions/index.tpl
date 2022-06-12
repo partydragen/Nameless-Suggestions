@@ -35,7 +35,7 @@
 						<div class="content">
 						  {$suggestion.status} <a href="{$suggestion.link}">{$suggestion.title}</a>
 						  <div class="sub header">
-							<span data-toggle="tooltip" data-content="{$suggestion.created}">{$suggestion.created_rough}</span> {$BY} <a style="{$suggestion.author_style}" href="{$suggestion.author_link}">{$suggestion.author_username}</a>
+							<span data-toggle="tooltip" data-content="{$suggestion.created}">{$suggestion.created_rough}</span> {$BY} <a style="{$suggestion.author_style}" href="{$suggestion.author_link}" data-poload="{$USER_INFO_URL}{$suggestion.author_id}">{$suggestion.author_username}</a>
 						  </div>
 					   </div>
 					  </h5>
@@ -50,7 +50,7 @@
 					  <h5 class="ui header">
 						<div class="content">
 						  <div class="sub header">
-							<span data-toggle="tooltip" data-content="{$suggestion.updated}">{$suggestion.updated_rough}</span></br> {$BY} <a style="{$suggestion.updated_by_style}" href="{$suggestion.updated_by_link}">{$suggestion.updated_by_username}</a>
+							<span data-toggle="tooltip" data-content="{$suggestion.updated}">{$suggestion.updated_rough}</span></br> {$BY} <a style="{$suggestion.updated_by_style}" href="{$suggestion.updated_by_link}" data-poload="{$USER_INFO_URL}{$suggestion.updated_by_id}">{$suggestion.updated_by_username}</a>
 						  </div>
 					   </div>
 					  </h5>

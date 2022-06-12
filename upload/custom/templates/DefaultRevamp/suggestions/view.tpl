@@ -36,7 +36,7 @@
 		  
 		  <div class="ui segment">
 			<h3 style="display:inline;">{$TITLE}</h3></br></br>
-			<a href="{$POSTER_PROFILE}" class="{$POSTER_TAG}" style="{$POSTER_STYLE}" target="_blank"><img src="{$POSTER_AVATAR}" class="ui mini avatar image" style="max-height:25px;max-width:25px;" alt="{$POSTER_USERNAME}" /> {$POSTER_USERNAME}</a>: <span data-toggle="tooltip" data-content="{$POSTER_DATE}">{$POSTER_DATE_FRIENDLY}</span>
+			<a href="{$POSTER_PROFILE}" data-poload="{$USER_INFO_URL}{$POSTER_ID}" style="{$POSTER_STYLE}"><img src="{$POSTER_AVATAR}" class="ui mini avatar image" style="max-height:25px;max-width:25px;" alt="{$POSTER_USERNAME}" /> {$POSTER_USERNAME}</a>: <span data-toggle="tooltip" data-content="{$POSTER_DATE}">{$POSTER_DATE_FRIENDLY}</span>
 			<span class="right floated">
                 {if isset($CAN_MODERATE)}
                 <a class="ui mini yellow icon button" href="{$EDIT_LINK}" data-tooltip="{$EDIT}" data-variation="mini" data-inverted=""><i class="pencil icon"></i></a>
@@ -65,7 +65,7 @@
 		  {if count($COMMENTS_LIST)}
 			{foreach from=$COMMENTS_LIST item=comment}
                <div class="ui segment">
-				  <a href="{$comment.profile}" style="{$comment.style}" target="_blank"><img src="{$comment.avatar}" class="ui mini avatar image" style="max-height:25px;max-width:25px;" alt="{$comment.username}" /> {$comment.username}</a>: <span data-toggle="tooltip" data-content="{$comment.date}">{$comment.date_friendly}</span>
+				  <a href="{$comment.profile}" data-poload="{$USER_INFO_URL}{$comment.user_id}" style="{$comment.style}" target="_blank"><img src="{$comment.avatar}" class="ui mini avatar image" style="max-height:25px;max-width:25px;" alt="{$comment.username}" /> {$comment.username}</a>: <span data-toggle="tooltip" data-content="{$comment.date}">{$comment.date_friendly}</span>
                   <span class="right floated">
                     {if isset($CAN_MODERATE)}
                     <button class="ui mini red icon button" data-toggle="modal" data-target="#modal-delete-{$comment.id}" data-tooltip="{$DELETE}" data-variation="mini" data-inverted=""><i class="trash icon"></i></button>

@@ -65,6 +65,7 @@
     "general\/suggestion": "Suggestion",
     "general\/by": "by",
     "general\/views": "Views",
+    "general\/unassigned": "Unassigned",
     "general\/title": "Título",
     "general\/title_maximum": "The title must be a maximum of 128 characters",
     "general\/title_minimum": "The title must be a minimum of 6 characters",

@@ -52,6 +52,9 @@ class Suggestions {
         $suggestions_query = $this->_db->query('SELECT * FROM nl2_suggestions WHERE deleted = 0 ORDER BY last_updated DESC LIMIT ' . $limit)->results();
         foreach ($suggestions_query as $item) {
             $updated_by_user = new User($item->updated_by);
+            if (!$updated_by_user->exists()) {
+                continue;
+            }
 
             $suggestions[] = [
                 'title' => Output::getClean($item->title),
