@@ -44,7 +44,7 @@ class CommentSuggestionEndpoint extends KeyAuthEndpoint {
             'url' => rtrim(Util::getSelfURL(), '/') . $suggestion->getURL()
         ]);
 
-        $api->returnArray(['comment_id' => $comment_id]);
+        $api->returnArray(['comment_id' => (int)$comment_id]);
     }
 
     private function transformUser(Nameless2API $api, string $value) {

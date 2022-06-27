@@ -58,7 +58,7 @@ class CreateSuggestionEndpoint extends KeyAuthEndpoint {
         $suggestion->create($user, $_POST['title'], nl2br($_POST['content']), $category_id);
 
         $api->returnArray([
-            'suggestion_id' => $suggestion->data()->id,
+            'suggestion_id' => (int)$suggestion->data()->id,
             'link' => rtrim(Util::getSelfURL(), '/') . URL::build('/user/submissions/', 'view=' . Output::getClean($suggestion->data()->id))
         ]);
     }

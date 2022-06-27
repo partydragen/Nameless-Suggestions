@@ -21,41 +21,41 @@ class SuggestionInfoEndpoint extends KeyAuthEndpoint {
         $likes_list = [];
         $likes = $api->getDb()->query('SELECT user_id FROM nl2_suggestions_votes WHERE suggestion_id = ? AND type = 1', [$suggestion->data()->id])->results();
         foreach ($likes as $like) {
-            $likes_list[] = $like->user_id;
+            $likes_list[] = (int)$like->user_id;
         }
 
         $dislikes_list = [];
         $dislikes = $api->getDb()->query('SELECT user_id FROM nl2_suggestions_votes WHERE suggestion_id = ? AND type = 2', [$suggestion->data()->id])->results();
         foreach ($dislikes as $dislike) {
-            $dislikes_list[] = $dislike->user_id;
+            $dislikes_list[] = (int)$dislike->user_id;
         }
 
         $api->returnArray([
-            'id' => $suggestion->data()->id,
+            'id' => (int)$suggestion->data()->id,
             'author' => [
-                'id' => $suggestion->data()->user_id,
+                'id' => (int)$suggestion->data()->user_id,
                 'username' => $author->exists() ? $author->getDisplayname(true) : $api->getLanguage()->get('general', 'deleted_user')
             ],
             'updated_by' => [
-                'id' => $suggestion->data()->updated_by,
+                'id' => (int)$suggestion->data()->updated_by,
                 'username' => $updated_by->exists() ? $updated_by->getDisplayname(true) : $api->getLanguage()->get('general', 'deleted_user')
             ],
             'status' => [
-                'id' => $suggestion->data()->status_id,
+                'id' => (int)$suggestion->data()->status_id,
                 'name' => $status ? $status->name : 'Unknown',
                 'open' => $status ? ($status->open ? true : false) : false
             ],
             'category' => [
-                'id' => $suggestion->data()->category_id,
+                'id' => (int)$suggestion->data()->category_id,
                 'name' => $category ? $category->name : 'Unknown'
             ],
             'title' => Output::getClean($suggestion->data()->title),
             'content' => Output::getDecoded($suggestion->data()->content),
-            'views' => $suggestion->data()->views,
-            'created' => $suggestion->data()->created,
-            'last_updated' => $suggestion->data()->last_updated,
-            'likes_count' => $suggestion->data()->likes,
-            'dislikes_count' => $suggestion->data()->dislikes,
+            'views' => (int)$suggestion->data()->views,
+            'created' => (int)$suggestion->data()->created,
+            'last_updated' => (int)$suggestion->data()->last_updated,
+            'likes_count' => (int)$suggestion->data()->likes,
+            'dislikes_count' => (int)$suggestion->data()->dislikes,
             'likes' => $likes_list,
             'dislikes' => $dislikes_list
         ]);
