@@ -32,13 +32,16 @@ class SuggestionInfoEndpoint extends KeyAuthEndpoint {
 
         $api->returnArray([
             'id' => (int)$suggestion->data()->id,
+            'link' => rtrim(Util::getSelfURL(), '/') . URL::build('/user/submissions/', 'view=' . Output::getClean($suggestion->data()->id)),
             'author' => [
                 'id' => (int)$suggestion->data()->user_id,
-                'username' => $author->exists() ? $author->getDisplayname(true) : $api->getLanguage()->get('general', 'deleted_user')
+                'username' => $author->exists() ? $author->getDisplayname(true) : $api->getLanguage()->get('general', 'deleted_user'),
+                'nickname' => $author->exists() ? $author->getDisplayname() : $api->getLanguage()->get('general', 'deleted_user')
             ],
             'updated_by' => [
                 'id' => (int)$suggestion->data()->updated_by,
-                'username' => $updated_by->exists() ? $updated_by->getDisplayname(true) : $api->getLanguage()->get('general', 'deleted_user')
+                'username' => $updated_by->exists() ? $updated_by->getDisplayname(true) : $api->getLanguage()->get('general', 'deleted_user'),
+                'nickname' => $updated_by->exists() ? $updated_by->getDisplayname() : $api->getLanguage()->get('general', 'deleted_user')
             ],
             'status' => [
                 'id' => (int)$suggestion->data()->status_id,
