@@ -41,7 +41,7 @@ class CommentSuggestionEndpoint extends KeyAuthEndpoint {
             'content_full' => str_replace('&nbsp;', '', strip_tags(htmlspecialchars_decode($_POST['content']))),
             'avatar_url' => $user->getAvatar(128, true),
             'title' => Output::getClean('#' . $suggestion->data()->id . ' - ' . $suggestion->data()->title),
-            'url' => rtrim(Util::getSelfURL(), '/') . $suggestion->getURL()
+            'url' => rtrim(Util::getSelfURL(), '/') . $suggestion->getURL() . '#comment-' . $comment_id
         ]);
 
         $api->returnArray(['comment_id' => (int)$comment_id]);
