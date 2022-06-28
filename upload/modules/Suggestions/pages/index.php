@@ -47,7 +47,7 @@ if (isset($_GET['sort'])) {
     $url = URL::build('/suggestions/');
 }
  
-$suggestions_query = DB::getInstance()->query('SELECT nl2_suggestions.*, html FROM nl2_suggestions LEFT JOIN nl2_suggestions_statuses ON nl2_suggestions_statuses.id=nl2_suggestions.status_id WHERE nl2_suggestions.deleted = 0 AND status_id != 2 ORDER BY '.$sort.' DESC')->results();
+$suggestions_query = DB::getInstance()->query('SELECT nl2_suggestions.*, html FROM nl2_suggestions LEFT JOIN nl2_suggestions_statuses ON nl2_suggestions_statuses.id=nl2_suggestions.status_id WHERE nl2_suggestions.deleted = 0 AND nl2_suggestions_statuses.open = 1 ORDER BY '.$sort.' DESC')->results();
 
 if (count($suggestions_query)) {
     // Get page
