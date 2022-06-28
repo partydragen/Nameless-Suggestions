@@ -127,11 +127,17 @@ if (count($suggestions_query)) {
     ]);
 }
 
+if ($user->hasPermission('suggestions.create')) {
+    $smarty->assign([
+        'CAN_CREATE' => true,
+        'NEW_SUGGESTION' => $suggestions_language->get('general', 'new_suggestion'),
+        'NEW_SUGGESTION_LINK' => URL::build('/suggestions/new')
+    ]);
+}
+
 $smarty->assign([
     'SUGGESTIONS' => $suggestions_language->get('general', 'suggestions'),
     'NO_SUGGESTIONS' => $suggestions_language->get('general', 'no_suggestions'),
-    'NEW_SUGGESTION' => $suggestions_language->get('general', 'new_suggestion'),
-    'NEW_SUGGESTION_LINK' => URL::build('/suggestions/new'),
     'CATEGORIES' => $suggestions_language->get('general', 'categories'),
     'CATEGORIES_LIST' => $suggestions->getCategories(),
     'SORT_BY' => $suggestions_language->get('general', 'sort_by'),

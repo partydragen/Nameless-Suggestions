@@ -193,7 +193,9 @@ if ($user->isLoggedIn() || Cookie::exists('alert-box')) {
 
 $voted = 0;
 if ($user->isLoggedIn()) {
-    $smarty->assign('CAN_COMMENT', true);
+    if ($user->hasPermission('suggestions.comment')) {
+        $smarty->assign('CAN_COMMENT', true);
+    }
 
     $user_voted = DB::getInstance()->query('SELECT id, type FROM nl2_suggestions_votes WHERE user_id = ? AND suggestion_id = ?', [$user->data()->id, $suggestion->data()->id])->results();
     if (count($user_voted)) {
@@ -296,7 +298,7 @@ $smarty->assign([
     'CATEGORY_TEXT' => $suggestions_language->get('general', 'category'),
     'CATEGORY_VALUE' => $category ? Output::getClean($category->name) : $suggestions_language->get('general', 'unassigned'),
     'STATUS_TEXT' => $suggestions_language->get('general', 'status'),
-    'STATUS_VALUE' => $status ? Output::getClean($status->name) : $suggestions_language->get('general', 'unassigned'),
+    'STATUS_VALUE' => $status ? Output::getClean($status->name) : $suggestions_language->get('general', 'unassigned')
 ]);
 
 // Load modules + template

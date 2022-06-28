@@ -135,7 +135,9 @@ class Suggestions_Module extends Module {
             $cache->setCache('panel_sidebar');
 
             PermissionHandler::registerPermissions('Suggestions', [
-                'suggestions.manage' => $this->_suggestions_language->get('admin', 'suggestions_manage')
+                'suggestions.manage' => $this->_suggestions_language->get('admin', 'suggestions_manage'),
+                'suggestions.create' => $this->_suggestions_language->get('admin', 'suggestions_create_permission'),
+                'suggestions.comment' => $this->_suggestions_language->get('admin', 'suggestions_comment_permission')
             ]);
 
             if ($user->hasPermission('suggestions.manage')) {
@@ -221,6 +223,26 @@ class Suggestions_Module extends Module {
         if ($old_version < 150) {
             try {
                 $this->_db->addColumn('suggestions', '`views`', 'int(11) NOT NULL DEFAULT \'0\'');
+            } catch (Exception $e) {
+                // Error
+            }
+        }
+        
+        if ($old_version < 151) {
+            try {
+                $groups = $this->_db->query('SELECT id, permissions FROM nl2_groups')->results();
+                foreach ($groups as $group) {
+                    try {
+                        $group_permissions = json_decode($group->permissions, TRUE);
+                        $group_permissions['suggestions.create'] = 1;
+                        $group_permissions['suggestions.comment'] = 1;
+
+                        $group_permissions = json_encode($group_permissions);
+                        $this->_db->update('groups', $group->id, ['permissions' => $group_permissions]);
+                    } catch (Exception $e) {
+                        // Error
+                    }
+                }
             } catch (Exception $e) {
                 // Error
             }

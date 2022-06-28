@@ -69,5 +69,7 @@
     "general\/title": "Название",
     "general\/title_maximum": "Название не должно быть длиннее 128 символов",
     "general\/title_minimum": "В названии должно быть минимум 6 символов",
-    "general\/title_required": "Вы должны указать название"
+    "general\/title_required": "Вы должны указать название",
+    "admin\/suggestions_create_permission": "Can user create a suggestion",
+    "admin\/suggestions_comment_permission": "Can user comment on a suggestion"
 }

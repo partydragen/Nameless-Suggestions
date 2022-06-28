@@ -12,6 +12,11 @@ if (!$user->isLoggedIn()) {
     die();
 }
 
+if (!$user->hasPermission('suggestions.create')) {
+    require_once(ROOT_PATH . '/403.php');
+    die();
+}
+
 // Always define page name for navbar
 define('PAGE', 'suggestions');
 $page_title = $suggestions_language->get('general', 'suggestions');

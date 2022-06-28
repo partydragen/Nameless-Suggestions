@@ -69,5 +69,7 @@
     "general\/title": "Título",
     "general\/title_maximum": "The title must be a maximum of 128 characters",
     "general\/title_minimum": "The title must be a minimum of 6 characters",
-    "general\/title_required": "You must enter a title"
+    "general\/title_required": "You must enter a title",
+    "admin\/suggestions_create_permission": "Can user create a suggestion",
+    "admin\/suggestions_comment_permission": "Can user comment on a suggestion"
 }

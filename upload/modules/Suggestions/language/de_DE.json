@@ -69,5 +69,7 @@
     "general\/title": "Title",
     "general\/title_maximum": "Der Titel muss maximal 128 Zeichen lang sein",
     "general\/title_minimum": "Der Titel muss mindestens 6 Zeichen lang sein",
-    "general\/title_required": "Du musst einen Titel angeben"
+    "general\/title_required": "Du musst einen Titel angeben",
+    "admin\/suggestions_create_permission": "Can user create a suggestion",
+    "admin\/suggestions_comment_permission": "Can user comment on a suggestion"
 }
