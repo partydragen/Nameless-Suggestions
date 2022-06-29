@@ -62,14 +62,14 @@
     "general\/stats": "Stats",
     "general\/status": "Status",
     "general\/suggestions": "Vorschläge",
-    "general\/suggestion": "Suggestion",
-    "general\/by": "by",
-    "general\/views": "Views",
-    "general\/unassigned": "Unassigned",
-    "general\/title": "Title",
+    "general\/suggestion": "Vorschlag",
+    "general\/by": "von",
+    "general\/views": "Aufrufe",
+    "general\/unassigned": "Nicht zugewiesen",
+    "general\/title": "Titel",
     "general\/title_maximum": "Der Titel muss maximal 128 Zeichen lang sein",
     "general\/title_minimum": "Der Titel muss mindestens 6 Zeichen lang sein",
     "general\/title_required": "Du musst einen Titel angeben",
-    "admin\/suggestions_create_permission": "Can user create a suggestion",
-    "admin\/suggestions_comment_permission": "Can user comment on a suggestion"
+    "admin\/suggestions_create_permission": "Kann ein Benutzer einen Vorschlag erstellen",
+    "admin\/suggestions_comment_permission": "Kann ein Benutzer einen Vorschlag kommentieren"
 }
