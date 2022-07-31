@@ -55,7 +55,7 @@ class Suggestion {
             'title' => $title,
             'content' => $content,
         ]);
-        $suggestion_id = DB::getInstance()->lastId();
+        $suggestion_id = $this->_db->lastId();
 
         $data = $this->_db->get('suggestions', ['id', '=', $suggestion_id]);
         if ($data->count()) {
@@ -67,7 +67,9 @@ class Suggestion {
                 'suggestion_id' => $suggestion_id,
                 'user_id' => $user->data()->id,
                 'username' => $user->getDisplayname(),
-                'content' => $suggestions_language->get('general', 'hook_new_suggestion', ['user' => $user->getDisplayname()]),
+                'content' => $suggestions_language->get('general', 'hook_new_suggestion', [
+                    'user' => $user->getDisplayname()
+                ]),
                 'content_full' => strip_tags($content),
                 'avatar_url' => $user->getAvatar(128, true),
                 'title' => Output::getClean('#' . $suggestion_id . ' - ' . $title),
@@ -108,45 +110,63 @@ class Suggestion {
     }
     
     public function userVote(User $user) {
-        $user_vote = DB::getInstance()->query('SELECT id, type FROM nl2_suggestions_votes WHERE user_id = ? AND suggestion_id = ?', [$user->data()->id, $suggestion->data()->id])->results();
+        $user_vote = $this->_db->query('SELECT id, type FROM nl2_suggestions_votes WHERE user_id = ? AND suggestion_id = ?', [$user->data()->id, $suggestion->data()->id])->results();
 
         if (count($user_vote)) {
             $user_vote = $user_vote[0];
 
             if ($user_vote->type == $_POST['vote']) {
                 // Undo vote
-                DB::getInstance()->delete('suggestions_votes', ['id', '=', $user_vote->id]);
+                $this->_db->delete('suggestions_votes', ['id', '=', $user_vote->id]);
 
                 if ($user_vote->type == 1) {
-                    DB::getInstance()->query('UPDATE nl2_suggestions SET likes = likes - 1 WHERE id = ?', [$suggestion->data()->id]);
+                    $this->_db->query('UPDATE nl2_suggestions SET likes = likes - 1 WHERE id = ?', [$suggestion->data()->id]);
                 } else {
-                    DB::getInstance()->query('UPDATE nl2_suggestions SET dislikes = dislikes - 1 WHERE id = ?', [$suggestion->data()->id]);
+                    $this->_db->query('UPDATE nl2_suggestions SET dislikes = dislikes - 1 WHERE id = ?', [$suggestion->data()->id]);
                 }
+
+                EventHandler::executeEvent('userSuggestionVote', [
+                    'suggestion_id' => $suggestion->data()->id,
+                    'user_id' => $user->data()->id,
+                    'vote_type' => 'undo'
+                ]);
             } else {
                 // Change existing vote
-                DB::getInstance()->update('suggestions_votes', $user_vote->id, [
+                $this->_db->update('suggestions_votes', $user_vote->id, [
                     'type' => $_POST['vote']
                 ]);
 
                 if ($_POST['vote'] == 1) {
-                    DB::getInstance()->query('UPDATE nl2_suggestions SET likes = likes + 1, dislikes = dislikes - 1 WHERE id = ?', [$suggestion->data()->id]);
+                    $this->_db->query('UPDATE nl2_suggestions SET likes = likes + 1, dislikes = dislikes - 1 WHERE id = ?', [$suggestion->data()->id]);
                 } else {
-                    DB::getInstance()->query('UPDATE nl2_suggestions SET dislikes = dislikes + 1, likes = likes - 1 WHERE id = ?', [$suggestion->data()->id]);
+                    $this->_db->query('UPDATE nl2_suggestions SET dislikes = dislikes + 1, likes = likes - 1 WHERE id = ?', [$suggestion->data()->id]);
                 }
+
+                EventHandler::executeEvent('userSuggestionVote', [
+                    'suggestion_id' => $suggestion->data()->id,
+                    'user_id' => $user->data()->id,
+                    'vote_type' => $_POST['vote'] == 1 ? 'like' : 'dislike'
+                ]);
             }
         } else {
             // Input new vote
-            DB::getInstance()->insert('suggestions_votes', [
+            $this->_db->insert('suggestions_votes', [
                 'user_id' => $user->data()->id,
                 'suggestion_id' => $suggestion->data()->id,
                 'type' => $_POST['vote']
             ]);
 
             if ($_POST['vote'] == 1) {
-                DB::getInstance()->increment('suggestions', $suggestion->data()->id, 'likes');
+                $this->_db->increment('suggestions', $suggestion->data()->id, 'likes');
             } else {
-                DB::getInstance()->increment('suggestions', $suggestion->data()->id, 'dislikes');
+                $this->_db->increment('suggestions', $suggestion->data()->id, 'dislikes');
             }
+
+            EventHandler::executeEvent('userSuggestionVote', [
+                'suggestion_id' => $suggestion->data()->id,
+                'user_id' => $user->data()->id,
+                'vote_type' => $_POST['vote'] == 1 ? 'like' : 'dislike'
+            ]);
         }
     }
 

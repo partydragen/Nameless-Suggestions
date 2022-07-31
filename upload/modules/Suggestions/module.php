@@ -58,6 +58,7 @@ class Suggestions_Module extends Module {
 
         EventHandler::registerEvent('newSuggestion', $this->_suggestions_language->get('general', 'new_suggestion'));
         EventHandler::registerEvent('newSuggestionComment', $this->_suggestions_language->get('general', 'new_suggestion_comment'));
+        EventHandler::registerEvent('userSuggestionVote', $this->_suggestions_language->get('general', 'user_suggestion_vote'));
 
         $endpoints->loadEndpoints(ROOT_PATH . '/modules/Suggestions/includes/endpoints');
 
@@ -207,7 +208,7 @@ class Suggestions_Module extends Module {
                         'NEW_VERSION' => $this->_suggestions_language->get('admin', 'new_version_x', ['new_version' => Output::getClean($update_check->new_version)]),
                         'UPDATE' => $this->_suggestions_language->get('admin', 'view_resource'),
                         'UPDATE_LINK' => Output::getClean($update_check->link),
-                        'NAMELESS_UPDATE' => $this->_suggestions_language->get('forms', 'view_resource'),
+                        'NAMELESS_UPDATE' => $this->_suggestions_language->get('admin', 'view_resource'),
                         'NAMELESS_UPDATE_LINK' => Output::getClean($update_check->link)
                     ]);
                 }
