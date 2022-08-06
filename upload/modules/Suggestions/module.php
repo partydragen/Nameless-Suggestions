@@ -23,7 +23,7 @@ class Suggestions_Module extends Module {
         $name = 'Suggestions';
         $author = '<a href="https://partydragen.com" target="_blank" rel="nofollow noopener">Partydragen</a>';
         $module_version = '1.5.1';
-        $nameless_version = '2.0.0-pr13';
+        $nameless_version = '2.0.1';
 
         parent::__construct($this, $name, $author, $module_version, $nameless_version);
 
@@ -206,8 +206,6 @@ class Suggestions_Module extends Module {
                         'NEW_UPDATE_URGENT' => (isset($update_check->urgent) && $update_check->urgent == 'true'),
                         'CURRENT_VERSION' => $this->_suggestions_language->get('admin', 'current_version_x', ['version' => Output::getClean($this->getVersion())]),
                         'NEW_VERSION' => $this->_suggestions_language->get('admin', 'new_version_x', ['new_version' => Output::getClean($update_check->new_version)]),
-                        'UPDATE' => $this->_suggestions_language->get('admin', 'view_resource'),
-                        'UPDATE_LINK' => Output::getClean($update_check->link),
                         'NAMELESS_UPDATE' => $this->_suggestions_language->get('admin', 'view_resource'),
                         'NAMELESS_UPDATE_LINK' => Output::getClean($update_check->link)
                     ]);
@@ -313,14 +311,6 @@ class Suggestions_Module extends Module {
         if (!$this->_db->showTables('suggestions_votes')) {
             try {
                 $this->_db->createTable('suggestions_votes', ' `id` int(11) NOT NULL AUTO_INCREMENT, `user_id` int(11) NOT NULL, `suggestion_id` int(11) NOT NULL, `type` tinyint(1) NOT NULL, PRIMARY KEY (`id`)');
-            } catch(Exception $e) {
-                // Error
-            }
-        }
-
-        if (!$this->_db->showTables('suggestions_settings')) {
-            try {
-                $this->_db->createTable('suggestions_settings', ' `id` int(11) NOT NULL AUTO_INCREMENT, `name` varchar(64) NOT NULL, `value` varchar(2048) DEFAULT NULL, PRIMARY KEY (`id`)');
             } catch(Exception $e) {
                 // Error
             }
