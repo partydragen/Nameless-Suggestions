@@ -22,7 +22,7 @@ class Suggestions_Module extends Module {
 
         $name = 'Suggestions';
         $author = '<a href="https://partydragen.com" target="_blank" rel="nofollow noopener">Partydragen</a>';
-        $module_version = '1.5.1';
+        $module_version = '1.5.2';
         $nameless_version = '2.0.1';
 
         parent::__construct($this, $name, $author, $module_version, $nameless_version);
