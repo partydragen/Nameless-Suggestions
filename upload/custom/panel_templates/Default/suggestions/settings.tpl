@@ -44,7 +44,7 @@
                         <div class="card shadow border-left-primary">
                             <div class="card-body">
                                 <h5><i class="icon fa fa-info-circle"></i> Info</h5>
-                                Did you know you can invite the <a href="https://namelessmc.com/resources/resource/191-namelesssuggestions-bot/" target="_blank">Nameless Suggestions</a> bot to your discord server and use the <a href="https://www.spigotmc.org/resources/nameless-plugin-for-v2.59032/" target="_blank">Nameless Plugin</a> on your minecraft server to integrate suggestions?
+                                Did you know you can invite the <a href="https://namelessmc.com/resources/resource/191-namelesssuggestions-bot/" target="_blank">Nameless Suggestions</a> bot to your Discord server and use the <a href="https://www.spigotmc.org/resources/nameless-plugin-for-v2.59032/" target="_blank">Nameless Plugin</a> on your Minecraft server to integrate suggestions?
                             </div>
                         </div>
 
