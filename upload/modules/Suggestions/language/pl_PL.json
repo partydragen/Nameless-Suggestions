@@ -1,1 +1,9 @@
-{}
+{
+    "admin/categories": "Kategorie",
+    "admin/category_deleted_successfully": "Kategoria usunięta pomyślnie.",
+    "admin/category_name": "Nazwa Kategorii",
+    "admin/category_updated_successfully": "Kategoria zaktualizowana pomyślnie.",
+    "admin/current_version_x": "Obecna wersja modułu: {{version}}",
+    "admin/actions": "Akcje",
+    "admin/category_created_successfully": "Kategoria stworzona pomyślnie."
+}
