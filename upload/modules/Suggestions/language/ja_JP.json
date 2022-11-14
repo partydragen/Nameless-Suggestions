@@ -1,1 +1,17 @@
-{}
+{
+    "admin/category_updated_successfully": "カテゴリの更新に成功しました。",
+    "admin/confirm_delete_category": "本当にこのカテゴリを削除してもいいですか？",
+    "admin/icon_example": "例: <i class=\"fa fa-users\" aria-hidden=\"true\"></i>",
+    "admin/actions": "アクション",
+    "admin/categories": "カテゴリ",
+    "admin/category_created_successfully": "カテゴリの作成に成功しました。",
+    "admin/category_deleted_successfully": "カテゴリの削除に成功しました。",
+    "admin/category_name": "カテゴリ名",
+    "admin/category_order": "カテゴリの順序",
+    "admin/confirm_delete_status": "本当にこのステータスを削除してもいいですか？",
+    "admin/creating_new_category": "新しいカテゴリを作成中",
+    "admin/creating_new_status": "新しいステータスを作成中",
+    "admin/current_version_x": "現在のモジュールバージョン: {{version}}",
+    "admin/editing_x": "{{name}}を編集中",
+    "admin/icon": "アイコン"
+}
