@@ -14,7 +14,7 @@
     "admin/editing_x": "{{name}} bearbeiten",
     "admin/icon": "Icon",
     "admin/icon_example": "Beispiel: <i class=\"fa fa-users\" aria-hidden=\"true\"></i>",
-    "admin/link_location": "Link-Standort.",
+    "admin/link_location": "Link-Standort",
     "admin/marked_as_open": "Als offen markeieren",
     "admin/new_category": "Neue Kategorie",
     "admin/new_status": "Neuer Status",
@@ -65,11 +65,11 @@
     "general/suggestion": "Suggestion",
     "general/by": "by",
     "general/views": "Views",
-    "general/unassigned": "Unassigned",
-    "general/title": "Title",
+    "general/unassigned": "Nicht zugewiesen",
+    "general/title": "Titel",
     "general/title_maximum": "Der Titel muss maximal 128 Zeichen lang sein",
     "general/title_minimum": "Der Titel muss mindestens 6 Zeichen lang sein",
     "general/title_required": "Du musst einen Titel angeben",
-    "admin/suggestions_create_permission": "Can user create a suggestion",
-    "admin/suggestions_comment_permission": "Can user comment on a suggestion"
+    "admin/suggestions_create_permission": "Kann ein Benutzer einen Vorschlag erstellen",
+    "admin/suggestions_comment_permission": "Kann ein Benutzer einen Vorschlag kommentieren"
 }
