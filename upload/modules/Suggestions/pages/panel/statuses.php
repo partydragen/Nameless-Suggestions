@@ -80,10 +80,11 @@ if (!isset($_GET['action'])) {
                         DB::getInstance()->insert('suggestions_statuses', [
                             'name' => Output::getClean(Input::get('name')),
                             'html' => Input::get('html'),
+                            'color' => ($_POST['color'] ? Input::get('color') : null),
                             'open' => $open,
                         ]);
 
-                        Session::flash('staff_suggestions', $suggestions_language->get('admin', 'status_created_successfully'));
+                        Session::flash('statuses_success', $suggestions_language->get('admin', 'status_created_successfully'));
                         Redirect::to(URL::build('/panel/suggestions/statuses'));
                     } else {
                         // Validation Errors
@@ -100,6 +101,8 @@ if (!isset($_GET['action'])) {
                 'BACK_LINK' => URL::build('/panel/suggestions/statuses/'),
                 'STATUS_NAME' => $suggestions_language->get('admin', 'status_name'),
                 'STATUS_HTML' => $suggestions_language->get('admin', 'status_html'),
+                'STATUS_COLOUR' => $suggestions_language->get('admin', 'status_colour'),
+                'STATUS_COLOUR_VALUE' => '',
                 'MARKED_AS_OPEN' => $suggestions_language->get('admin', 'marked_as_open'),
             ]);
 
@@ -144,10 +147,11 @@ if (!isset($_GET['action'])) {
                         DB::getInstance()->update('suggestions_statuses', $status->id, [
                             'name' => Output::getClean(Input::get('name')),
                             'html' => Input::get('html'),
+                            'color' => ($_POST['color'] ? Input::get('color') : null),
                             'open' => $open,
                         ]);
 
-                        Session::flash('staff_suggestions', $suggestions_language->get('admin', 'status_updated_successfully'));
+                        Session::flash('statuses_success', $suggestions_language->get('admin', 'status_updated_successfully'));
                         Redirect::to(URL::build('/panel/suggestions/statuses', 'action=edit&id=' . Output::getClean($status->id)));
                     } else {
                         // Validation Errors
@@ -166,6 +170,8 @@ if (!isset($_GET['action'])) {
                 'STATUS_NAME_VALUE' => Output::getClean($status->name),
                 'STATUS_HTML' => $suggestions_language->get('admin', 'status_html'),
                 'STATUS_HTML_VALUE' => Output::getClean($status->html),
+                'STATUS_COLOUR' => $suggestions_language->get('admin', 'status_color'),
+                'STATUS_COLOUR_VALUE' => Output::getClean($status->color),
                 'MARKED_AS_OPEN' => $suggestions_language->get('admin', 'marked_as_open'),
                 'MARKED_AS_OPEN_VALUE' => Output::getClean($status->open),
             ]);
@@ -183,7 +189,7 @@ if (!isset($_GET['action'])) {
                 DB::getInstance()->update('suggestions_statuses', $status[0]->id, [
                     'deleted' => date('U')
                 ]);
-                Session::flash('staff_suggestions', $suggestions_language->get('admin', 'status_deleted_successfully'));
+                Session::flash('statuses_success', $suggestions_language->get('admin', 'status_deleted_successfully'));
             }
             Redirect::to(URL::build('/panel/suggestions/statuses'));
         break;
@@ -196,8 +202,12 @@ if (!isset($_GET['action'])) {
 // Load modules + template
 Module::loadPage($user, $pages, $cache, $smarty, [$navigation, $cc_nav, $staffcp_nav], $widgets, $template);
 
-if (Session::exists('staff_suggestions'))
-    $success = Session::flash('staff_suggestions');
+$template->assets()->include([
+    AssetTree::BOOTSTRAP_COLORPICKER
+]);
+
+if (Session::exists('statuses_success'))
+    $success = Session::flash('statuses_success');
 
 if (isset($success)) {
     $smarty->assign([

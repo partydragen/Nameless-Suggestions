@@ -78,11 +78,18 @@ if (Input::exists()) {
             }
 
             if (!count($errors)) {
+                $event_data = EventHandler::executeEvent('preSuggestionPostEdit', [
+                    'suggestion_id' => $suggestion->data()->id,
+                    'title' => Input::get('title'),
+                    'content' => nl2br(Input::get('content')),
+                    'user' => $user
+                ]);
+
                 $suggestion->update([
                     'category_id' => Input::get('category'),
                     'status_id' => Input::get('status'),
-                    'title' => Input::get('title'),
-                    'content' => nl2br(Input::get('content')),
+                    'title' => $event_data['title'],
+                    'content' => $event_data['content']
                 ]);
 
                 Redirect::to($suggestion->getURL());

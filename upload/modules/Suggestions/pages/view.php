@@ -42,6 +42,10 @@ if ($suggestion->data()->deleted == 1) {
     die();
 }
 
+// Get status
+$status = DB::getInstance()->query('SELECT * FROM nl2_suggestions_statuses WHERE id = ?', [$suggestion->data()->status_id]);
+$status = $status->first();
+
 // Deal with input
 if (Input::exists()) {
     if (Token::check(Input::get('token'))) {
@@ -103,6 +107,19 @@ if (Input::exists()) {
                             'last_updated' => date('U')
                         ]);
                         
+                        $event_data = EventHandler::executeEvent('preSuggestionPostCreate', [
+                            'alert_full' => ['path' => ROOT_PATH . '/modules/Suggestions/language', 'file' => 'general', 'term' => 'user_tag_info', 'replace' => '{{author}}', 'replace_with' => $user->getDisplayname()],
+                            'alert_short' => ['path' => ROOT_PATH . '/modules/Suggestions/language', 'file' => 'general', 'term' => 'user_tag'],
+                            'alert_url' => URL::build('/suggestions/view/' . urlencode($suggestion->data()->id)),
+                            'suggestion_id' => $suggestion->data()->id,
+                            'content' => nl2br(Input::get('content')),
+                            'user' => $user,
+                        ]);
+
+                        DB::getInstance()->update('suggestions_comments', $comment_id, [
+                            'content' => $event_data['content'],
+                        ]);
+
                         $discordAlert = [
                             'event' => 'newSuggestionComment',
                             'suggestion_id' => $suggestion->data()->id,
@@ -112,7 +129,7 @@ if (Input::exists()) {
                             'content' => $suggestions_language->get('general', 'hook_new_comment', [
                                 'user' => $user->getDisplayname(),
                                 'likes' => Output::getClean($suggestion->data()->likes),
-                                'dislikes' =>Output::getClean($suggestion->data()->dislikes)
+                                'dislikes' => Output::getClean($suggestion->data()->dislikes)
                             ]),
                             'content_full' => str_replace('&nbsp;', '', strip_tags(htmlspecialchars_decode(Input::get('content')))),
                             'avatar_url' => $user->getAvatar(128, true),
@@ -122,34 +139,25 @@ if (Input::exists()) {
                     }
                 }
                 
-                if ($user->canViewStaffCP()) {
-                    if ($suggestion->data()->status_id != htmlspecialchars(Input::get('status'))) {
-                        $suggestion->update([
-                            'status_id' => Input::get('status'),
-                        ]);
+                if ($user->canViewStaffCP() && $suggestion->data()->status_id != Input::get('status')) {
+                    $new_status = DB::getInstance()->query('SELECT * FROM nl2_suggestions_statuses WHERE id = ?', [Input::get('status')]);
+                    if ($new_status->count()) {
+                        $status = $new_status->first();
 
-                        /*switch (Input::get('status')) {
-                            case 2:
-                                $color = "f50606";
-                            break;
-                            case 3:
-                                $color = "11ff00";
-                            break;
-                            case 4:
-                                $color = "ff6100";
-                            break;
-                            default:
-                                $color = "f50606";
-                            break;
-                        }
-                        $discordAlert['color'] = $color;*/
+                        $suggestion->update([
+                            'status_id' => $status->id,
+                        ]);
                     }
                 }
             
                 if (!empty(Input::get('content'))) {
+                    if ($status->color != null) {
+                        $discordAlert['color'] = $status->color;
+                    }
+
                     EventHandler::executeEvent('newSuggestionComment', $discordAlert);
                 }
-                
+
                 if (!count($errors)) {
                     Redirect::to($suggestion->getURL());
                 }
@@ -217,22 +225,34 @@ foreach ($comments as $comment) {
     $comment_user = new User($comment->user_id);
 
     if ($comment_user->exists()) {
+        if ($comment->type == 2) {
+            // User mentioned this suggestion
+            $content = $suggestions_language->get('general', 'user_mentioned_suggestion', [
+                'user' => '[user]' . $comment->user_id . '[/user]',
+                'suggestion' => '[suggestion]' . $comment->content . '[/suggestion]'
+            ]);
+        } else {
+            // Normal comment
+            $content = $comment->content;
+        }
+
+        // Purify post content
+        $content = EventHandler::executeEvent('renderSuggestionPost', ['content' => $content])['content'];
+
         $smarty_comments[] = [
             'id' => $comment->id,
             'user_id' => $comment->user_id,
+            'type' => $comment->type,
             'username' => $comment_user->getDisplayname(),
             'profile' => $comment_user->getProfileURL(),
-            'style' => $comment_user->getGroupClass(),
+            'style' => $comment_user->getGroupStyle(),
             'avatar' => $comment_user->getAvatar(),
-            'content' => Output::getPurified(Output::getDecoded($comment->content)),
+            'content' => $content,
             'date' => date(DATE_FORMAT, $comment->created),
             'date_friendly' => $timeago->inWords($comment->created, $language)
         ];
     }
 }
-
-$status = DB::getInstance()->query('SELECT * FROM nl2_suggestions_statuses WHERE id = ?', [$suggestion->data()->status_id]);
-$status = $status->first();
 
 $category = DB::getInstance()->query('SELECT * FROM nl2_suggestions_categories WHERE id = ?', [$suggestion->data()->category_id]);
 $category = $category->first();
@@ -252,6 +272,9 @@ if (isset($errors) && count($errors))
         'ERRORS_TITLE' => $language->get('general', 'error')
     ]);
 
+// Purify post content
+$content = EventHandler::executeEvent('renderSuggestionPost', ['content' => $suggestion->data()->content])['content'];
+
 $author_user = new User($suggestion->data()->user_id);
 $smarty->assign([
     'ID' => Output::getClean($suggestion->data()->id),
@@ -264,11 +287,11 @@ $smarty->assign([
     'POSTER_ID' => $author_user->exists() ? $author_user->data()->id : 0,
     'POSTER_USERNAME' => $author_user->exists() ? $author_user->getDisplayname() : $language->get('general', 'deleted_user'),
     'POSTER_PROFILE' => $author_user->exists() ? $author_user->getProfileURL() : '#',
-    'POSTER_STYLE' => $author_user->exists() ? $author_user->getGroupClass() : '',
+    'POSTER_STYLE' => $author_user->exists() ? $author_user->getGroupStyle() : '',
     'POSTER_AVATAR' => $author_user->exists() ? $author_user->getAvatar() : 'https://avatars.dicebear.com/api/initials/'.$language->get('general', 'deleted_user').'.svg?size=64',
     'POSTER_DATE' => date(DATE_FORMAT, $suggestion->data()->created),
     'POSTER_DATE_FRIENDLY' => $timeago->inWords($suggestion->data()->created, $language),
-    'CONTENT' => Output::getPurified(Output::getDecoded($suggestion->data()->content)),
+    'CONTENT' => $content,
     'LIKES' => Output::getClean($suggestion->data()->likes),
     'DISLIKES' => Output::getClean($suggestion->data()->dislikes),
     'VOTED' => $voted,

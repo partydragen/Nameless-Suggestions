@@ -22,7 +22,7 @@ class Suggestions_Module extends Module {
 
         $name = 'Suggestions';
         $author = '<a href="https://partydragen.com" target="_blank" rel="nofollow noopener">Partydragen</a>';
-        $module_version = '1.5.2';
+        $module_version = '1.6.0';
         $nameless_version = '2.0.1';
 
         parent::__construct($this, $name, $author, $module_version, $nameless_version);
@@ -34,6 +34,8 @@ class Suggestions_Module extends Module {
         $pages->add('Suggestions', '/suggestions/edit', 'pages/edit.php');
         $pages->add('Suggestions', '/suggestions/view', 'pages/view.php');
         $pages->add('Suggestions', '/suggestions/search_api', 'pages/search_api.php');
+        
+        $pages->add('Suggestions', '/queries/suggestion', 'queries/suggestion.php');
 
         $pages->add('Suggestions', '/panel/suggestions/settings', 'pages/panel/settings.php');
         $pages->add('Suggestions', '/panel/suggestions/categories', 'pages/panel/categories.php');
@@ -59,6 +61,50 @@ class Suggestions_Module extends Module {
         EventHandler::registerEvent('newSuggestion', $this->_suggestions_language->get('general', 'new_suggestion'));
         EventHandler::registerEvent('newSuggestionComment', $this->_suggestions_language->get('general', 'new_suggestion_comment'));
         EventHandler::registerEvent('userSuggestionVote', $this->_suggestions_language->get('general', 'user_suggestion_vote'));
+
+        EventHandler::registerEvent('preSuggestionPostCreate',
+            $this->_suggestions_language->get('admin', 'pre_suggestion_post_create_hook_info'),
+            [
+                'content' => $this->_language->get('general', 'content')
+            ],
+            true,
+            true
+        );
+
+        EventHandler::registerEvent('preSuggestionPostEdit',
+            $this->_suggestions_language->get('admin', 'pre_suggestion_post_edit_hook_info'),
+            [
+                'content' => $this->_language->get('general', 'content')
+            ],
+            true,
+            true
+        );
+
+        EventHandler::registerEvent('renderSuggestionPost',
+            $this->_suggestions_language->get('admin', 'render_suggestion_post'),
+            [
+                'content' => $this->_language->get('general', 'content')
+            ],
+            true,
+            true
+        );
+
+        EventHandler::registerEvent('renderSuggestionPostEdit',
+            $this->_suggestions_language->get('admin', 'render_suggestion_post_edit'),
+            [
+                'content' => $this->_language->get('general', 'content')
+            ],
+            true,
+            true
+        );
+
+        require_once(ROOT_PATH . "/modules/Suggestions/hooks/SuggestionsMentionsHook.php");
+
+        EventHandler::registerListener('renderSuggestionPost', 'ContentHook::purify');
+        EventHandler::registerListener('renderSuggestionPost', 'ContentHook::codeTransform', false, 15);
+        EventHandler::registerListener('renderSuggestionPost', 'ContentHook::decode', false, 20);
+        EventHandler::registerListener('renderSuggestionPost', 'ContentHook::renderEmojis', false, 10);
+        EventHandler::registerListener('renderSuggestionPost', 'ContentHook::replaceAnchors', false, 15);
 
         $endpoints->loadEndpoints(ROOT_PATH . '/modules/Suggestions/includes/endpoints');
 
@@ -228,7 +274,7 @@ class Suggestions_Module extends Module {
                 // Error
             }
         }
-        
+
         if ($old_version < 151) {
             try {
                 $groups = $this->_db->query('SELECT id, permissions FROM nl2_groups')->results();
@@ -244,6 +290,20 @@ class Suggestions_Module extends Module {
                         // Error
                     }
                 }
+            } catch (Exception $e) {
+                // Error
+            }
+        }
+
+        if ($old_version < 160) {
+            try {
+                $this->_db->addColumn('suggestions_statuses', '`color`', "varchar(32) NULL DEFAULT NULL");
+            } catch (Exception $e) {
+                // Error
+            }
+
+            try {
+                $this->_db->addColumn('suggestions_comments', '`type`', "int(11) NOT NULL DEFAULT '1'");
             } catch (Exception $e) {
                 // Error
             }
@@ -270,7 +330,7 @@ class Suggestions_Module extends Module {
 
         if (!$this->_db->showTables('suggestions_comments')) {
             try {
-                $this->_db->createTable('suggestions_comments', ' `id` int(11) NOT NULL AUTO_INCREMENT, `suggestion_id` int(11) NOT NULL, `user_id` int(11) NOT NULL, `created` int(11) NOT NULL, `content` mediumtext, PRIMARY KEY (`id`)');
+                $this->_db->createTable('suggestions_comments', ' `id` int(11) NOT NULL AUTO_INCREMENT, `suggestion_id` int(11) NOT NULL, `user_id` int(11) NOT NULL, `type` int(11) NOT NULL DEFAULT \'1\', `created` int(11) NOT NULL, `content` mediumtext, PRIMARY KEY (`id`)');
             } catch(Exception $e) {
                 // Error
             }
@@ -278,7 +338,7 @@ class Suggestions_Module extends Module {
 
         if (!$this->_db->showTables('suggestions_statuses')) {
             try {
-                $this->_db->createTable('suggestions_statuses', ' `id` int(11) NOT NULL AUTO_INCREMENT, `name` varchar(32) NOT NULL, `html` varchar(1024) NOT NULL, `open` tinyint(1) NOT NULL DEFAULT \'1\', `deleted` int(11) NOT NULL DEFAULT \'0\', PRIMARY KEY (`id`)');
+                $this->_db->createTable('suggestions_statuses', ' `id` int(11) NOT NULL AUTO_INCREMENT, `name` varchar(32) NOT NULL, `html` varchar(1024) NOT NULL, `open` tinyint(1) NOT NULL DEFAULT \'1\', `color` varchar(32) NULL DEFAULT NULL, `deleted` int(11) NOT NULL DEFAULT \'0\', PRIMARY KEY (`id`)');
 
                 $this->_db->insert('suggestions_statuses', [
                     'name' => 'Open',

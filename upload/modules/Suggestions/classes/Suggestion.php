@@ -61,6 +61,21 @@ class Suggestion {
         if ($data->count()) {
             $this->_data = $data->first();
 
+            $event_data = EventHandler::executeEvent('preSuggestionPostCreate', [
+                'alert_full' => ['path' => ROOT_PATH . '/modules/Suggestions/language', 'file' => 'general', 'term' => 'user_tag_info', 'replace' => '{{author}}', 'replace_with' => $user->getDisplayname()],
+                'alert_short' => ['path' => ROOT_PATH . '/modules/Suggestions/language', 'file' => 'general', 'term' => 'user_tag'],
+                'alert_url' => URL::build('/suggestions/view/' . urlencode($suggestion_id)),
+                'suggestion_id' => $suggestion_id,
+                'title' => $title,
+                'content' => $content,
+                'user' => $user,
+            ]);
+
+            $this->update([
+                'title' => $event_data['title'],
+                'content' => $event_data['content'],
+            ]);
+
             $suggestions_language = new Language(ROOT_PATH . '/modules/Suggestions/language', DEFAULT_LANGUAGE);
             EventHandler::executeEvent('newSuggestion', [
                 'event' => 'newSuggestion',

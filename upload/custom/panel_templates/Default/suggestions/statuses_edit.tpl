@@ -53,7 +53,16 @@
                                 <label for="InputName">{$STATUS_HTML}</label>
                                 <input type="text" name="html" class="form-control" id="InputHTML" placeholder="{$STATUS_HTML}" value="{$STATUS_HTML_VALUE}">
                             </div>
-                           <div class="form-group custom-control custom-switch">
+                            <div class="form-group">
+                                <label for="InputColour">{$STATUS_COLOUR}</label>
+                                <div class="input-group">
+                                    <input type="text" name="color" class="form-control" id="InputColour" value="{$STATUS_COLOUR_VALUE}">
+                                    <span class="input-group-append statusColour">
+                                        <span class="input-group-text colorpicker-input-addon"><i></i></span>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="form-group custom-control custom-switch">
                                 <input id="inputOpen" name="open" type="checkbox" class="custom-control-input"{if $MARKED_AS_OPEN_VALUE eq 1} checked{/if} />
                                 <label class="custom-control-label" for="inputOpen">{$MARKED_AS_OPEN}</label>
                             </div>
@@ -87,6 +96,23 @@
 </div>
 
 {include file='scripts.tpl'}
+
+<script type="text/javascript">
+    $(function () {
+        $('.statusColour').colorpicker({
+            format: 'hex',
+            'color': '{$STATUS_COLOUR_VALUE}'
+        });
+
+        $('.statusColour').on('colorpickerChange', function (event) {
+            $('#InputColour').val(event.color.toString());
+        });
+
+        $('#InputColour').change(function () {
+            $('.statusColour').colorpicker('setValue', $(this).val());
+        });
+    });
+</script>
 
 </body>
 </html>

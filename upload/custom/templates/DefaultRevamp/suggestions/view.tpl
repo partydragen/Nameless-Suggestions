@@ -19,7 +19,7 @@
               </div>
             </div>
           {/if}
-                  
+
           {if isset($ERRORS)}
             <div class="ui error icon message">
               <i class="x icon"></i>
@@ -33,7 +33,7 @@
               </div>
             </div>
           {/if}
-		  
+
 		  <div class="ui segment">
 			<h3 style="display:inline;">{$TITLE}</h3></br></br>
 			<a href="{$POSTER_PROFILE}" data-poload="{$USER_INFO_URL}{$POSTER_ID}" style="{$POSTER_STYLE}"><img src="{$POSTER_AVATAR}" class="ui mini avatar image" style="max-height:25px;max-width:25px;" alt="{$POSTER_USERNAME}" /> {$POSTER_USERNAME}</a>: <span data-toggle="tooltip" data-content="{$POSTER_DATE}">{$POSTER_DATE_FRIENDLY}</span>
@@ -64,7 +64,8 @@
           <h4>{$COMMENTS_TEXT}</h4>
 		  {if count($COMMENTS_LIST)}
 			{foreach from=$COMMENTS_LIST item=comment}
-               <div class="ui segment">
+              {if $comment.type == 1}
+                <div class="ui segment">
 				  <a href="{$comment.profile}" data-poload="{$USER_INFO_URL}{$comment.user_id}" style="{$comment.style}" target="_blank"><img src="{$comment.avatar}" class="ui mini avatar image" style="max-height:25px;max-width:25px;" alt="{$comment.username}" /> {$comment.username}</a>: <span data-toggle="tooltip" data-content="{$comment.date}">{$comment.date_friendly}</span>
                   <span class="right floated">
                     {if isset($CAN_MODERATE)}
@@ -74,6 +75,22 @@
 				  <hr>
 				  {$comment.content}
                 </div>
+              {else}
+                <div class="ui segment">
+                  <div class="ui stackable grid">
+                    <div class="ui row">
+                      <div class="ui ten wide column">
+				        <strong>{$comment.content}</strong>
+                      </div>
+                      <div class="ui six wide column">
+                        {if isset($CAN_MODERATE)}
+                          <span class="right floated"><button class="ui mini red icon button" data-toggle="modal" data-target="#modal-delete-{$comment.id}" data-tooltip="{$DELETE}" data-variation="mini" data-inverted=""><i class="trash icon"></i></button></span>
+                        {/if}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              {/if}
 			{/foreach}
 		  {else}
 			{$NO_COMMENTS}
