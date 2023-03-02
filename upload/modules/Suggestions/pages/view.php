@@ -110,7 +110,7 @@ if (Input::exists()) {
                         $event_data = EventHandler::executeEvent('preSuggestionPostCreate', [
                             'alert_full' => ['path' => ROOT_PATH . '/modules/Suggestions/language', 'file' => 'general', 'term' => 'user_tag_info', 'replace' => '{{author}}', 'replace_with' => $user->getDisplayname()],
                             'alert_short' => ['path' => ROOT_PATH . '/modules/Suggestions/language', 'file' => 'general', 'term' => 'user_tag'],
-                            'alert_url' => URL::build('/suggestions/view/' . urlencode($suggestion->data()->id)),
+                            'alert_url' => URL::build('/suggestions/view/' . URL::urlSafe($suggestion->data()->id)),
                             'suggestion_id' => $suggestion->data()->id,
                             'content' => nl2br(Input::get('content')),
                             'user' => $user,
@@ -134,7 +134,7 @@ if (Input::exists()) {
                             'content_full' => str_replace('&nbsp;', '', strip_tags(htmlspecialchars_decode(Input::get('content')))),
                             'avatar_url' => $user->getAvatar(128, true),
                             'title' => Output::getClean('#' . $suggestion->data()->id . ' - ' . $suggestion->data()->title),
-                            'url' => rtrim(Util::getSelfURL(), '/') . $suggestion->getURL() . '#comment-' . $comment_id
+                            'url' => rtrim(URL::getSelfURL(), '/') . $suggestion->getURL() . '#comment-' . $comment_id
                         ];
                     }
                 }

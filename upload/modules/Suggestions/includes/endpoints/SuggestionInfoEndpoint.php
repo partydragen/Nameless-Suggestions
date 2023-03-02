@@ -32,7 +32,7 @@ class SuggestionInfoEndpoint extends KeyAuthEndpoint {
 
         $api->returnArray([
             'id' => (int)$suggestion->data()->id,
-            'link' => rtrim(Util::getSelfURL(), '/') . $suggestion->getURL(),
+            'link' => rtrim(URL::getSelfURL(), '/') . $suggestion->getURL(),
             'author' => [
                 'id' => (int)$suggestion->data()->user_id,
                 'username' => $author->exists() ? $author->getDisplayname(true) : $api->getLanguage()->get('general', 'deleted_user'),

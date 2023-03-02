@@ -44,28 +44,28 @@ if (isset($_GET['sort'])) {
         case 'recent-activity':
             $sort = 'last_updated';
             $sort_by = $suggestions_language->get('general', 'recent_activity');
-            $url = URL::build('/suggestions/category/' . $category->id . '-' . Util::stringToURL($category->name), 'sort=recent-activity');
+            $url = URL::build('/suggestions/category/' . $category->id . '-' . URL::urlSafe($category->name), 'sort=recent-activity');
         break;
         case 'newest':
             $sort = 'created';
             $sort_by = $suggestions_language->get('general', 'newest');
-            $url = URL::build('/suggestions/category/' . $category->id . '-' . Util::stringToURL($category->name), 'sort=newest');
+            $url = URL::build('/suggestions/category/' . $category->id . '-' . URL::urlSafe($category->name), 'sort=newest');
         break;
         case 'likes':
             $sort = 'likes';
             $sort_by = $suggestions_language->get('general', 'likes');
-            $url = URL::build('/suggestions/category/' . $category->id . '-' . Util::stringToURL($category->name), 'sort=likes');
+            $url = URL::build('/suggestions/category/' . $category->id . '-' . URL::urlSafe($category->name), 'sort=likes');
         break;
         default:
             $sort = 'created';
             $sort_by = $suggestions_language->get('general', 'newest');
-            $url = URL::build('/suggestions/category/' . $category->id . '-' . Util::stringToURL($category->name));
+            $url = URL::build('/suggestions/category/' . $category->id . '-' . URL::urlSafe($category->name));
         break;
     }
 } else {
     $sort = 'created';
     $sort_by = $suggestions_language->get('general', 'newest');
-    $url = URL::build('/suggestions/category/' . $category->id . '-' . Util::stringToURL($category->name));
+    $url = URL::build('/suggestions/category/' . $category->id . '-' . URL::urlSafe($category->name));
 }
 
 $suggestions_query = DB::getInstance()->query('SELECT nl2_suggestions.*, html FROM nl2_suggestions LEFT JOIN nl2_suggestions_statuses ON nl2_suggestions_statuses.id=nl2_suggestions.status_id WHERE nl2_suggestions.deleted = 0 AND nl2_suggestions_statuses.open = 1 AND category_id = ? ORDER BY '.$sort.' DESC', [$category->id])->results();
@@ -104,12 +104,12 @@ if (count($suggestions_query)) {
         $suggestions_array[] = [
             'title' => Output::getClean($item->title),
             'status' => $item->html,
-            'link' => URL::build('/suggestions/view/' . $item->id . '-' . Util::stringToURL($item->title)),
+            'link' => URL::build('/suggestions/view/' . $item->id . '-' . URL::urlSafe($item->title)),
             'created_rough' => $timeago->inWords($item->created, $language),
             'created' => date(DATE_FORMAT, $item->created),
             'author_id' => $author_user->exists() ? $author_user->data()->id : 0,
             'author_username' => $author_user->exists() ? $author_user->getDisplayname() : $language->get('general', 'deleted_user'),
-            'author_style' => $author_user->exists() ? $author_user->getGroupClass() : '',
+            'author_style' => $author_user->exists() ? $author_user->getGroupStyle() : '',
             'author_link' => $author_user->exists() ? $author_user->getProfileURL() : '#',
             'likes' => Output::getClean($item->likes),
             'dislikes' => Output::getClean($item->dislikes),
@@ -117,7 +117,7 @@ if (count($suggestions_query)) {
             'updated' => date(DATE_FORMAT, $item->last_updated),
             'updated_by_id' => $updated_by_user->exists() ? $updated_by_user->data()->id : 0,
             'updated_by_username' => $updated_by_user->exists() ? $updated_by_user->getDisplayname() : $language->get('general', 'deleted_user'),
-            'updated_by_style' => $updated_by_user->exists() ? $updated_by_user->getGroupClass() : '',
+            'updated_by_style' => $updated_by_user->exists() ? $updated_by_user->getGroupStyle() : '',
             'updated_by_link' => $updated_by_user->exists() ? $updated_by_user->getProfileURL() : '#',
         ];
     }

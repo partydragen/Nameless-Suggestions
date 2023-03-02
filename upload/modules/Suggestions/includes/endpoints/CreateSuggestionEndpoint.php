@@ -66,7 +66,7 @@ class CreateSuggestionEndpoint extends KeyAuthEndpoint {
         $api->returnArray([
             'id' => (int)$suggestion->data()->id,
             'suggestion_id' => (int)$suggestion->data()->id,
-            'link' => rtrim(Util::getSelfURL(), '/') . $suggestion->getURL(),
+            'link' => rtrim(URL::getSelfURL(), '/') . $suggestion->getURL(),
             'author' => [
                 'id' => (int)$suggestion->data()->user_id,
                 'username' => $user->getDisplayname(true),

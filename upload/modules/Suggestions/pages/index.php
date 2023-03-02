@@ -85,12 +85,12 @@ if (count($suggestions_query)) {
         $suggestions_array[] = [
             'title' => Output::getClean($item->title),
             'status' => $item->html,
-            'link' => URL::build('/suggestions/view/' . $item->id . '-' . Util::stringToURL($item->title)),
+            'link' => URL::build('/suggestions/view/' . $item->id . '-' . URL::urlSafe($item->title)),
             'created_rough' => $timeago->inWords($item->created, $language),
             'created' => date(DATE_FORMAT, $item->created),
             'author_id' => $author_user->exists() ? $author_user->data()->id : 0,
             'author_username' => $author_user->exists() ? $author_user->getDisplayname() : $language->get('general', 'deleted_user'),
-            'author_style' => $author_user->exists() ? $author_user->getGroupClass() : '',
+            'author_style' => $author_user->exists() ? $author_user->getGroupStyle() : '',
             'author_link' => $author_user->exists() ? $author_user->getProfileURL() : '#',
             'likes' => Output::getClean($item->likes),
             'dislikes' => Output::getClean($item->dislikes),
@@ -98,7 +98,7 @@ if (count($suggestions_query)) {
             'updated' => date(DATE_FORMAT, $item->last_updated),
             'updated_by_id' => $updated_by_user->exists() ? $updated_by_user->data()->id : 0,
             'updated_by_username' => $updated_by_user->exists() ? $updated_by_user->getDisplayname() : $language->get('general', 'deleted_user'),
-            'updated_by_style' => $updated_by_user->exists() ? $updated_by_user->getGroupClass() : '',
+            'updated_by_style' => $updated_by_user->exists() ? $updated_by_user->getGroupStyle() : '',
             'updated_by_link' => $updated_by_user->exists() ? $updated_by_user->getProfileURL() : '#',
         ];
     }

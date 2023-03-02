@@ -64,7 +64,7 @@ class Suggestion {
             $event_data = EventHandler::executeEvent('preSuggestionPostCreate', [
                 'alert_full' => ['path' => ROOT_PATH . '/modules/Suggestions/language', 'file' => 'general', 'term' => 'user_tag_info', 'replace' => '{{author}}', 'replace_with' => $user->getDisplayname()],
                 'alert_short' => ['path' => ROOT_PATH . '/modules/Suggestions/language', 'file' => 'general', 'term' => 'user_tag'],
-                'alert_url' => URL::build('/suggestions/view/' . urlencode($suggestion_id)),
+                'alert_url' => URL::build('/suggestions/view/' . URL::urlSafe($suggestion_id)),
                 'suggestion_id' => $suggestion_id,
                 'title' => $title,
                 'content' => $content,
@@ -88,7 +88,7 @@ class Suggestion {
                 'content_full' => strip_tags($content),
                 'avatar_url' => $user->getAvatar(128, true),
                 'title' => Output::getClean('#' . $suggestion_id . ' - ' . $title),
-                'url' => rtrim(Util::getSelfURL(), '/') . $this->getURL()
+                'url' => rtrim(URL::getSelfURL(), '/') . $this->getURL()
             ]);
 
             return true;
@@ -121,7 +121,7 @@ class Suggestion {
      * @return object Compiled suggestion URL.
      */
     public function getURL(): string {
-        return URL::build('/suggestions/view/' . $this->data()->id . '-' . Util::stringToURL($this->data()->title));
+        return URL::build('/suggestions/view/' . $this->data()->id . '-' . URL::urlSafe($this->data()->title));
     }
     
     public function userVote(User $user) {

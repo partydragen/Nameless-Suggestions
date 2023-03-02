@@ -23,7 +23,7 @@ class Suggestions {
             $categories[] = [
                 'id' => Output::getClean($category->id),
                 'name' => Output::getClean($category->name),
-                'link' => URL::build('/suggestions/category/' . $category->id . '-' . Util::stringToURL($category->name))
+                'link' => URL::build('/suggestions/category/' . $category->id . '-' . URL::urlSafe($category->name))
             ];
         }
 
@@ -58,12 +58,12 @@ class Suggestions {
 
             $suggestions[] = [
                 'title' => Output::getClean($item->title),
-                'link' => URL::build('/suggestions/view/' . $item->id . '-' . Util::stringToURL($item->title)),
+                'link' => URL::build('/suggestions/view/' . $item->id . '-' . URL::urlSafe($item->title)),
                 'updated_rough' => $timeago->inWords($item->last_updated, $language),
                 'updated' => date(DATE_FORMAT, $item->last_updated),
                 'updated_by_avatar' => $updated_by_user->getAvatar(),
                 'updated_by_username' => $updated_by_user->getDisplayname(),
-                'updated_by_style' => $updated_by_user->getGroupClass(),
+                'updated_by_style' => $updated_by_user->getGroupStyle(),
                 'updated_by_link' => $updated_by_user->getProfileURL(),
             ];
         }
@@ -89,7 +89,7 @@ class Suggestions {
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_URL, 'https://api.partydragen.com/stats.php?uid=' . $uid . '&version=' . $current_version . '&module=Suggestions&module_version='.$module->getVersion() . '&domain='. Util::getSelfURL());
+        curl_setopt($ch, CURLOPT_URL, 'https://api.partydragen.com/stats.php?uid=' . $uid . '&version=' . $current_version . '&module=Suggestions&module_version='.$module->getVersion() . '&domain='. URL::getSelfURL());
 
         $update_check = curl_exec($ch);
         curl_close($ch);
