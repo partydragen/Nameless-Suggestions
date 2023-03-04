@@ -71,5 +71,9 @@
     "general/title_minimum": "Der Titel muss mindestens 6 Zeichen lang sein",
     "general/title_required": "Du musst einen Titel angeben",
     "admin/suggestions_create_permission": "Kann ein Benutzer einen Vorschlag erstellen",
-    "admin/suggestions_comment_permission": "Kann ein Benutzer einen Vorschlag kommentieren"
+    "admin/suggestions_comment_permission": "Kann ein Benutzer einen Vorschlag kommentieren",
+    "general/user_tag": "Du wurdest in einem Vorschlag getaggt.",
+    "general/user_tag_info": "Du wurdest in einem Vorschlag von {{author}} markiert.",
+    "general/deleted_suggestion": "Gelöschter Vorschlag",
+    "general/user_mentioned_suggestion": "{{user}} erwähnte diesen Vorschlag in {{suggestion}}"
 }
