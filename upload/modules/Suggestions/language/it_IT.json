@@ -71,5 +71,9 @@
     "general/unassigned": "Non assegnato",
     "general/title_minimum": "Il titolo deve avere almeno 6 caratteri",
     "general/title_required": "Devi inserire un titolo per la proposta",
-    "admin/suggestions_create_permission": "Può un utente creare proposte"
+    "admin/suggestions_create_permission": "Può un utente creare proposte",
+    "general/user_tag": "Sei stato taggato in una proposta.",
+    "general/user_tag_info": "Sei stato taggato in una proposta da{{author}}.",
+    "general/deleted_suggestion": "Cancella Proposta",
+    "general/user_mentioned_suggestion": "{{user}} ha menzionato questa proposta in {{suggestion}}"
 }
