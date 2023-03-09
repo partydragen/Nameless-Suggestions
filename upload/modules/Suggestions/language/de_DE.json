@@ -1,7 +1,7 @@
 {
     "admin/actions": "Aktionen",
     "admin/categories": "Kategorien",
-    "admin/category_created_successfully": "Kategorie erfolgreich erstellt.",
+    "admin/category_created_successfully": "Kategorie wurde erfolgreich erstellt",
     "admin/category_deleted_successfully": "Kategorie erfolgreich gelöscht.",
     "admin/category_name": "Kategorie Name",
     "admin/category_order": "Kategorie Sortierung",
