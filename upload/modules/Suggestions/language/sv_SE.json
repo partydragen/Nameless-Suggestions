@@ -19,7 +19,7 @@
     "admin\/new_category": "Ny kategori",
     "admin\/new_status": "Ny status",
     "admin\/new_update_available_x": "Det är en uppdatering för denna modelen {{module}}",
-    "admin\/new_urgent_update_available_x": "Det är en broskande uppdatering tillgänglig för denna modulen {{module}}. Snälla uppdatera den så snaras det går",
+    "admin\/new_urgent_update_available_x": "Det är en brådskande uppdatering tillgänglig för denna modulen {{module}}. Snälla uppdatera den så snaras det går",
     "admin\/new_version_x": "Ny Modul version: {{new_version}}",
     "admin\/settings": "Inställningar",
     "admin\/settings_updated_successfully": "Inställningar uppdaterades.",
