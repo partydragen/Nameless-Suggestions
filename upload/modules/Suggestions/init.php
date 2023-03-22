@@ -21,6 +21,13 @@ spl_autoload_register(function ($class) {
     }
 });
 
+spl_autoload_register(function ($class) {
+    $path = join(DIRECTORY_SEPARATOR, array(ROOT_PATH, 'modules', 'Suggestions', 'classes', 'Events', $class . '.php'));
+    if (file_exists($path)) {
+        require_once($path);
+    }
+});
+
 // Initialise module
 require_once(ROOT_PATH . '/modules/Suggestions/module.php');
 $module = new Suggestions_Module($language, $suggestions_language, $pages, $navigation, $cache, $endpoints);

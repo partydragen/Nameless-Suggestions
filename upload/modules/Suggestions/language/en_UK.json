@@ -75,5 +75,8 @@
     "general/user_tag": "You have been tagged in a suggestion.",
     "general/user_tag_info": "You have been tagged in a suggestion by {{author}}.",
     "general/deleted_suggestion": "Deleted Suggestion",
-    "general/user_mentioned_suggestion": "{{user}} mentioned this suggestion in {{suggestion}}"
+    "general/user_mentioned_suggestion": "{{user}} mentioned this suggestion in {{suggestion}}",
+    "general/user_liked_suggestion": "{{user}} liked this suggestion.",
+    "general/user_disliked_suggestion": "{{user}} disliked this suggestion.",
+    "general/user_removed_vote": "{{user}} removed his vote from this suggestion."
 }

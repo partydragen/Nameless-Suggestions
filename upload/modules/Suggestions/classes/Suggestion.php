@@ -1,10 +1,10 @@
 <?php
-/**
+/*
  * Suggestion class.
  *
  * @package Modules\Suggestions
  * @author Partydragen
- * @version 2.0.0-pr13
+ * @version 2.1.0
  * @license MIT
  */
 class Suggestion {
@@ -26,7 +26,7 @@ class Suggestion {
         }
     }
 
-    /**
+    /*
      * Update a suggestion data in the database.
      *
      * @param array $fields Column names and values to update.
@@ -37,7 +37,7 @@ class Suggestion {
         }
     }
 
-    /**
+    /*
      * Create a new suggestion.
      *
      * @param User $user The user who post this suggestion
@@ -76,20 +76,10 @@ class Suggestion {
                 'content' => $event_data['content'],
             ]);
 
-            $suggestions_language = new Language(ROOT_PATH . '/modules/Suggestions/language', DEFAULT_LANGUAGE);
-            EventHandler::executeEvent('newSuggestion', [
-                'event' => 'newSuggestion',
-                'suggestion_id' => $suggestion_id,
-                'user_id' => $user->data()->id,
-                'username' => $user->getDisplayname(),
-                'content' => $suggestions_language->get('general', 'hook_new_suggestion', [
-                    'user' => $user->getDisplayname()
-                ]),
-                'content_full' => strip_tags($content),
-                'avatar_url' => $user->getAvatar(128, true),
-                'title' => Output::getClean('#' . $suggestion_id . ' - ' . $title),
-                'url' => rtrim(URL::getSelfURL(), '/') . $this->getURL()
-            ]);
+            EventHandler::executeEvent(new SuggestionCreatedEvent(
+                $user,
+                $this
+            ));
 
             return true;
         }
@@ -185,7 +175,7 @@ class Suggestion {
         }
     }
 
-    public function setVote(User $user, int $reaction, bool $can_remove = true) {
+    public function setVote(User $user, int $reaction, bool $can_remove = true): bool {
         $existing_vote = $this->_db->query('SELECT id, type FROM nl2_suggestions_votes WHERE user_id = ? AND suggestion_id = ?', [$user->data()->id, $this->data()->id]);
         if ($existing_vote->count()) {
             $existing_vote = $existing_vote->first();
@@ -195,10 +185,21 @@ class Suggestion {
                 $this->removeVote($user);
 
             } else {
+                // Don't change vote if its match the existing reaction
+                if ($existing_vote->type == $reaction) {
+                    return false;
+                }
+
                 // Change existing vote
                 $this->_db->update('suggestions_votes', $existing_vote->id, [
                     'type' => $reaction
                 ]);
+
+                EventHandler::executeEvent(new UserSuggestionVoteEvent(
+                    $user,
+                    $this,
+                    $reaction == 1 ? 'like' : 'dislike'
+                ));
             }
         } else {
             $this->_db->insert('suggestions_votes', [
@@ -206,13 +207,26 @@ class Suggestion {
                 'suggestion_id' => $this->data()->id,
                 'type' => $reaction
             ]);
+
+            EventHandler::executeEvent(new UserSuggestionVoteEvent(
+                $user,
+                $this,
+                $reaction == 1 ? 'like' : 'dislike'
+            ));
         }
 
         $this->updateVotes();
+        return true;
     }
 
     public function removeVote(User $user) {
         $this->_db->query('DELETE FROM nl2_suggestions_votes WHERE suggestion_id = ? AND user_id = ?', [$this->data()->id, $user->data()->id]);
+
+        EventHandler::executeEvent(new UserSuggestionVoteEvent(
+            $user,
+            $this,
+            'undo'
+        ));
 
         $this->updateVotes();
     }

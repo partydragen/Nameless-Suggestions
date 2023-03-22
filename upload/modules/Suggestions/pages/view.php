@@ -119,23 +119,6 @@ if (Input::exists()) {
                         DB::getInstance()->update('suggestions_comments', $comment_id, [
                             'content' => $event_data['content'],
                         ]);
-
-                        $discordAlert = [
-                            'event' => 'newSuggestionComment',
-                            'suggestion_id' => $suggestion->data()->id,
-                            'comment_id' => $comment_id,
-                            'user_id' => $user->data()->id,
-                            'username' => $user->getDisplayname(),
-                            'content' => $suggestions_language->get('general', 'hook_new_comment', [
-                                'user' => $user->getDisplayname(),
-                                'likes' => Output::getClean($suggestion->data()->likes),
-                                'dislikes' => Output::getClean($suggestion->data()->dislikes)
-                            ]),
-                            'content_full' => str_replace('&nbsp;', '', strip_tags(htmlspecialchars_decode(Input::get('content')))),
-                            'avatar_url' => $user->getAvatar(128, true),
-                            'title' => Output::getClean('#' . $suggestion->data()->id . ' - ' . $suggestion->data()->title),
-                            'url' => rtrim(URL::getSelfURL(), '/') . $suggestion->getURL() . '#comment-' . $comment_id
-                        ];
                     }
                 }
                 
@@ -151,11 +134,12 @@ if (Input::exists()) {
                 }
             
                 if (!empty(Input::get('content'))) {
-                    if ($status->color != null) {
-                        $discordAlert['color'] = $status->color;
-                    }
-
-                    EventHandler::executeEvent('newSuggestionComment', $discordAlert);
+                    EventHandler::executeEvent(new SuggestionCommentCreatedEvent(
+                        $user,
+                        $suggestion,
+                        $comment_id,
+                        Input::get('content')
+                    ));
                 }
 
                 if (!count($errors)) {

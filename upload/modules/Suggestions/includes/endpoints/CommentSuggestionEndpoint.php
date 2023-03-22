@@ -26,23 +26,12 @@ class CommentSuggestionEndpoint extends KeyAuthEndpoint {
             'last_updated' => date('U')
         ]);
 
-        $suggestions_language = new Language(ROOT_PATH . '/modules/Suggestions/language', DEFAULT_LANGUAGE);
-        EventHandler::executeEvent('newSuggestionComment', [
-            'event' => 'newSuggestionComment',
-            'suggestion_id' => $suggestion->data()->id,
-            'comment_id' => $comment_id,
-            'user_id' => $user->data()->id,
-            'username' => $user->getDisplayname(),
-            'content' => $suggestions_language->get('general', 'hook_new_comment', [
-                'user' => $user->getDisplayname(),
-                'likes' => Output::getClean($suggestion->data()->likes),
-                'dislikes' =>Output::getClean($suggestion->data()->dislikes)
-            ]),
-            'content_full' => str_replace('&nbsp;', '', strip_tags(htmlspecialchars_decode($_POST['content']))),
-            'avatar_url' => $user->getAvatar(128, true),
-            'title' => Output::getClean('#' . $suggestion->data()->id . ' - ' . $suggestion->data()->title),
-            'url' => rtrim(URL::getSelfURL(), '/') . $suggestion->getURL() . '#comment-' . $comment_id
-        ]);
+        EventHandler::executeEvent(new SuggestionCommentCreatedEvent(
+            $user,
+            $suggestion,
+            $comment_id,
+            $_POST['content']
+        ));
 
         $api->returnArray(['comment_id' => (int)$comment_id]);
     }

@@ -34,7 +34,7 @@ class Suggestions_Module extends Module {
         $pages->add('Suggestions', '/suggestions/edit', 'pages/edit.php');
         $pages->add('Suggestions', '/suggestions/view', 'pages/view.php');
         $pages->add('Suggestions', '/suggestions/search_api', 'pages/search_api.php');
-        
+
         $pages->add('Suggestions', '/queries/suggestion', 'queries/suggestion.php');
 
         $pages->add('Suggestions', '/panel/suggestions/settings', 'pages/panel/settings.php');
@@ -58,9 +58,9 @@ class Suggestions_Module extends Module {
             }
         }
 
-        EventHandler::registerEvent('newSuggestion', $this->_suggestions_language->get('general', 'new_suggestion'));
-        EventHandler::registerEvent('newSuggestionComment', $this->_suggestions_language->get('general', 'new_suggestion_comment'));
-        EventHandler::registerEvent('userSuggestionVote', $this->_suggestions_language->get('general', 'user_suggestion_vote'));
+        EventHandler::registerEvent(SuggestionCreatedEvent::class);
+        EventHandler::registerEvent(SuggestionCommentCreatedEvent::class);
+        EventHandler::registerEvent(UserSuggestionVoteEvent::class);
 
         EventHandler::registerEvent('preSuggestionPostCreate',
             $this->_suggestions_language->get('admin', 'pre_suggestion_post_create_hook_info'),
