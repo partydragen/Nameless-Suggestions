@@ -75,5 +75,8 @@
     "general/user_tag": "Du wurdest in einem Vorschlag getaggt.",
     "general/user_tag_info": "Du wurdest in einem Vorschlag von {{author}} markiert.",
     "general/deleted_suggestion": "Gelöschter Vorschlag",
-    "general/user_mentioned_suggestion": "{{user}} erwähnte diesen Vorschlag in {{suggestion}}"
+    "general/user_mentioned_suggestion": "{{user}} erwähnte diesen Vorschlag in {{suggestion}}",
+    "general/user_liked_suggestion": "Dieser Vorschlag hat {{user}} gefallen.",
+    "general/user_disliked_suggestion": "{{user}} gefällt diesen Vorschlag nicht.",
+    "general/user_removed_vote": "{{user}} hat seine Stimme von diesem Vorschlag entfernt."
 }
