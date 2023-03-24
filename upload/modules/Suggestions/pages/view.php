@@ -151,15 +151,26 @@ if (Input::exists()) {
             }
         } else if (Input::get('action') == 'deleteSuggestion') {
             if ($user->canViewStaffCP()) {
-                DB::getInstance()->update('suggestions', $suggestion->data()->id, [
+                $suggestion->update([
                     'deleted' => 1
                 ]);
+
+                EventHandler::executeEvent(new SuggestionDeletedEvent(
+                    $user,
+                    $suggestion
+                ));
             }
 
             Redirect::to(URL::build('/suggestions/'));
         } else if (Input::get('action') == 'deleteComment') {
             if ($user->canViewStaffCP() && is_numeric(Input::get('cid'))) {
                 DB::getInstance()->delete('suggestions_comments', ['id', '=', Input::get('cid')]);
+
+                EventHandler::executeEvent(new SuggestionCommentDeletedEvent(
+                    $user,
+                    $suggestion,
+                    Input::get('cid')
+                ));
             }
 
             Redirect::to($suggestion->getURL());

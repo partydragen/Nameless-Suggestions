@@ -19,7 +19,7 @@ class SuggestionCommentCreatedEvent extends AbstractEvent implements HasWebhookP
     }
 
     public static function description(): string {
-        return (new Language(ROOT_PATH . '/modules/Suggestions/language'))->get('general', 'new_suggestion');
+        return (new Language(ROOT_PATH . '/modules/Suggestions/language'))->get('general', 'new_suggestion_comment');
     }
 
     function webhookParams(): array {
