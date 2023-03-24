@@ -78,5 +78,10 @@
     "general/user_mentioned_suggestion": "{{user}} erwähnte diesen Vorschlag in {{suggestion}}",
     "general/user_liked_suggestion": "Dieser Vorschlag hat {{user}} gefallen.",
     "general/user_disliked_suggestion": "{{user}} gefällt diesen Vorschlag nicht.",
-    "general/user_removed_vote": "{{user}} hat seine Stimme von diesem Vorschlag entfernt."
+    "general/user_removed_vote": "{{user}} hat seine Stimme von diesem Vorschlag entfernt.",
+    "general/suggestion_deleted_by_x": "Vorschlag von {{user}} gelöscht",
+    "general/suggestion_comment_deletion": "Vorschlag zur Löschung eines Kommentars",
+    "general/suggestion_comment_deleted_by_x": "Vorschlagskommentar von {{user}} gelöscht",
+    "general/user_suggestion_vote": "Abstimmung über den Benutzervorschlag",
+    "general/suggestion_deletion": "Vorschlag Löschung"
 }
