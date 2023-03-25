@@ -75,5 +75,13 @@
     "general/deleted_suggestion": "Odstraněný návrh",
     "general/user_tag": "Byli jste označeni v návrhu.",
     "general/user_tag_info": "Byli jste označeni v návrhu uživatelem {{author}}.",
-    "general/user_mentioned_suggestion": "Uživatel {{user}} zmínil tento návrh v {{suggestion}}"
+    "general/user_mentioned_suggestion": "Uživatel {{user}} zmínil tento návrh v {{suggestion}}",
+    "general/user_suggestion_vote": "Hlasování u návrhu",
+    "general/suggestion_deletion": "Odstranění návrhu",
+    "general/suggestion_deleted_by_x": "Návrh odstraněn uživatelem {{user}}",
+    "general/suggestion_comment_deletion": "Odstranění komentáře u návrhu",
+    "general/suggestion_comment_deleted_by_x": "Komentář u návrhu odstraněn uživatelem {{user}}",
+    "general/user_liked_suggestion": "Uživatel {{user}} přidal tento návrh do oblíbených.",
+    "general/user_disliked_suggestion": "Uživatel {{user}} přidal tento návrh do neoblíbených.",
+    "general/user_removed_vote": "Uživatel {{user}} odebral svůj hlas z tohoto návrhu."
 }
