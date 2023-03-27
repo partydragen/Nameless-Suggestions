@@ -1,1 +1,8 @@
-{}
+{
+    "admin/actions": "Ações",
+    "admin/categories": "Categorias",
+    "admin/category_created_successfully": "Categoria criada com sucesso.",
+    "admin/category_deleted_successfully": "Categoria excluída com sucesso.",
+    "admin/category_name": "Nome da Categoria",
+    "admin/category_updated_successfully": "Categoria atualizada com sucesso."
+}
