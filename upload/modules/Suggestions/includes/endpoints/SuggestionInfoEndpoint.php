@@ -46,7 +46,8 @@ class SuggestionInfoEndpoint extends KeyAuthEndpoint {
             'status' => [
                 'id' => (int)$suggestion->data()->status_id,
                 'name' => $status ? $status->name : 'Unknown',
-                'open' => $status ? ($status->open ? true : false) : false
+                'open' => $status ? ($status->open ? true : false) : false,
+                'color' => $status ? $status->color : null,
             ],
             'category' => [
                 'id' => (int)$suggestion->data()->category_id,

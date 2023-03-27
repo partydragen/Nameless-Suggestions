@@ -9,7 +9,7 @@ class ListSuggestionsEndpoint extends KeyAuthEndpoint {
     }
 
     public function execute(Nameless2API $api): void {
-        $query = 'SELECT nl2_suggestions.*, name, open FROM nl2_suggestions LEFT JOIN nl2_suggestions_statuses ON nl2_suggestions_statuses.id=nl2_suggestions.status_id';
+        $query = 'SELECT nl2_suggestions.*, name, open, color FROM nl2_suggestions LEFT JOIN nl2_suggestions_statuses ON nl2_suggestions_statuses.id=nl2_suggestions.status_id';
         $where = ' WHERE nl2_suggestions.deleted = 0';
         $order = ' ORDER BY `created` DESC';
         $limit = '';
@@ -54,7 +54,8 @@ class ListSuggestionsEndpoint extends KeyAuthEndpoint {
                 'status' => [
                     'id' => (int)$suggestion->status_id,
                     'name' => $suggestion->name ? $suggestion->name : 'Unknown',
-                    'open' => $suggestion->open ? ($suggestion->open ? true : false) : false
+                    'open' => $suggestion->open ? ($suggestion->open ? true : false) : false,
+                    'color' => $suggestion->color ? $suggestion->color : null,
                 ]
             ];
         }
