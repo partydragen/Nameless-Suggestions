@@ -71,5 +71,17 @@
     "admin/status_updated_successfully": "Stav bol úspešne aktualizovaný.",
     "general/content_minimum": "Obsah musí mať minimálne 6 znakov",
     "general/editing_suggestion": "Upravovanie návrhu",
-    "general/hook_new_comment": "Nový komentár od {{user}} - návrh má {{likes}} páči sa mi a {{dislikes}} nepáči sa mi"
+    "general/hook_new_comment": "Nový komentár od {{user}} - návrh má {{likes}} páči sa mi a {{dislikes}} nepáči sa mi",
+    "general/suggestion_deleted_by_x": "Návrh odstránil používateľ {{user}}",
+    "general/suggestion_comment_deletion": "Vymazanie komentára návrhu",
+    "general/suggestion_comment_deleted_by_x": "Vymazanie komentára návrhu používateľom {{user}}",
+    "general/user_suggestion_vote": "Hlasovanie za návrh používateľa",
+    "general/suggestion_deletion": "Vymazanie návrhu",
+    "general/user_tag": "Boli ste označený v návrhu.",
+    "general/user_tag_info": "Boli ste označený v návrhu od {{author}}.",
+    "general/deleted_suggestion": "Zmazaný návrh",
+    "general/user_mentioned_suggestion": "{{user}} spomenul tento návrh v {{suggestion}}",
+    "general/user_liked_suggestion": "{{user}} sa páči tento návrh.",
+    "general/user_disliked_suggestion": "{{user}} sa nepáči tento návrh.",
+    "general/user_removed_vote": "{{user}} odstránil svoj hlas z tohto návrhu."
 }
