@@ -59,8 +59,9 @@ class Suggestions_Module extends Module {
         }
 
         EventHandler::registerEvent(SuggestionCreatedEvent::class);
-        EventHandler::registerEvent(SuggestionCommentCreatedEvent::class);
+        EventHandler::registerEvent(SuggestionUpdatedEvent::class);
         EventHandler::registerEvent(SuggestionDeletedEvent::class);
+        EventHandler::registerEvent(SuggestionCommentCreatedEvent::class);
         EventHandler::registerEvent(SuggestionCommentDeletedEvent::class);
         EventHandler::registerEvent(UserSuggestionVoteEvent::class);
 

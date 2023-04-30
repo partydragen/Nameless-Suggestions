@@ -80,6 +80,7 @@
     "general/user_disliked_suggestion": "{{user}} disliked this suggestion.",
     "general/user_removed_vote": "{{user}} removed his vote from this suggestion.",
     "general/user_suggestion_vote": "User suggestion vote",
+    "general/suggestion_updated": "Suggestion updated",
     "general/suggestion_deletion": "Suggestion deletion",
     "general/suggestion_deleted_by_x": "Suggestion deleted by {{user}}",
     "general/suggestion_comment_deletion": "Suggestion comment deletion",

@@ -35,6 +35,10 @@ class Suggestion {
         if (!$this->_db->update('suggestions', $this->data()->id, $fields)) {
             throw new Exception('There was a problem updating suggestion');
         }
+
+        foreach ($fields as $key => $value) {
+            $this->_data->$key = $value;
+        }
     }
 
     /*
@@ -112,67 +116,6 @@ class Suggestion {
      */
     public function getURL(): string {
         return URL::build('/suggestions/view/' . $this->data()->id . '-' . URL::urlSafe($this->data()->title));
-    }
-    
-    public function userVote(User $user) {
-        $user_vote = $this->_db->query('SELECT id, type FROM nl2_suggestions_votes WHERE user_id = ? AND suggestion_id = ?', [$user->data()->id, $suggestion->data()->id])->results();
-
-        if (count($user_vote)) {
-            $user_vote = $user_vote[0];
-
-            if ($user_vote->type == $_POST['vote']) {
-                // Undo vote
-                $this->_db->delete('suggestions_votes', ['id', '=', $user_vote->id]);
-
-                if ($user_vote->type == 1) {
-                    $this->_db->query('UPDATE nl2_suggestions SET likes = likes - 1 WHERE id = ?', [$suggestion->data()->id]);
-                } else {
-                    $this->_db->query('UPDATE nl2_suggestions SET dislikes = dislikes - 1 WHERE id = ?', [$suggestion->data()->id]);
-                }
-
-                EventHandler::executeEvent('userSuggestionVote', [
-                    'suggestion_id' => $suggestion->data()->id,
-                    'user_id' => $user->data()->id,
-                    'vote_type' => 'undo'
-                ]);
-            } else {
-                // Change existing vote
-                $this->_db->update('suggestions_votes', $user_vote->id, [
-                    'type' => $_POST['vote']
-                ]);
-
-                if ($_POST['vote'] == 1) {
-                    $this->_db->query('UPDATE nl2_suggestions SET likes = likes + 1, dislikes = dislikes - 1 WHERE id = ?', [$suggestion->data()->id]);
-                } else {
-                    $this->_db->query('UPDATE nl2_suggestions SET dislikes = dislikes + 1, likes = likes - 1 WHERE id = ?', [$suggestion->data()->id]);
-                }
-
-                EventHandler::executeEvent('userSuggestionVote', [
-                    'suggestion_id' => $suggestion->data()->id,
-                    'user_id' => $user->data()->id,
-                    'vote_type' => $_POST['vote'] == 1 ? 'like' : 'dislike'
-                ]);
-            }
-        } else {
-            // Input new vote
-            $this->_db->insert('suggestions_votes', [
-                'user_id' => $user->data()->id,
-                'suggestion_id' => $suggestion->data()->id,
-                'type' => $_POST['vote']
-            ]);
-
-            if ($_POST['vote'] == 1) {
-                $this->_db->increment('suggestions', $suggestion->data()->id, 'likes');
-            } else {
-                $this->_db->increment('suggestions', $suggestion->data()->id, 'dislikes');
-            }
-
-            EventHandler::executeEvent('userSuggestionVote', [
-                'suggestion_id' => $suggestion->data()->id,
-                'user_id' => $user->data()->id,
-                'vote_type' => $_POST['vote'] == 1 ? 'like' : 'dislike'
-            ]);
-        }
     }
 
     public function setVote(User $user, int $reaction, bool $can_remove = true): bool {

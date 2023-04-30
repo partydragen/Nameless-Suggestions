@@ -106,7 +106,7 @@ if (Input::exists()) {
                             'updated_by' => $user->data()->id,
                             'last_updated' => date('U')
                         ]);
-                        
+
                         $event_data = EventHandler::executeEvent('preSuggestionPostCreate', [
                             'alert_full' => ['path' => ROOT_PATH . '/modules/Suggestions/language', 'file' => 'general', 'term' => 'user_tag_info', 'replace' => '{{author}}', 'replace_with' => $user->getDisplayname()],
                             'alert_short' => ['path' => ROOT_PATH . '/modules/Suggestions/language', 'file' => 'general', 'term' => 'user_tag'],
@@ -130,6 +130,11 @@ if (Input::exists()) {
                         $suggestion->update([
                             'status_id' => $status->id,
                         ]);
+
+                        EventHandler::executeEvent(new SuggestionUpdatedEvent(
+                            $user,
+                            $suggestion
+                        ));
                     }
                 }
             
