@@ -83,5 +83,6 @@
     "general/suggestion_comment_deletion": "Vorschlag zur Löschung eines Kommentars",
     "general/suggestion_comment_deleted_by_x": "Vorschlagskommentar von {{user}} gelöscht",
     "general/user_suggestion_vote": "Abstimmung über den Benutzervorschlag",
-    "general/suggestion_deletion": "Vorschlag Löschung"
+    "general/suggestion_deletion": "Vorschlag Löschung",
+    "general/suggestion_updated": "Vorschlag aktualisiert"
 }
