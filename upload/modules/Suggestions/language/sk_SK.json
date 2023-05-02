@@ -83,5 +83,6 @@
     "general/user_mentioned_suggestion": "{{user}} spomenul tento návrh v {{suggestion}}",
     "general/user_liked_suggestion": "{{user}} sa páči tento návrh.",
     "general/user_disliked_suggestion": "{{user}} sa nepáči tento návrh.",
-    "general/user_removed_vote": "{{user}} odstránil svoj hlas z tohto návrhu."
+    "general/user_removed_vote": "{{user}} odstránil svoj hlas z tohto návrhu.",
+    "general/suggestion_updated": "Návrh aktualizovaný"
 }
