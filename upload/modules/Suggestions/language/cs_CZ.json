@@ -83,5 +83,6 @@
     "general/suggestion_comment_deleted_by_x": "Komentář u návrhu odstraněn uživatelem {{user}}",
     "general/user_liked_suggestion": "Uživatel {{user}} přidal tento návrh do oblíbených.",
     "general/user_disliked_suggestion": "Uživatel {{user}} přidal tento návrh do neoblíbených.",
-    "general/user_removed_vote": "Uživatel {{user}} odebral svůj hlas z tohoto návrhu."
+    "general/user_removed_vote": "Uživatel {{user}} odebral svůj hlas z tohoto návrhu.",
+    "general/suggestion_updated": "Návrh aktualizován"
 }
