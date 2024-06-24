@@ -71,5 +71,17 @@
     "general/none_categories_defined": "Geen categorieën gevonden",
     "general/search_keyword": "Zoekterm",
     "general/spam_wait": "Wacht alstublieft {{seconds}} seconden voordat je opnieuw post.",
-    "general/title_minimum": "De titel moet minimaal 6 karakters lang zijn"
+    "general/title_minimum": "De titel moet minimaal 6 karakters lang zijn",
+    "general/suggestion_deleted_by_x": "Suggestie verwijderd door {{user}}",
+    "general/suggestion_comment_deletion": "Verwijderen van reactie op suggestie",
+    "general/user_tag": "Je bent genoemd in een suggestie.",
+    "general/deleted_suggestion": "Verwijderde Suggestie",
+    "general/user_mentioned_suggestion": "{{user}} noemde deze suggestie in {{suggestion}}",
+    "general/suggestion_comment_deleted_by_x": "Suggestiereactie verwijdered door {{user}}",
+    "general/user_tag_info": "Je bent door {{author}} genoemd in een suggestie.",
+    "general/suggestion_deletion": "Verwijderen van suggestie",
+    "general/user_liked_suggestion": "{{user}} vind deze suggestie leuk.",
+    "general/user_disliked_suggestion": "{{user}} vind deze suggestie niet leuk.",
+    "general/user_removed_vote": "{{user}} heeft hun stem teruggenomen van deze suggestie.",
+    "general/suggestion_updated": "Suggestie bijgewerkt"
 }
