@@ -71,5 +71,17 @@
     "general/title_minimum": "В названии должно быть минимум 6 символов",
     "general/title_required": "Вы должны указать название",
     "admin/suggestions_create_permission": "Может пользователь создать предложение",
-    "admin/suggestions_comment_permission": "Может пользователь комментировать предложение"
+    "admin/suggestions_comment_permission": "Может пользователь комментировать предложение",
+    "general/suggestion_deletion": "Удалить предложение",
+    "general/suggestion_deleted_by_x": "Предложение удалено пользователем {{user}}",
+    "general/suggestion_comment_deletion": "Удаление коментария к предложению",
+    "general/suggestion_comment_deleted_by_x": "Комментарий к предложению удален пользователем {{user}}",
+    "general/user_mentioned_suggestion": "{{user}} упомянул это предложение в {{suggestion}}",
+    "general/user_tag": "Вас упомянули в предложении.",
+    "general/user_disliked_suggestion": "{{user}} не понравилось это предложение.",
+    "general/user_tag_info": "Вас упомянул {{author}} в предложении.",
+    "general/deleted_suggestion": "Удаленное предложение",
+    "general/user_liked_suggestion": "{{user}} понравилось это предложение.",
+    "general/user_removed_vote": "{{user}} отменил свой голос за это предложение.",
+    "general/suggestion_updated": "Предложение обновлено"
 }
