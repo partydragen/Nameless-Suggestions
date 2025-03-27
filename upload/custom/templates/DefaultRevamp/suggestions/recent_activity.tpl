@@ -1,6 +1,6 @@
 <div class="ui segment">
   <h4>{$RECENT_ACTIVITY}</h4>
-  <hr>
+  <div class="ui divider"></div>
   <small>
   {foreach from=$RECENT_ACTIVITY_LIST item=item}
     <div class="ui middle aligned centered two column stackable grid">

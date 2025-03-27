@@ -5,7 +5,7 @@
   <div class="ui segment">
 	<h1 style="display:inline;">{$NEW_SUGGESTION}</h1><span class="right floated">
 		  <a class="ui small negative button" href="{$BACK_LINK}">{$BACK}</a></span>
-	<hr>
+	  <div class="ui divider"></div>
 				
 	{if isset($ERRORS)}
 	  <div class="ui negative icon message">
@@ -29,7 +29,7 @@
 	  </div>
 	  <div class="field">
 	    <label for="categoryLabel">{$CATEGORY} <span style="color:red"><strong>*</strong></span></label>
-		<select name="category" id="category">
+		<select class="ui fluid dropdown" name="category" id="category">
 		  {foreach from=$CATEGORIES item=item}
             <option value="{$item.id}" {if $CATEGORY_VALUE == $item.id}selected{/if}>{$item.name}</option>
 		  {/foreach}

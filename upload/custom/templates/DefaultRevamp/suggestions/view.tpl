@@ -2,13 +2,13 @@
 {include file='navbar.tpl'}
 
 <div class="ui container" style="padding-bottom:300px;">
-  <div class="ui segment">
 	<div class="ui stackable grid">
 	  <div class="ui centered row">
 		<div class="ui ten wide tablet twelve wide computer column">
+          <div class="ui segment">
 		  <h1 style="display:inline;">{$SUGGESTIONS}</h1><span class="right floated">
 		  <a class="ui small negative button" href="{$BACK_LINK}">{$BACK}</a></span>
-		  <hr>
+          <div class="ui divider"></div>
           
           {if isset($SESSION_SUCCESS_POST)}
             <div class="ui success icon message">
@@ -43,9 +43,9 @@
                 <button class="ui mini red icon button" data-toggle="modal" data-target="#modal-delete-suggestion" data-tooltip="{$DELETE}" data-variation="mini" data-inverted=""><i class="trash icon"></i></button>
                 {/if}
 			</span>
-			<hr>
+            <div class="ui divider"></div>
 			{$CONTENT}
-			<hr>
+            <div class="ui divider"></div>
 			
 			<form style="display:inline;" action="" method="post">
 			  <input type="hidden" name="action" value="vote">
@@ -72,7 +72,7 @@
                     <button class="ui mini red icon button" data-toggle="modal" data-target="#modal-delete-{$comment.id}" data-tooltip="{$DELETE}" data-variation="mini" data-inverted=""><i class="trash icon"></i></button>
                     {/if}
                   </span>
-				  <hr>
+                  <div class="ui divider"></div>
 				  {$comment.content}
                 </div>
               {else}
@@ -102,7 +102,7 @@
 			  {if isset($CAN_MODERATE)}
 			  <div class="field">
 				<label for="statusLabel">Status </label>
-				<select name="status" id="status">
+				<select class="ui fluid dropdown" name="status" id="status">
 				  {foreach from=$STATUSES item=item}
 					<option value="{$item.id}" {if $STATUS == $item.id}selected{/if}>{$item.name}</option>
 				  {/foreach}
@@ -117,7 +117,7 @@
              <input type="submit" value="{$SUBMIT}" class="ui primary button">
 		    </form>
           {/if}
-		  
+          </div>
 		</div>
 		
 		<div class="ui six wide tablet four wide computer column">
@@ -159,7 +159,6 @@
 		
 	  </div>
 	</div>
-  </div>
 </div>
 
 {if isset($CAN_MODERATE)}

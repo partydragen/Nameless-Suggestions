@@ -2,24 +2,25 @@
 {include file='navbar.tpl'}
 
 <div class="ui container" style="padding-bottom:300px;">
-  <div class="ui segment">
 	<div class="ui stackable grid">
 	  <div class="ui centered row">
 		<div class="ui ten wide tablet twelve wide computer column">
-		  <h1 style="display:inline;">{$SUGGESTIONS}</h1><span class="right floated">
-		  <div class="ui small dropdown primary button">
-		    <span class="text">{$SORT_BY} {$SORT_BY_VALUE}</span> <i class="dropdown icon"></i>
-		    <div class="menu">
-			  <a rel="noopener nofollow" class="item" href="{$SORT_NEWEST_LINK}">{$NEWEST}</a>
-			  <a rel="noopener nofollow" class="item" href="{$SORT_RECENT_ACTIVITY_LINK}">{$RECENT_ACTIVITY}</a>
-			  <a rel="noopener nofollow" class="item" href="{$SORT_LIKES_LINK}">{$LIKES}</a>
-		    </div>
-		  </div>
-          {if isset($CAN_CREATE)}
-		  <a class="ui small primary button" href="{$NEW_SUGGESTION_LINK}">{$NEW_SUGGESTION}</a>
-          {/if}
-          </span>
-		  <hr>
+			<div class="ui segment">
+		    <h1 style="display:inline;">{$SUGGESTIONS}</h1>
+			<span class="right floated">
+			  <div class="ui small dropdown primary button">
+				<span class="text">{$SORT_BY} {$SORT_BY_VALUE}</span> <i class="dropdown icon"></i>
+				<div class="menu">
+				  <a rel="noopener nofollow" class="item" href="{$SORT_NEWEST_LINK}">{$NEWEST}</a>
+				  <a rel="noopener nofollow" class="item" href="{$SORT_RECENT_ACTIVITY_LINK}">{$RECENT_ACTIVITY}</a>
+				  <a rel="noopener nofollow" class="item" href="{$SORT_LIKES_LINK}">{$LIKES}</a>
+				</div>
+			  </div>
+			  {if isset($CAN_CREATE)}
+			  <a class="ui small primary button" href="{$NEW_SUGGESTION_LINK}">{$NEW_SUGGESTION}</a>
+			  {/if}
+            </span>
+			<div class="ui divider"></div>
 		  
 		  {if isset($SUGGESTIONS_LIST)}
 			<table class="ui fixed single line selectable unstackable small padded res table">
@@ -67,7 +68,7 @@
 		  {else}
 			{$NO_SUGGESTIONS}
 		  {/if}
-		  
+		  </div>
 		</div>
 		
 		<div class="ui six wide tablet four wide computer column">
@@ -78,7 +79,6 @@
 		
 	  </div>
 	</div>
-  </div>
 </div>
 
 {include file='footer.tpl'}

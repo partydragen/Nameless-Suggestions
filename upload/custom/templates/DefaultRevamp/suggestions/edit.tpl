@@ -4,7 +4,7 @@
 <div class="ui container" style="padding-bottom:300px;">
   <div class="ui segment">
 	<h2 style="display:inline;">{$EDITING_SUGGESTION}</h2>
-	<hr>
+	<div class="ui divider"></div>
 				
 	{if isset($ERRORS)}
 	  <div class="ui negative icon message">
@@ -24,7 +24,7 @@
 	  </div>
 	  <div class="field">
 	    <label for="categoryLabel">{$CATEGORY} <span style="color:red"><strong>*</strong></span></label>
-		<select name="category" id="category">
+		<select class="ui fluid dropdown" name="category" id="category">
 		  {foreach from=$CATEGORIES item=item}
 		    <option value="{$item.id}" {if $CATEGORY_VALUE == $item.id}selected{/if}>{$item.name}</option>
 		  {/foreach}
@@ -32,7 +32,7 @@
 	  </div>
 	  <div class="field">
 	    <label for="statusLabel">{$STATUS} </label>
-		<select name="status" id="status">
+		<select class="ui fluid dropdown" name="status" id="status">
 		  {foreach from=$STATUSES item=item}
 		    <option value="{$item.id}" {if $STATUS_VALUE == $item.id}selected{/if}>{$item.name}</option>
 		  {/foreach}
