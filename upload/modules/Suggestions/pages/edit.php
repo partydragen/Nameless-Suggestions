@@ -104,9 +104,9 @@ if (Input::exists()) {
 }
 
 if (isset($errors) && count($errors))
-    $smarty->assign('ERRORS', $errors);
+    $template->getEngine()->addVariable('ERRORS', $errors);
 
-$smarty->assign([
+$template->getEngine()->addVariables([
     'EDITING_SUGGESTION' => $suggestions_language->get('general', 'editing_suggestion'),
     'SUGGESTION_TITLE' => $suggestions_language->get('general', 'title'),
     'TITLE_VALUE' => Output::getClean($suggestion->data()->title),
@@ -133,4 +133,4 @@ require(ROOT_PATH . '/core/templates/navbar.php');
 require(ROOT_PATH . '/core/templates/footer.php');
     
 // Display template
-$template->displayTemplate('suggestions/edit.tpl', $smarty);
+$template->displayTemplate('suggestions/edit');

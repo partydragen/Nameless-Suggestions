@@ -75,7 +75,7 @@ if (count($suggestions_query)) {
     $results = $paginator->getLimited($suggestions_query, 16, $p, count($suggestions_query));
     $pagination = $paginator->generate(7, $url);
 
-    $smarty->assign('PAGINATION', $pagination);
+    $template->getEngine()->addVariable('PAGINATION', $pagination);
 
     $suggestions_array = [];
     foreach ($results->data as $item) {
@@ -103,20 +103,20 @@ if (count($suggestions_query)) {
         ];
     }
     
-    $smarty->assign([
+    $template->getEngine()->addVariables([
         'SUGGESTIONS_LIST' => $suggestions_array
     ]);
 }
 
 if ($user->hasPermission('suggestions.create')) {
-    $smarty->assign([
+    $template->getEngine()->addVariables([
         'CAN_CREATE' => true,
         'NEW_SUGGESTION' => $suggestions_language->get('general', 'new_suggestion'),
         'NEW_SUGGESTION_LINK' => URL::build('/suggestions/new')
     ]);
 }
 
-$smarty->assign([
+$template->getEngine()->addVariables([
     'SUGGESTIONS' => $suggestions_language->get('general', 'suggestions'),
     'NO_SUGGESTIONS' => $suggestions_language->get('general', 'no_suggestions'),
     'CATEGORIES' => $suggestions_language->get('general', 'categories'),
@@ -153,10 +153,10 @@ $template->addJSScript('$(\'.ui.search\')
 
 $template->onPageLoad();
     
-$smarty->assign('WIDGETS', $widgets->getWidgets());
+$template->getEngine()->addVariable('WIDGETS', $widgets->getWidgets('right'));
     
 require(ROOT_PATH . '/core/templates/navbar.php');
 require(ROOT_PATH . '/core/templates/footer.php');
     
 // Display template
-$template->displayTemplate('suggestions/index.tpl', $smarty);
+$template->displayTemplate('suggestions/index');

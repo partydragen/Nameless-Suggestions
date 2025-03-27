@@ -86,9 +86,9 @@ if (Input::exists()) {
 }
 
 if (isset($errors) && count($errors))
-    $smarty->assign('ERRORS', $errors);
+    $template->getEngine()->addVariable('ERRORS', $errors);
 
-$smarty->assign([
+$template->getEngine()->addVariables([
     'SUGGESTIONS' => $suggestions_language->get('general', 'suggestions'),
     'NEW_SUGGESTION' => $suggestions_language->get('general', 'new_suggestion'),
     'BACK' => $language->get('general', 'back'),
@@ -118,11 +118,9 @@ $template->addJSScript('$(\'.ui.search\')
 ;');
 
 $template->onPageLoad();
-    
-$smarty->assign('WIDGETS', $widgets->getWidgets());
-    
+
 require(ROOT_PATH . '/core/templates/navbar.php');
 require(ROOT_PATH . '/core/templates/footer.php');
     
 // Display template
-$template->displayTemplate('suggestions/new.tpl', $smarty);
+$template->displayTemplate('suggestions/new');

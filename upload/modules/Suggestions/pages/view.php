@@ -202,7 +202,7 @@ if ($user->isLoggedIn() || Cookie::exists('alert-box')) {
 $voted = 0;
 if ($user->isLoggedIn()) {
     if ($user->hasPermission('suggestions.comment')) {
-        $smarty->assign('CAN_COMMENT', true);
+        $template->getEngine()->addVariable('CAN_COMMENT', true);
     }
 
     $user_voted = DB::getInstance()->query('SELECT id, type FROM nl2_suggestions_votes WHERE user_id = ? AND suggestion_id = ?', [$user->data()->id, $suggestion->data()->id])->results();
@@ -211,7 +211,7 @@ if ($user->isLoggedIn()) {
     }
 
     if ($user->canViewStaffCP()) {
-        $smarty->assign([
+        $template->getEngine()->addVariables([
             'CAN_MODERATE' => true,
             'STATUSES' => $suggestions->getStatuses()
         ]);
@@ -220,7 +220,7 @@ if ($user->isLoggedIn()) {
 
 // Get comments
 $comments = DB::getInstance()->get('suggestions_comments', ['suggestion_id', '=', $suggestion->data()->id])->results();
-$smarty_comments = [];
+$comments_list = [];
 foreach ($comments as $comment) {
     $comment_user = new User($comment->user_id);
 
@@ -239,7 +239,7 @@ foreach ($comments as $comment) {
         // Purify post content
         $content = EventHandler::executeEvent('renderSuggestionPost', ['content' => $content])['content'];
 
-        $smarty_comments[] = [
+        $comments_list[] = [
             'id' => $comment->id,
             'user_id' => $comment->user_id,
             'type' => $comment->type,
@@ -261,13 +261,13 @@ if (Session::exists('suggestions_success'))
     $success = Session::flash('suggestions_success');
 
 if (isset($success))
-    $smarty->assign([
+    $template->getEngine()->addVariables([
         'SUCCESS' => $success,
         'SUCCESS_TITLE' => $language->get('general', 'success')
     ]);
 
 if (isset($errors) && count($errors))
-    $smarty->assign([
+    $template->getEngine()->addVariables([
         'ERRORS' => $errors,
         'ERRORS_TITLE' => $language->get('general', 'error')
     ]);
@@ -276,7 +276,7 @@ if (isset($errors) && count($errors))
 $content = EventHandler::executeEvent('renderSuggestionPost', ['content' => $suggestion->data()->content])['content'];
 
 $author_user = new User($suggestion->data()->user_id);
-$smarty->assign([
+$template->getEngine()->addVariables([
     'ID' => Output::getClean($suggestion->data()->id),
     'SUGGESTIONS' => $suggestions_language->get('general', 'suggestions'),
     'SUGGESTION' => $suggestions_language->get('general', 'suggestion'),
@@ -302,7 +302,7 @@ $smarty->assign([
     'COMMENTS_TEXT' => $language->get('moderator', 'comments'),
     'NEW_COMMENT' => $language->get('moderator', 'new_comment'),
     'NO_COMMENTS' => $language->get('moderator', 'no_comments'),
-    'COMMENTS_LIST' => $smarty_comments,
+    'COMMENTS_LIST' => $comments_list,
     'SUBMIT' => $language->get('general', 'submit'),
     'STATUS' => Output::getClean($suggestion->data()->status_id),
     'BY' => $suggestions_language->get('general', 'by'),
@@ -338,11 +338,11 @@ $template->addJSScript('$(\'.ui.search\')
 ;');
 
 $template->onPageLoad();
-    
-$smarty->assign('WIDGETS', $widgets->getWidgets());
+
+$template->getEngine()->addVariable('WIDGETS', $widgets->getWidgets('right'));
     
 require(ROOT_PATH . '/core/templates/navbar.php');
 require(ROOT_PATH . '/core/templates/footer.php');
     
 // Display template
-$template->displayTemplate('suggestions/view.tpl', $smarty);
+$template->displayTemplate('suggestions/view');

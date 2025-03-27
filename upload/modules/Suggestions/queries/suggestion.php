@@ -40,7 +40,7 @@ if (!is_numeric($_GET['id'])) {
 }
 
 $author_user = new User($author_id);
-$smarty->assign([
+$template->getEngine()->addVariables([
     'ID' => $id,
     'TITLE_VALUE' => $title,
     'LINK_VALUE' => $link,
@@ -73,5 +73,5 @@ echo json_encode([
     'likes' => $likes,
     'dislikes' => $dislikes,
     'views' => $views,
-    'html' => $template->getTemplate('suggestions/suggestion_popover.tpl', $smarty)
+    'html' => $template->getTemplate('suggestions/suggestion_popover')
 ], JSON_PRETTY_PRINT);

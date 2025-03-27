@@ -33,7 +33,7 @@ if (!isset($_GET['action'])) {
         }
     }
 
-    $smarty->assign([
+    $template->getEngine()->addVariables([
         'CATEGORIES_LIST' => $categories_array,
         'NEW_CATEGORY' => $suggestions_language->get('admin', 'new_category'),
         'NEW_CATEGORY_LINK' => URL::build('/panel/suggestions/categories/', 'action=new'),
@@ -44,7 +44,7 @@ if (!isset($_GET['action'])) {
         'NO' => $language->get('general', 'no')
     ]);
 
-    $template_file = 'suggestions/categories.tpl';
+    $template_file = 'suggestions/categories';
 } else {
     switch ($_GET['action']) {
         case 'new':
@@ -79,7 +79,7 @@ if (!isset($_GET['action'])) {
                 }
             }
 
-            $smarty->assign([
+            $template->getEngine()->addVariables([
                 'CREATING_NEW_CATEGORY' => $suggestions_language->get('admin', 'creating_new_category'),
                 'BACK' => $language->get('general', 'back'),
                 'BACK_LINK' => URL::build('/panel/suggestions/categories/'),
@@ -87,7 +87,7 @@ if (!isset($_GET['action'])) {
                 'CATEGORY_ORDER' => $suggestions_language->get('admin', 'category_order'),
             ]);
 
-            $template_file = 'suggestions/categories_new.tpl';
+            $template_file = 'suggestions/categories_new';
         break;
         case 'edit':
             // Edit Category
@@ -132,7 +132,7 @@ if (!isset($_GET['action'])) {
                 }
             }
 
-            $smarty->assign([
+            $template->getEngine()->addVariables([
                 'EDITING_CATEGORY' => $suggestions_language->get('admin', 'editing_x', ['name' => Output::getClean($category->name)]),
                 'BACK' => $language->get('general', 'back'),
                 'BACK_LINK' => URL::build('/panel/suggestions/categories/'),
@@ -142,7 +142,7 @@ if (!isset($_GET['action'])) {
                 'CATEGORY_ORDER_VALUE' => Output::getClean($category->display_order),
             ]);
 
-            $template_file = 'suggestions/categories_edit.tpl';
+            $template_file = 'suggestions/categories_edit';
         break;
         case 'delete':
             // Delete Category
@@ -174,20 +174,20 @@ if (Session::exists('staff_suggestions'))
     $success = Session::flash('staff_suggestions');
 
 if (isset($success)) {
-    $smarty->assign([
+    $template->getEngine()->addVariables([
         'SUCCESS_TITLE' => $language->get('general', 'success'),
         'SUCCESS' => $success
     ]);
 }
 
 if (isset($errors) && count($errors)) {
-    $smarty->assign([
+    $template->getEngine()->addVariables([
         'ERRORS_TITLE' => $language->get('general', 'error'),
         'ERRORS' => $errors
     ]);
 }
 
-$smarty->assign([
+$template->getEngine()->addVariables([
     'PARENT_PAGE' => PARENT_PAGE,
     'DASHBOARD' => $language->get('admin', 'dashboard'),
     'PAGE' => PANEL_PAGE,
@@ -202,4 +202,4 @@ $template->onPageLoad();
 require(ROOT_PATH . '/core/templates/panel_navbar.php');
 
 // Display template
-$template->displayTemplate($template_file, $smarty);
+$template->displayTemplate($template_file);

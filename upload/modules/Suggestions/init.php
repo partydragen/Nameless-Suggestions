@@ -3,7 +3,7 @@
  *	Made by Partydragen
  *  https://github.com/partydragen/Nameless-Suggestions
  *  https://partydragen.com
- *  NamelessMC version 2.0.0-pr10
+ *  NamelessMC version 2.2.0
  *
  *  License: MIT
  *
