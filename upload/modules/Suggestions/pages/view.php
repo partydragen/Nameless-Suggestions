@@ -138,7 +138,7 @@ if (Input::exists()) {
                     }
                 }
             
-                if (!empty(Input::get('content'))) {
+                if (!empty(Input::get('content')) && !count($errors)) {
                     EventHandler::executeEvent(new SuggestionCommentCreatedEvent(
                         $user,
                         $suggestion,
