@@ -1,4 +1,4 @@
-# Suggestions Module for NamelessMC v2.1.0
+# Suggestions Module for NamelessMC v2.2.0
 
 ## Installation:
 - Upload the contents of the **upload** directory straight into your NamelessMC installation's directory
