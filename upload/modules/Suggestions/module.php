@@ -21,7 +21,7 @@ class Suggestions_Module extends Module {
         $this->_suggestions_language = $suggestions_language;
 
         $name = 'Suggestions';
-        $author = '<a href="https://partydragen.com" target="_blank" rel="nofollow noopener">Partydragen</a>';
+        $author = '<a href="https://partydragen.com" target="_blank" rel="nofollow noopener">Partydragen</a> and my <a href="https://partydragen.com/supporters/" target="_blank">Sponsors</a>';
         $module_version = '1.6.2';
         $nameless_version = '2.2.0';
 
