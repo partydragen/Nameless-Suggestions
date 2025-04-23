@@ -106,11 +106,11 @@ class Suggestions_Module extends Module {
         EventHandler::registerListener('preSuggestionPostEdit', 'SuggestionsMentionsHook::preEdit');
 
         EventHandler::registerListener('renderSuggestionPost', 'ContentHook::purify');
-        EventHandler::registerListener('renderSuggestionPost', 'ContentHook::codeTransform', false, 15);
-        EventHandler::registerListener('renderSuggestionPost', 'ContentHook::decode', false, 20);
-        EventHandler::registerListener('renderSuggestionPost', 'ContentHook::renderEmojis', false, 10);
-        EventHandler::registerListener('renderSuggestionPost', 'ContentHook::replaceAnchors', false, 15);
-        EventHandler::registerListener('renderSuggestionPost', 'SuggestionsMentionsHook::parsePost', false, 5);
+        EventHandler::registerListener('renderSuggestionPost', 'ContentHook::codeTransform', 15);
+        EventHandler::registerListener('renderSuggestionPost', 'ContentHook::decode', 20);
+        EventHandler::registerListener('renderSuggestionPost', 'ContentHook::renderEmojis', 10);
+        EventHandler::registerListener('renderSuggestionPost', 'ContentHook::replaceAnchors', 15);
+        EventHandler::registerListener('renderSuggestionPost', 'SuggestionsMentionsHook::parsePost', 5);
 
         $endpoints->loadEndpoints(ROOT_PATH . '/modules/Suggestions/includes/endpoints');
 
