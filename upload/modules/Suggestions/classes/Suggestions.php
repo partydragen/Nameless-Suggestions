@@ -18,7 +18,7 @@ class Suggestions {
     // Get Categories
     public function getCategories() {
         $categories = [];
-        $categories_query = $this->_db->query('SELECT * FROM nl2_suggestions_categories WHERE deleted = 0')->results();
+        $categories_query = $this->_db->query('SELECT * FROM nl2_suggestions_categories WHERE `deleted` = 0 ORDER BY `display_order`')->results();
         foreach ($categories_query as $category) {
             $categories[] = [
                 'id' => Output::getClean($category->id),
