@@ -314,6 +314,14 @@ class Suggestions_Module extends Module {
                 // Error
             }
         }
+
+        if ($old_version < 163) {
+            try {
+                $this->_db->addColumn('suggestions_votes', '`voted_at`', "int(11) NOT NULL DEFAULT '0'");
+            } catch (Exception $e) {
+                // Error
+            }
+        }
     }
 
     private function initialise() {
@@ -376,24 +384,10 @@ class Suggestions_Module extends Module {
 
         if (!$this->_db->showTables('suggestions_votes')) {
             try {
-                $this->_db->createTable('suggestions_votes', ' `id` int(11) NOT NULL AUTO_INCREMENT, `user_id` int(11) NOT NULL, `suggestion_id` int(11) NOT NULL, `type` tinyint(1) NOT NULL, PRIMARY KEY (`id`)');
+                $this->_db->createTable('suggestions_votes', ' `id` int(11) NOT NULL AUTO_INCREMENT, `user_id` int(11) NOT NULL, `suggestion_id` int(11) NOT NULL, `type` tinyint(1) NOT NULL, `voted_at` int(11) NOT NULL DEFAULT \'0\', PRIMARY KEY (`id`)');
             } catch(Exception $e) {
                 // Error
             }
-        }
-
-        try {
-            // Update main admin group permissions
-            $group = $this->_db->get('groups', ['id', '=', 2])->results();
-            $group = $group[0];
-
-            $group_permissions = json_decode($group->permissions, TRUE);
-            $group_permissions['suggestions.manage'] = 1;
-
-            $group_permissions = json_encode($group_permissions);
-            $this->_db->update('groups', 2, ['permissions' => $group_permissions]);
-        } catch (Exception $e) {
-            // Error
         }
     }
 }

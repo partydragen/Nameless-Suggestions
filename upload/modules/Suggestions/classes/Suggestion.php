@@ -4,7 +4,7 @@
  *
  * @package Modules\Suggestions
  * @author Partydragen
- * @version 2.1.0
+ * @version 2.2.2
  * @license MIT
  */
 class Suggestion {
@@ -135,7 +135,8 @@ class Suggestion {
 
                 // Change existing vote
                 $this->_db->update('suggestions_votes', $existing_vote->id, [
-                    'type' => $reaction
+                    'type' => $reaction,
+                    'voted_at' => date('U')
                 ]);
 
                 EventHandler::executeEvent(new UserSuggestionVoteEvent(
@@ -148,7 +149,8 @@ class Suggestion {
             $this->_db->insert('suggestions_votes', [
                 'user_id' => $user->data()->id,
                 'suggestion_id' => $this->data()->id,
-                'type' => $reaction
+                'type' => $reaction,
+                'voted_at' => date('U')
             ]);
 
             EventHandler::executeEvent(new UserSuggestionVoteEvent(
