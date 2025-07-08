@@ -63,10 +63,10 @@
     "general/status": "Статус",
     "general/suggestions": "Предложения",
     "general/suggestion": "Suggestion",
-    "general/by": "by",
+    "general/by": "от",
     "general/views": "Views",
     "general/unassigned": "Не назначено",
-    "general/title": "Название",
+    "general/title": "Заголовок",
     "general/title_maximum": "Название не должно быть длиннее 128 символов",
     "general/title_minimum": "В названии должно быть минимум 6 символов",
     "general/title_required": "Вы должны указать название",
@@ -83,5 +83,6 @@
     "general/deleted_suggestion": "Удаленное предложение",
     "general/user_liked_suggestion": "{{user}} понравилось это предложение.",
     "general/user_removed_vote": "{{user}} отменил свой голос за это предложение.",
-    "general/suggestion_updated": "Предложение обновлено"
+    "general/suggestion_updated": "Предложение обновлено",
+    "general/user_suggestion_vote": "Голос за предложение пользователя"
 }
