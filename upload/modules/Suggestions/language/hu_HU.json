@@ -1,1 +1,16 @@
-{}
+{
+    "admin/actions": "Műveletek",
+    "admin/categories": "Kategóriák",
+    "admin/category_created_successfully": "A kategória sikeresen létrehozva.",
+    "admin/category_deleted_successfully": "A kategória sikeresen törölve.",
+    "admin/category_name": "Kategória neve",
+    "admin/category_updated_successfully": "A kategória sikeresen frissítve.",
+    "admin/current_version_x": "Jelenlegi modul verziója: {{version}}",
+    "admin/new_category": "Új kategória",
+    "admin/new_urgent_update_available_x": "Új, sürgős frissítés érhető el a(z) {{module}} modulhoz. Kérjük, frissítsen amint lehetséges!",
+    "admin/new_version_x": "Új modul verzió: {{new_version}}",
+    "admin/settings": "Beállítások",
+    "admin/status": "Állapot",
+    "admin/view_resource": "Erőforrás megtekintése",
+    "admin/new_update_available_x": "Új frissítés érhető el a(z) {{module}} modulhoz"
+}
